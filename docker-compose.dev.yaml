@@ -1,19 +1,5 @@
-version: '3.8'
+version: '3'
 services:
-  web:
-    container_name: web
-    build: .
-    environment:
-      DB_HOST: "mysql"
-      DB_DATABASE: "bruh"
-      DB_USERNAME: "root"
-      DB_PASSWORD: "toor"
-      DB_DIALECT: "mysql"
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./config:/app/config
-
   mysql:
     image: mysql:latest
     container_name: mysql
@@ -37,6 +23,18 @@ services:
       PMA_PORT: 3306
     ports:
       - "8080:80"
+    depends_on:
+      - mysql
+
+  web-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: web-dev
+    ports:
+      - "9229:9229"
+    volumes:
+      - .:/usr/src/app
     depends_on:
       - mysql
 

@@ -12,11 +12,19 @@
       "runtimeArgs": [
         "start"
       ],
-      "preLaunchTask": "",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Docker: Attach to Node",
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/usr/src/app",
     }
   ]
 }
