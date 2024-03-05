@@ -6,8 +6,8 @@ services:
     environment:
       DB_HOST: "mysql"
       DB_DATABASE: "bruh"
-      DB_USERNAME: "root"
-      DB_PASSWORD: "toor"
+      DB_USERNAME: "my-user"
+      DB_PASSWORD: "my-user-pw"
       DB_DIALECT: "mysql"
     ports:
       - "3000:3000"
