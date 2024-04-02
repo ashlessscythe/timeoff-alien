@@ -2,7 +2,7 @@
 
 # Update and install necessary packages
 sudo apt-get update
-sudo apt-get install -y tmux ranger tig cargo pgcli postgresql-client postgresql-client-common libpq-dev
+sudo apt-get install -y tmux ranger tig cargo mycli postgresql-client postgresql-client-common libpq-dev
 
 # Remove pgcli if installed via apt
 sudo apt-get remove -y pgcli
