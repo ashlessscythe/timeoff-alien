@@ -4,11 +4,12 @@ services:
     container_name: web
     build: .
     environment:
-      DB_HOST: "mysql"
-      DB_DATABASE: "bruh"
-      DB_USERNAME: "my-user"
-      DB_PASSWORD: "my-user-pw"
+      DB_HOST: ${MYSQL_HOST}
+      DB_DATABASE: ${MYSQL_DATABASE}
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
       DB_DIALECT: "mysql"
+      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:3306/${MYSQL_DATABASE}
     ports:
       - "3000:3000"
     volumes:
@@ -20,10 +21,10 @@ services:
     image: mysql:latest
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: toor
-      MYSQL_DATABASE: bruh
-      MYSQL_USER: my-user
-      MYSQL_PASSWORD: my-user-pw
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_HOST: '%'
     volumes:
       - my-mysql-data:/var/lib/mysql
