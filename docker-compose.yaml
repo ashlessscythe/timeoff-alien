@@ -12,10 +12,11 @@ services:
       DATABASE_URL: ${DB_DIALECT}://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}
       DB_SSL_REQUIRE: ${DB_SSL_REQUIRE}
       DB_SSL_REJECT_UNAUTHORIZED: ${DB_SSL_REJECT_UNAUTHORIZED}
+      OPTION_ALLOW_NEW_REGISTRATIONS: ${OPTION_ALLOW_NEW_REGISTRATIONS}
     ports:
       - "3000:3000"
-    volumes:
-      - ./config:/app/config
+    # volumes:
+    #   - ./config:/app/config
     restart: unless-stopped
 
   # postgres:
