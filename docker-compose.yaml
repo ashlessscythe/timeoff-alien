@@ -13,6 +13,8 @@ services:
       - "3000:3000"
     volumes:
       - ./config:/app/config
+    depends_on:
+      - mysql
 
   mysql:
     image: mysql:latest

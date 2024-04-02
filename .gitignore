@@ -5,6 +5,7 @@
 *.swm
 node_modules/
 config/
+.env
 *.sqlite
 *.DS_Store
 t/integration/test.csv
