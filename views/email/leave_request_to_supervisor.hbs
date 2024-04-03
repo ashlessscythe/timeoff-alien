@@ -1,8 +1,8 @@
 New leave request
 =====
-<p>Hello <strong>{{#with approver }}{{this.full_name}}{{/with}}</strong>,</p>
+<p>Hello <strong>{{#with approver }}{{this.name}}{{/with}}</strong>,</p>
 
-<p><strong>{{#with requester}}{{this.full_name}}{{/with}}</strong> sent new leave request <strong>{{>leave_request_detail leave=leave }}</strong>.</p>
+<p><strong>{{#with requester}}{{this.name}}{{/with}}</strong> sent new leave request <strong>{{>leave_request_detail leave=leave }}</strong>.</p>
 
 {{> email/leave_comments comments=comments }}
 
