@@ -1,8 +1,8 @@
 Leave request is awaiting decision
 =====
-<p>Hello <strong>{{#with requester}}{{this.full_name}}{{/with}},</strong></p>
+<p>Hello <strong>{{requester.full_name}},</strong></p>
 
-<p>Your leave request <strong>{{>leave_request_detail leave=leave }} was sent</strong> to {{#with approver }}{{this.full_name}}{{/with}}.</p>
+<p>Your leave request <strong>{{>leave_request_detail leave=leave }} was sent</strong> to {{approver.full_name}}.</p>
 
 {{> email/leave_comments comments=comments }}
 

@@ -9,13 +9,10 @@
       "request": "launch",
       "name": "Launch Program",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "start"
-      ],
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "console": "integratedTerminal"
+      "runtimeArgs": ["start"],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env.dev"
     },
     {
       "type": "node",
@@ -24,7 +21,7 @@
       "port": 9229,
       "address": "localhost",
       "localRoot": "${workspaceFolder}",
-      "remoteRoot": "/usr/src/app",
+      "remoteRoot": "/usr/src/app"
     }
   ]
 }
