@@ -44,10 +44,17 @@
           <td data-vpp="days_used">{{ this.get_deducted_days_number }}</td>
           <td>{{this.comment.comment}}</td>
           <td>
-            <form action="/requests/reject/" method="POST">
-            <input class="btn btn-warning single-click" type="submit" value="Reject">
-            <input type="hidden" value="{{this.id}}" name="request">
-            </form>
+            {{!-- <form action="/requests/reject/" method="POST">
+              <input class="btn btn-warning single-click" type="submit" value="Reject">
+              <input type="hidden" value="{{this.id}}" name="request">
+            </form> --}}
+            <!-- Trigger Modal -->
+            <button class="btn btn-warning" data-toggle="modal"
+                data-target="#rejectModal"
+                data-leave-id="{{this.id}}"
+                name="reject_modal">
+                Reject
+            </button>
           </td>
           <td>
             <form action="/requests/approve/" method="POST">
@@ -72,5 +79,24 @@
 </div>
 
 {{> user_requests_grouped grouped_leaves=my_leaves_grouped logged_user=logged_user }}
+{{> reject_leave_modal
+  container_id="rejectModal"
+  reject_leave_modal_action='/requests/reject'
+  leave_id=data-leave-id
+}}
 
 {{>footer}}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $('#rejectModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget); // Button that triggered the modal
+      var leaveId = button.data('leave-id'); // Extract info from data-* attributes
+
+      // If you need to set this somewhere in the modal
+      var modal = $(this);
+      modal.find('input[name="request"]').val(leaveId);
+    });
+  });
+</script>
