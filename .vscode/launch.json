@@ -12,7 +12,7 @@
       "runtimeArgs": ["start"],
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal",
-      "envFile": "${workspaceFolder}/.env.dev"
+      "envFile": "${workspaceFolder}/.env"
     },
     {
       "type": "node",

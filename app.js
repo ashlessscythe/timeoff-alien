@@ -6,9 +6,8 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const moment = require('moment')
 const _handlebars = require('handlebars')
-const {
-  allowInsecurePrototypeAccess
-} = require('@handlebars/allow-prototype-access')
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
+
 
 const app = express()
 
@@ -22,8 +21,25 @@ const handlebars = require('express-handlebars').create({
   defaultLayout: 'main',
   extname: '.hbs',
   helpers: require('./lib/view/helpers')(),
-  handlebars: allowInsecurePrototypeAccess(_handlebars)
-})
+  handlebars: allowInsecurePrototypeAccess(_handlebars),
+  runtimeOptions: {
+    allowedProtoProperties: {
+      full_name: true,
+      get_leave_type_name: true,
+      get_start_leave_day: true,
+      get_end_leave_day: true,
+      get_end_leave_day: true,
+
+    },
+    allowedProtoMethods: {
+      full_name: true,
+      get_leave_type_name: true,
+      get_start_leave_day: true,
+      get_end_leave_day: true,
+      get_end_leave_day: true,
+    },
+  }
+});
 
 app.engine('.hbs', handlebars.engine)
 app.set('view engine', '.hbs')
