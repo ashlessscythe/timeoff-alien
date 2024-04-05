@@ -4,60 +4,46 @@ const models = require('../lib/model/db')
 
 module.exports = {
   up: async function(queryInterface, Sequelize) {
-    await queryInterface.describeTable('Comment').then(async attributes => {
+    await queryInterface.describeTable('comments').then(async attributes => {
       if (attributes.entityType) {
         await queryInterface.renameColumn(
-          'Comment',
+          'comment',
           'entityType',
           'entity_type'
         )
       }
 
       if (attributes.entityId) {
-        await queryInterface.renameColumn('Comment', 'entityId', 'entity_id')
+        await queryInterface.renameColumn('comment', 'entityId', 'entity_id')
       }
 
       if (attributes.companyId) {
-        await queryInterface.renameColumn('Comment', 'companyId', 'company_id')
+        await queryInterface.renameColumn('comment', 'companyId', 'company_id')
       }
     })
 
-    await queryInterface.describeTable('Audit').then(async attributes => {
+    await queryInterface.describeTable('audit').then(async attributes => {
       if (attributes.entityType) {
-        await queryInterface.renameColumn('Audit', 'entityType', 'entity_type')
+        await queryInterface.renameColumn('audit', 'entityType', 'entity_type')
       }
 
       if (attributes.entityId) {
-        await queryInterface.renameColumn('Audit', 'entityId', 'entity_id')
+        await queryInterface.renameColumn('audit', 'entityId', 'entity_id')
       }
 
       if (attributes.oldValue) {
-        await queryInterface.renameColumn('Audit', 'oldValue', 'old_value')
+        await queryInterface.renameColumn('audit', 'oldValue', 'old_value')
       }
 
       if (attributes.newValue) {
-        await queryInterface.renameColumn('Audit', 'newValue', 'new_value')
+        await queryInterface.renameColumn('audit', 'newValue', 'new_value')
       }
     })
 
-    await queryInterface.describeTable('Company').then(async attributes => {
-      if (attributes.companyId) {
-        await queryInterface.renameColumn('Company', 'companyId', 'company_id')
-      }
-
-      if (attributes.DepartmentId) {
-        await queryInterface.renameColumn(
-          'Company',
-          'DepartmentId',
-          'department_id'
-        )
-      }
-    })
-
-    await queryInterface.describeTable('Department').then(async attributes => {
+    await queryInterface.describeTable('companies').then(async attributes => {
       if (attributes.companyId) {
         await queryInterface.renameColumn(
-          'Department',
+          'companies',
           'companyId',
           'company_id'
         )
@@ -65,41 +51,41 @@ module.exports = {
 
       if (attributes.DepartmentId) {
         await queryInterface.renameColumn(
-          'Department',
+          'companies',
+          'DepartmentId',
+          'department_id'
+        )
+      }
+    })
+
+    await queryInterface.describeTable('departments').then(async attributes => {
+      if (attributes.companyId) {
+        await queryInterface.renameColumn(
+          'departments',
+          'companyId',
+          'company_id'
+        )
+      }
+
+      if (attributes.DepartmentId) {
+        await queryInterface.renameColumn(
+          'department',
           'DepartmentId',
           'department_id'
         )
       }
 
       if (attributes.bossId) {
-        await queryInterface.renameColumn('Department', 'bossId', 'manager_id')
-      }
-    })
-
-    await queryInterface.describeTable('BankHoliday').then(async attributes => {
-      if (attributes.companyId) {
-        await queryInterface.renameColumn(
-          'BankHoliday',
-          'companyId',
-          'company_id'
-        )
-      }
-
-      if (attributes.DepartmentId) {
-        await queryInterface.renameColumn(
-          'BankHoliday',
-          'DepartmentId',
-          'department_id'
-        )
+        await queryInterface.renameColumn('departments', 'bossId', 'manager_id')
       }
     })
 
     await queryInterface
-      .describeTable('DepartmentSupervisor')
+      .describeTable('bank_holidays')
       .then(async attributes => {
         if (attributes.companyId) {
           await queryInterface.renameColumn(
-            'DepartmentSupervisor',
+            'bank_holidays',
             'companyId',
             'company_id'
           )
@@ -107,97 +93,19 @@ module.exports = {
 
         if (attributes.DepartmentId) {
           await queryInterface.renameColumn(
-            'DepartmentSupervisor',
+            'bank_holidays',
             'DepartmentId',
             'department_id'
           )
         }
       })
 
-    await queryInterface.describeTable('EmailAudit').then(async attributes => {
-      if (attributes.companyId) {
-        await queryInterface.renameColumn(
-          'EmailAudit',
-          'companyId',
-          'company_id'
-        )
-      }
-
-      if (attributes.DepartmentId) {
-        await queryInterface.renameColumn(
-          'EmailAudit',
-          'DepartmentId',
-          'department_id'
-        )
-      }
-    })
-
-    await queryInterface.describeTable('Leave').then(async attributes => {
-      if (attributes.companyId) {
-        await queryInterface.renameColumn('Leave', 'companyId', 'company_id')
-      }
-
-      if (attributes.DepartmentId) {
-        await queryInterface.renameColumn(
-          'Leave',
-          'DepartmentId',
-          'department_id'
-        )
-      }
-    })
-
-    await queryInterface.describeTable('LeaveType').then(async attributes => {
-      if (attributes.companyId) {
-        await queryInterface.renameColumn(
-          'LeaveType',
-          'companyId',
-          'company_id'
-        )
-      }
-
-      if (attributes.DepartmentId) {
-        await queryInterface.renameColumn(
-          'LeaveType',
-          'DepartmentId',
-          'department_id'
-        )
-      }
-    })
-
-    await queryInterface.describeTable('Schedule').then(async attributes => {
-      if (attributes.companyId) {
-        await queryInterface.renameColumn('Schedule', 'companyId', 'company_id')
-      }
-
-      if (attributes.DepartmentId) {
-        await queryInterface.renameColumn(
-          'Schedule',
-          'DepartmentId',
-          'department_id'
-        )
-      }
-    })
-
-    await queryInterface.describeTable('User').then(async attributes => {
-      if (attributes.companyId) {
-        await queryInterface.renameColumn('User', 'companyId', 'company_id')
-      }
-
-      if (attributes.DepartmentId) {
-        await queryInterface.renameColumn(
-          'User',
-          'DepartmentId',
-          'department_id'
-        )
-      }
-    })
-
     await queryInterface
-      .describeTable('UserAllowanceAdjustment')
+      .describeTable('department_supervisors')
       .then(async attributes => {
         if (attributes.companyId) {
           await queryInterface.renameColumn(
-            'UserAllowanceAdjustment',
+            'department_supervisors',
             'companyId',
             'company_id'
           )
@@ -205,7 +113,111 @@ module.exports = {
 
         if (attributes.DepartmentId) {
           await queryInterface.renameColumn(
-            'UserAllowanceAdjustment',
+            'department_supervisors',
+            'DepartmentId',
+            'department_id'
+          )
+        }
+      })
+
+    await queryInterface
+      .describeTable('email_audits')
+      .then(async attributes => {
+        if (attributes.companyId) {
+          await queryInterface.renameColumn(
+            'email_audits',
+            'companyId',
+            'company_id'
+          )
+        }
+
+        if (attributes.DepartmentId) {
+          await queryInterface.renameColumn(
+            'email_audits',
+            'DepartmentId',
+            'department_id'
+          )
+        }
+      })
+
+    await queryInterface.describeTable('leaves').then(async attributes => {
+      if (attributes.companyId) {
+        await queryInterface.renameColumn('leaves', 'companyId', 'company_id')
+      }
+
+      if (attributes.DepartmentId) {
+        await queryInterface.renameColumn(
+          'leaves',
+          'DepartmentId',
+          'department_id'
+        )
+      }
+    })
+
+    await queryInterface.describeTable('leave_types').then(async attributes => {
+      if (attributes.companyId) {
+        await queryInterface.renameColumn(
+          'leave_types',
+          'companyId',
+          'company_id'
+        )
+      }
+
+      if (attributes.DepartmentId) {
+        await queryInterface.renameColumn(
+          'leave_types',
+          'DepartmentId',
+          'department_id'
+        )
+      }
+    })
+
+    await queryInterface.describeTable('schedules').then(async attributes => {
+      if (attributes.companyId) {
+        await queryInterface.renameColumn(
+          'schedules',
+          'companyId',
+          'company_id'
+        )
+      }
+
+      if (attributes.DepartmentId) {
+        await queryInterface.renameColumn(
+          'schedules',
+          'DepartmentId',
+          'department_id'
+        )
+      }
+    })
+
+    await queryInterface.describeTable('users').then(async attributes => {
+      if (attributes.companyId) {
+        await queryInterface.renameColumn('users', 'companyId', 'company_id')
+      }
+
+      if (attributes.DepartmentId) {
+        await queryInterface.renameColumn(
+          'users',
+          'DepartmentId',
+          'department_id'
+        )
+      }
+    })
+
+    await queryInterface
+      .describeTable('user_allowance_adjustment')
+      .then(async attributes => {
+        if (attributes.companyId) {
+          await queryInterface.renameColumn(
+            'user_allowance_adjustment',
+            'companyId',
+            'company_id'
+          )
+        }
+
+        if (attributes.DepartmentId) {
+          await queryInterface.renameColumn(
+            'user_allowance_adjustment',
             'DepartmentId',
             'department_id'
           )

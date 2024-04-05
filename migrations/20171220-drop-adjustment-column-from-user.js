@@ -1,11 +1,11 @@
 'use strict'
 
-const models = require('../lib/model/db');
-  const Promise = require('bluebird')
+const models = require('../lib/model/db')
+const Promise = require('bluebird')
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.describeTable('Users').then(attributes => {
+    return queryInterface.describeTable('users').then(attributes => {
       if (!attributes.hasOwnProperty('adjustment')) {
         return Promise.resolve()
       }
