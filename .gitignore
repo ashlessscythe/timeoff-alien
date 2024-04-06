@@ -5,6 +5,8 @@
 *.swm
 node_modules/
 config/
+scripts/
+mock_data/
 .env
 *.sqlite
 *.DS_Store
