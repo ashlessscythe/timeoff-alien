@@ -61,6 +61,14 @@
         {{/each}}
     </select>
   </div>
+  <div class="form-group">
+    <label for="personal_select">Personal</label>
+    <select class="form-control" name="personal" id="personal_select">
+        {{#each personal_days_options}}
+        <option value="{{value}}" {{#if_equal this.value ../department.personal}} selected="selected"{{/if_equal}}>{{caption}}</option>
+        {{/each}}
+    </select>
+  </div>
 
   <div class="form-group">
     <label for="use_bank_holidays_inp" class="control-label">

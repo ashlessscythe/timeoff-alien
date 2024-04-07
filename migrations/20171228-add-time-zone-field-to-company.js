@@ -4,13 +4,13 @@ const models = require('../lib/model/db')
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.describeTable('Companies').then(function(attributes) {
+    return queryInterface.describeTable('companies').then(function(attributes) {
       if (attributes.hasOwnProperty('timezone')) {
         return 1
       }
 
       return queryInterface.addColumn(
-        'Companies',
+        'companies',
         'timezone',
         models.Company.attributes.timezone
       )
@@ -18,6 +18,6 @@ module.exports = {
   },
 
   down: function(queryInterface, Sequelize) {
-    return queryInterface.removeColumn('Companies', 'timezone')
+    return queryInterface.removeColumn('companies', 'timezone')
   }
 }

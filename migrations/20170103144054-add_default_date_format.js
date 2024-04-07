@@ -2,12 +2,12 @@
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.describeTable('Companies').then(function(attributes) {
+    return queryInterface.describeTable('companies').then(function(attributes) {
       if (attributes.hasOwnProperty('date_format')) {
         return 1
       }
 
-      return queryInterface.addColumn('Companies', 'date_format', {
+      return queryInterface.addColumn('companies', 'date_format', {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: 'YYYY-MM-DD'
@@ -16,6 +16,6 @@ module.exports = {
   },
 
   down: function(queryInterface, Sequelize) {
-    return queryInterface.removeColumn('Companies', 'date_format')
+    return queryInterface.removeColumn('companies', 'date_format')
   }
 }

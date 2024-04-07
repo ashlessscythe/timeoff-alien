@@ -5,7 +5,7 @@ const models = require('../lib/model/db')
 module.exports = {
   up: function(queryInterface, Sequelize) {
     return queryInterface
-      .describeTable('Departments')
+      .describeTable('departments')
       .then(function(attributes) {
         if (attributes.hasOwnProperty('allowance')) {
           return 1
@@ -63,7 +63,7 @@ module.exports = {
           console.log('Generic option')
 
           return queryInterface
-            .renameColumn('Departments', 'allowence', 'allowance')
+            .renameColumn('departments', 'allowence', 'allowance')
             .then(function(d) {
               console.dir(d)
             })
@@ -72,6 +72,6 @@ module.exports = {
   },
 
   down: function(queryInterface, Sequelize) {
-    return queryInterface.renameColumn('Departments', 'allowance', 'allowence')
+    return queryInterface.renameColumn('departments', 'allowance', 'allowence')
   }
 }
