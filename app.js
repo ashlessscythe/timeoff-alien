@@ -7,6 +7,7 @@ const bodyParser = require('body-parser')
 const moment = require('moment')
 const _handlebars = require('handlebars')
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
+require('dotenv').config()
 
 
 const app = express()
@@ -78,7 +79,7 @@ app.use(passport.session())
 // Custom middlewares
 //
 // Make sure session and user objects are available in templates
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   // Get today given user's timezone
   let today
 
@@ -91,7 +92,8 @@ app.use(function (req, res, next) {
   res.locals.session = req.session
   res.locals.logged_user = req.user
   res.locals.url_to_the_site_root = '/'
-  res.locals.requested_path = req.originalUrl
+  // set header from env or default to static string
+  res.locals.header_title = process.env.HEADER_TITLE || 'Time Off Requests'
   // For book leave request modal
   res.locals.booking_start = today
   res.locals.booking_end = today
@@ -104,7 +106,7 @@ app.use(function (req, res, next) {
   next()
 })
 
-app.use(function (_req, res, next) {
+app.use(function(_req, res, next) {
   res.locals.custom_java_script = [
     '/js/bootstrap-datepicker.js',
     '/js/global.js'
@@ -156,7 +158,7 @@ app.use('/audit/', require('./lib/route/audit'))
 app.use('/reports/', require('./lib/route/reports'))
 
 // catch 404
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.render('not_found')
 })
 
@@ -165,7 +167,7 @@ app.use(function (req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function (err, req, res, next) {
+  app.use(function(err, req, res, next) {
     console.error(err)
     res.status(err.status || 500)
     res.render('error', {
@@ -177,7 +179,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   console.error(err)
   res.status(err.status || 500)
   res.render('error', {
