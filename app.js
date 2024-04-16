@@ -6,9 +6,10 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const moment = require('moment')
 const _handlebars = require('handlebars')
-const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
+const {
+  allowInsecurePrototypeAccess
+} = require('@handlebars/allow-prototype-access')
 require('dotenv').config()
-
 
 const app = express()
 
@@ -26,21 +27,26 @@ const handlebars = require('express-handlebars').create({
   runtimeOptions: {
     allowedProtoProperties: {
       full_name: true,
+      name: true,
       get_leave_type_name: true,
       get_start_leave_day: true,
       get_end_leave_day: true,
       get_end_leave_day: true,
-
+      ldap_auth_enabled: true,
+      get_reset_password_token: true
     },
     allowedProtoMethods: {
       full_name: true,
+      name: true,
       get_leave_type_name: true,
       get_start_leave_day: true,
       get_end_leave_day: true,
       get_end_leave_day: true,
-    },
+      ldap_auth_enabled: true,
+      get_reset_password_token: true
+    }
   }
-});
+})
 
 app.engine('.hbs', handlebars.engine)
 app.set('view engine', '.hbs')
