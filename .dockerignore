@@ -2,3 +2,7 @@
 .github
 .vscode
 docs
+config.example/
+scripts/
+mock_data/
+import_data/
