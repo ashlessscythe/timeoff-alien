@@ -9,6 +9,7 @@ const _handlebars = require('handlebars')
 const {
   allowInsecurePrototypeAccess
 } = require('@handlebars/allow-prototype-access')
+require('dotenv').config()
 
 const app = express()
 
@@ -22,7 +23,29 @@ const handlebars = require('express-handlebars').create({
   defaultLayout: 'main',
   extname: '.hbs',
   helpers: require('./lib/view/helpers')(),
-  handlebars: allowInsecurePrototypeAccess(_handlebars)
+  handlebars: allowInsecurePrototypeAccess(_handlebars),
+  runtimeOptions: {
+    allowedProtoProperties: {
+      full_name: true,
+      name: true,
+      get_leave_type_name: true,
+      get_start_leave_day: true,
+      get_end_leave_day: true,
+      get_end_leave_day: true,
+      ldap_auth_enabled: true,
+      get_reset_password_token: true
+    },
+    allowedProtoMethods: {
+      full_name: true,
+      name: true,
+      get_leave_type_name: true,
+      get_start_leave_day: true,
+      get_end_leave_day: true,
+      get_end_leave_day: true,
+      ldap_auth_enabled: true,
+      get_reset_password_token: true
+    }
+  }
 })
 
 app.engine('.hbs', handlebars.engine)
@@ -75,7 +98,8 @@ app.use(function(req, res, next) {
   res.locals.session = req.session
   res.locals.logged_user = req.user
   res.locals.url_to_the_site_root = '/'
-  res.locals.requested_path = req.originalUrl
+  // set header from env or default to static string
+  res.locals.header_title = process.env.HEADER_TITLE || 'Time Off Requests'
   // For book leave request modal
   res.locals.booking_start = today
   res.locals.booking_end = today

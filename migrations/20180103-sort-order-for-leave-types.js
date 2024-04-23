@@ -5,14 +5,14 @@ const models = require('../lib/model/db')
 module.exports = {
   up: function(queryInterface, Sequelize) {
     return queryInterface
-      .describeTable('LeaveTypes')
+      .describeTable('leave_types')
       .then(function(attributes) {
         if (attributes.hasOwnProperty('sort_order')) {
           return 1
         }
 
         return queryInterface.addColumn(
-          'LeaveTypes',
+          'leave_types',
           'sort_order',
           models.LeaveType.attributes.sort_order
         )
@@ -20,6 +20,6 @@ module.exports = {
   },
 
   down: function(queryInterface, Sequelize) {
-    return queryInterface.removeColumn('LeaveTypes', 'sort_order')
+    return queryInterface.removeColumn('leave_types', 'sort_order')
   }
 }

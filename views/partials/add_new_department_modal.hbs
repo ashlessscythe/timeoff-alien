@@ -25,6 +25,15 @@
         </div>
 
         <div class="form-group">
+          <label for="department_personal_new" class="control-label">Personal Days:</label>
+          <select class="form-control" id="department_personal_new name=" name="personal__new">
+            {{#each personal_days_options}}
+            <option value="{{value}}" {{#if_equal this.value 5}} selected="selected"{{/if_equal}}>{{caption}}</option>
+            {{/each}}
+          </select>
+        </div>
+
+        <div class="form-group">
           <input type="checkbox" id="department_include_public_holiday_new" name="include_public_holidays__new" checked="checked">&nbsp;
           <label for="department_include_public_holiday_new" class="control-label">Include Public Holidays?</label>
         </div>
@@ -36,7 +45,7 @@
 
         <div class="form-group">
           <label for="department_superwiser_new" class="control-label">Supervisor</label>
-          <select class="form-control" id="department_allowance_new" name="manager_id__new">
+          <select class="form-control" id="department_superwiser_new" name="manager_id__new">
             {{#each company.users}}
               <option value="{{this.id}}">{{this.full_name}}</option>
             {{/each}}

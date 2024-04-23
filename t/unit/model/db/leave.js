@@ -1,9 +1,9 @@
 'use strict'
 
 const expect = require('chai').expect;
-  const _ = require('underscore');
-  const model = require('../../../../lib/model/db');
-  const LeaveRequestParameters = require('../../../../lib/model/leave_request_parameters')
+const _ = require('underscore');
+const model = require('../../../../lib/model/db');
+const LeaveRequestParameters = require('../../../../lib/model/leave_request_parameters')
 
 describe('Check bug when type mismatch happenned', function() {
   const leave = model.Leave.build({

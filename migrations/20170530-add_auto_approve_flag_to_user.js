@@ -4,13 +4,13 @@ const models = require('../lib/model/db')
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.describeTable('Users').then(function(attributes) {
+    return queryInterface.describeTable('users').then(function(attributes) {
       if (attributes.hasOwnProperty('auto_approve')) {
         return 1
       }
 
       return queryInterface.addColumn(
-        'Users',
+        'users',
         'auto_approve',
         models.User.attributes.auto_approve
       )
@@ -18,6 +18,6 @@ module.exports = {
   },
 
   down: function(queryInterface, Sequelize) {
-    return queryInterface.removeColumn('Users', 'auto_approve')
+    return queryInterface.removeColumn('users', 'auto_approve')
   }
 }

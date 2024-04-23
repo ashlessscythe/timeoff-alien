@@ -36,7 +36,7 @@ LABEL org.label-schema.docker.cmd="docker run -d -p 3000:3000 --name alpine_time
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
 
-RUN npm install -y
+RUN npm install
 
 # Copy the application into the container.
 COPY . /app

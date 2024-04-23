@@ -7,7 +7,8 @@
     "node": ">=16.0.0"
   },
   "optionalDependencies": {
-    "mysql2": "^1.6.4",
+    "mysql2": "^3.9.1",
+    "pg": "^8.11.4",
     "redis": "^3.1.2",
     "sqlite3": "^5.1.6"
   },
@@ -21,6 +22,7 @@
     "cookie-parser": "^1.4.4",
     "csv": "~5.1.1",
     "debug": "~4.1.1",
+    "dotenv": "^16.4.5",
     "express": "^4.16.4",
     "express-handlebars": "^3.0.2",
     "express-session": "^1.16.1",
@@ -42,8 +44,8 @@
     "passport-google-oauth20": "^1.0.0",
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
-    "sequelize": "^5.8.2",
-    "sequelize-cli": "5.4.0",
+    "sequelize": "^5.22.5",
+    "sequelize-cli": "^5.5.1",
     "serve-favicon": "^2.5.0",
     "underscore": "^1.9.1",
     "uuid": "^3.3.2",

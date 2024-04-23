@@ -32,7 +32,9 @@
     "auth": {
       "clientId": "123",
       "clientSecret": "123",
-      "domains": ["mydomain.com"]
+      "domains": [
+        "mydomain.com"
+      ]
     }
   },
   "slack": {
@@ -41,7 +43,7 @@
     "bot_name": "The display name for the messages being sent."
   },
   "options": {
-    "registration": true
+    "registration": false
   },
   "locale_code_for_sorting": "en",
   "force_to_explicitly_select_type_when_requesting_new_leave": false
