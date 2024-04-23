@@ -1,0 +1,21 @@
+{
+  "development": {
+    "username": "user",
+    "password": "pass",
+    "database": "dbname",
+    "host": "mysql",
+    "dialect": "mysql"
+  },
+  "test": {
+    "dialect": "sqlite",
+    "storage": "./localdb.sqlite",
+    "logging": false
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}

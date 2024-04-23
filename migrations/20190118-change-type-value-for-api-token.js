@@ -4,7 +4,7 @@ const models = require('../lib/model/db')
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.describeTable('Companies').then(attributes => {
+    return queryInterface.describeTable('companies').then(attributes => {
       if (attributes.integration_api_token.type === 'UUID') {
         return 1
       }

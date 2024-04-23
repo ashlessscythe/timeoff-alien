@@ -3,27 +3,28 @@
 const models = require('../lib/model/db')
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface
-      .describeTable('Companies')
+  up: (queryInterface, Sequelize) =>
+    queryInterface
+      .describeTable('companies')
       .then(attributes => {
         if (attributes.hasOwnProperty('integration_api_token')) {
           return 1
         }
 
         return queryInterface.addColumn(
-          'Companies',
+          'companies',
           'integration_api_token',
           models.Company.attributes.integration_api_token
         )
       })
       .then(() =>
-        queryInterface.describeTable('Companies').then(attributes => {
+        queryInterface.describeTable('companies').then(attributes => {
           if (attributes.hasOwnProperty('integration_api_enabled')) {
             return 1
           }
 
           return queryInterface.addColumn(
-            'Companies',
+            'companies',
             'integration_api_enabled',
             models.Company.attributes.integration_api_enabled
           )
@@ -32,8 +33,8 @@ module.exports = {
 
   down: (queryInterface, Sequelize) =>
     queryInterface
-      .removeColumn('Companies', 'integration_api_token')
+      .removeColumn('companies', 'integration_api_token')
       .then(() =>
-        queryInterface.removeColumn('Companies', 'integration_api_enabled')
+        queryInterface.removeColumn('companies', 'integration_api_enabled')
       )
 }

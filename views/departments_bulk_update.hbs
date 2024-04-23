@@ -50,6 +50,15 @@
         </select>
     </div>
 
+
+    <div class="col-md-1">
+        <select class="form-control" name="personal__{{@index}}">
+            {{#each ../personal_options}}
+            <option value="{{value}}" {{#if_equal this.value ../personal}} selected="selected"{{/if_equal}}>{{caption}}</option>
+            {{/each}}
+        </select>
+    </div>
+
     <div class="col-md-2">
         <input name="include_public_holidays__{{@index}}" id="include_public_holidays__{{@index}}" type="checkbox" {{#if include_public_holidays}}checked="checked"{{/if}}>
         <label for="include_public_holidays__{{@index}}" class="control-label">Public holidays</label>

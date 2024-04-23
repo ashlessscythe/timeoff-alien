@@ -31,6 +31,7 @@
           <th>Name</th>
           <th>Manager</th>
           <th>Allowance</th>
+          <th>Personal Days</th>
           <th>Number Employees</th>
           <th>Public Holidays
             <button type="button"
@@ -64,6 +65,9 @@
           <td><a href="/users/edit/{{this.manager.id}}/">{{# with this.manager }}{{this.full_name }}{{/with}}</a></td>
           <td>
             {{#each ../allowance_options}}{{#if_equal this.value ../allowance}}{{caption}}{{/if_equal}}{{/each}}
+          </td>
+          <td>
+            {{#each ../personal_days_options}}{{#if_equal this.value ../personal}}{{caption}}{{/if_equal}}{{/each}}
           </td>
           <td><a href="/users/?department={{ this.id }}">{{this.users.length}}</a></td>
           <td>{{# if this.include_public_holidays }}Yes{{/if}}</td>

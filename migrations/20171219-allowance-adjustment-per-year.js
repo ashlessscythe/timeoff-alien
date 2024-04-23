@@ -1,7 +1,7 @@
 'use strict'
 
-const models = require('../lib/model/db');
-  const Promise = require('bluebird')
+const models = require('../lib/model/db')
+const Promise = require('bluebird')
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
@@ -10,7 +10,7 @@ module.exports = {
         models.UserAllowanceAdjustment.tableName,
         models.UserAllowanceAdjustment.attributes
       )
-      .then(() => queryInterface.describeTable('Users'))
+      .then(() => queryInterface.describeTable('users'))
       .then(function(attributes) {
         if (!attributes.hasOwnProperty('adjustment')) {
           return Promise.resolve()

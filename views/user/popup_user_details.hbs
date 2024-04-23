@@ -7,7 +7,9 @@
 </div>
 {{#if userAllowance }}
   <div>
-    <strong>Available:</strong> {{userAllowance.number_of_days_available_in_allowance}} days out of {{userAllowance.total_number_of_days_in_allowance}}.
+    <strong>Available:</strong> [{{userAllowance.number_of_days_available_in_allowance}} reg,
+      {{#if userAllowance.total_personal_available}}{{userAllowance.total_personal_available}}{{else}}0{{/if}} pers] days out of
+      {{userAllowance.total_number_of_days_in_allowance}} total.
   </div>
 {{/if}}
 {{#if supervisorNames}}

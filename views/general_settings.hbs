@@ -236,6 +236,10 @@
               <label for="use_allowance__{{ this.id }}" class="control-label">Use allowance</label>
             </div>
             <div>
+              <input name="use_personal__{{ this.id }}" id="use_personal__{{ this.id }}" type="checkbox" {{#if use_personal}}checked="checked"{{/if}} data-tom-leave-type-order="personal_{{@index}}">
+              <label for="use_personal__{{ this.id }}" class="control-label">Use Personal</label>
+            </div>
+            <div>
               <input name="auto_approve__{{ this.id }}" id="auto_approve__{{ this.id }}" type="checkbox" {{#if auto_approve}}checked="checked"{{/if}} data-tom-leave-type-order="approve_{{@index}}">
               <label for="auto_approve__{{ this.id }}" class="control-label">Auto approve</label>
             </div>

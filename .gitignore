@@ -4,6 +4,11 @@
 *.swn
 *.swm
 node_modules/
+config/
+scripts/
+mock_data/
+import_data/
+.env
 *.sqlite
 *.DS_Store
 t/integration/test.csv

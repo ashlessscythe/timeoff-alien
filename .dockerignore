@@ -2,4 +2,7 @@
 .github
 .vscode
 docs
-config/app.json
+config.example/
+scripts/
+mock_data/
+import_data/

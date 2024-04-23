@@ -4,13 +4,13 @@ const models = require('../lib/model/db')
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.describeTable('Companies').then(function(attributes) {
+    return queryInterface.describeTable('companies').then(function(attributes) {
       if (attributes.hasOwnProperty('company_wide_message')) {
         return 1
       }
 
       return queryInterface.addColumn(
-        'Companies',
+        'companies',
         'company_wide_message',
         models.Company.attributes.company_wide_message
       )
@@ -18,6 +18,6 @@ module.exports = {
   },
 
   down: function(queryInterface, Sequelize) {
-    return queryInterface.removeColumn('Companies', 'company_wide_message')
+    return queryInterface.removeColumn('companies', 'company_wide_message')
   }
 }
