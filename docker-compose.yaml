@@ -19,17 +19,17 @@ services:
     #   - ./config:/app/config
     restart: unless-stopped
 
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    environment:
-      POSTGRES_DB: ${DB_DATABASE}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - my-postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+  # postgres:
+  #   image: postgres:latest
+  #   container_name: postgres
+  #   environment:
+  #     POSTGRES_DB: ${DB_DATABASE}
+  #     POSTGRES_USER: ${DB_USER}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - my-postgres-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
 
   # mysql:
   #   image: mysql:latest
@@ -56,6 +56,17 @@ services:
   #     - "8080:80"
   #   depends_on:
   #     - mysql
+
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     ADMINER_DEFAULT_SERVER: ${DB_HOST}
+  #     ADMINER_DEFAULT_DB: ${DB_NAME}
+  #     ADMINER_DEFAULT_USER: ${DB_USER}
+  #     ADMINER_DEFAULT_PASSWORD: ${DB_PASSWORD}
 
 volumes:
   # my-mysql-data:
