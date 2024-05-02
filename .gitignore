@@ -7,6 +7,8 @@ node_modules/
 config/
 mock_data/
 import_data/
+import/
+export/
 .env
 *.sqlite
 *.DS_Store
