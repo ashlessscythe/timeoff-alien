@@ -5,7 +5,6 @@
 *.swm
 node_modules/
 config/
-scripts/
 mock_data/
 import_data/
 .env
