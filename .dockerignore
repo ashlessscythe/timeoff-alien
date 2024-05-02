@@ -4,5 +4,7 @@
 docs
 config.example/
 scripts/
+import/
+export/
 mock_data/
 import_data/

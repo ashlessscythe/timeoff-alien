@@ -5,27 +5,27 @@ DO
 ----------------------------------+----------------------------------
  companies                        | 1
  departments                      | 38
- users                            | 230
- audit                            | 661
+ users                            | 231
+ audit                            | 664
  bank_holidays                    | 1
- comments                         | 2146
- department_supervisors           | 207
- email_audits                     | 28727
+ comments                         | 2228
+ department_supervisors           | 
+ email_audits                     | 29899
  leave_types                      | 20
- leaves                           | 3998
+ leaves                           | 4140
  schedules                        | 1
  user_feeds                       | 
- Sessions                         | tuM9RQ84wEmEv6fE-IxHlTd5_AJ4v-xq
+ Sessions                         | xkxHu6HbJWRLHHU4wwk3cUNPYvRElnlG
  user_allowance_adjustment        | 364
  companies_id_seq                 | 1
  departments_id_seq               | 38
- users_id_seq                     | 231
- audit_id_seq                     | 662
+ users_id_seq                     | 232
+ audit_id_seq                     | 665
  bank_holidays_id_seq             | 1
- comments_id_seq                  | 2147
- email_audits_id_seq              | 28728
+ comments_id_seq                  | 2228
+ email_audits_id_seq              | 29899
  leave_types_id_seq               | 21
- leaves_id_seq                    | 3999
+ leaves_id_seq                    | 4140
  schedules_id_seq                 | 1
  user_allowance_adjustment_id_seq | 364
  user_feeds_id_seq                | 1
