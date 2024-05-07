@@ -6,7 +6,7 @@ DECLARE
     _column_name text := 'id';  -- Assuming 'id' is the standard column name
     _max_id_query text;
     _setval_query text;
-    _tables_to_process text[] := ARRAY['users', 'audit', 'comments', 'email_audits', 'leave_types', 'leaves'];  -- Specify the list of tables to process
+    _tables_to_process text[] := ARRAY['companies', 'schedules', 'user_allowance_adjustment', 'users', 'audit', 'comments', 'email_audits', 'leave_types', 'leaves'];  -- Specify the list of tables to process
     _column_overrides jsonb := '{"Sessions": "sid", "department_supervisors": "user_id"}'; -- Override column names as needed
 BEGIN
     FOR rec IN SELECT sequence_name,
