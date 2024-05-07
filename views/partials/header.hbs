@@ -21,6 +21,10 @@
           {{# unless keep_team_view_hidden }}
             <li><a href="/calendar/teamview/">Team View</a></li>
           {{/ unless }}
+          {{# if logged_user.manager }}
+            <li><a href="/calendar/teamview/">Team View</a></li>
+          {{/if}}
+
           {{# if logged_user.admin }}
             <li class="hidden-xs"><a href="/users/">Employees</a></li>
           {{/if}}
