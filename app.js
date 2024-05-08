@@ -48,6 +48,14 @@ const handlebars = require('express-handlebars').create({
   }
 })
 
+handlebars.handlebars.registerHelper('or', function(a, b) {
+  return a || b
+})
+
+handlebars.handlebars.registerHelper('not', function(a) {
+  return !a
+})
+
 app.engine('.hbs', handlebars.engine)
 app.set('view engine', '.hbs')
 
