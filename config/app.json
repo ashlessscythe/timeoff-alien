@@ -8,6 +8,9 @@
     "default": true,
     "google": false
   },
+  "contact": {
+    "email": "email@addr.ess"
+  },
   "smtp": {
     "host": "localhost",
     "port": 25,
