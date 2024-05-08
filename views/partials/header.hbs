@@ -16,16 +16,12 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-left">
-        {{# if logged_user }}
+        {{#if logged_user}}
           <li><a href="/calendar/">Calendar</a></li>
-          {{# unless keep_team_view_hidden }}
-            <li><a href="/calendar/teamview/">Team View</a></li>
-          {{/ unless }}
-          {{# if logged_user.manager }}
+          {{#if (or (not keep_team_view_hidden) logged_user.manager)}}
             <li><a href="/calendar/teamview/">Team View</a></li>
           {{/if}}
-
-          {{# if logged_user.admin }}
+          {{#if logged_user.admin}}
             <li class="hidden-xs"><a href="/users/">Employees</a></li>
           {{/if}}
           <li class="navbar-form navbar-left">
