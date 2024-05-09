@@ -13,9 +13,15 @@
   <div>
     <strong>Type:</strong> {{leave.type}}.
   </div>
+{{#if leave.status}}
   <div>
     <strong>Status:</strong> {{leave.status}}.
   </div>
+{{else}}
+  <div>
+    <strong>Status:</strong> -
+  </div>
+{{/if}}
   <div>
     <strong>Employee:</strong> {{leave.employeeFullName}}.
   </div>
