@@ -51,16 +51,28 @@ body.dark-mode .modal-content {
   background-color: #333; // Darker background for dark mode
   color: #fff; // Light text for dark mode
 }
+
 body.dark-mode .panel-default {
   background-color: var(--background-color);
   color: var(--text-color);
 }
+
 body.dark-mode .container-fluid {
   background-color: var(--background-color);
   color: var(--text-color);
 }
 
 body.dark-mode .container-fluid:hover {
+  color: var(--hover-text-color);
+  background-color: var(--hover-bg-color);
+}
+
+body.dark-mode .form-control {
+  color: var(--hover-text-color);
+  background-color: var(--hover-bg-color);
+}
+
+body.dark-mode .datepicker-days {
   color: var(--hover-text-color);
   background-color: var(--hover-bg-color);
 }
