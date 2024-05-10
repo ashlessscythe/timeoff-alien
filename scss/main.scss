@@ -4,6 +4,26 @@
       sassc scss/main.scss public/css/style.css
 */
 
+/* Example CSS Variables setup */
+:root {
+  --background-color: #fff;
+  --text-color: #000;
+  --hover-text-color: #555; /* Hover text color for light theme */
+  --hover-bg-color: #eee; /* Hover background color for light theme */
+}
+
+.dark-mode {
+  --background-color: #333;
+  --text-color: #fff;
+  --hover-text-color: #fff; /* Hover text color for dark theme */
+  --hover-bg-color: #555; /* Hover background color for dark theme */
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
 $primary-font-color: #61686b;
 $border-color: #e5e5e5;
 $link-color: #5ba4e5;
@@ -18,12 +38,31 @@ $leave_cell_font_color: #61686b;
 // 5E5E5E
 
 body {
-  font: $font-size-primary "Open Sans", Helvetica, Arial, sans-serif;
+  font: $font-size-primary 'Open Sans', Helvetica, Arial, sans-serif;
   color: $primary-font-color;
 }
 
 a {
   color: $link-color;
+}
+
+/* Dark mode specific styles */
+body.dark-mode .modal-content {
+  background-color: #333; // Darker background for dark mode
+  color: #fff; // Light text for dark mode
+}
+body.dark-mode .panel-default {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+body.dark-mode .container-fluid {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+body.dark-mode .container-fluid:hover {
+  color: var(--hover-text-color);
+  background-color: var(--hover-bg-color);
 }
 
 /*
@@ -190,6 +229,7 @@ td.leave_cell_pended {
 .modal-dialog {
   max-width: 450px;
 }
+
 .left-column-cell {
   text-overflow: ellipsis;
   /* Cannot avoid specifying width with pixels... */
