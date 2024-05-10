@@ -13,12 +13,12 @@
   /* Hover background color for light theme */ }
 
 .dark-mode {
-  --background-color: #333;
-  --text-color: #fff;
-  --hover-text-color: #fff;
-  /* Hover text color for dark theme */
-  --hover-bg-color: #555;
-  /* Hover background color for dark theme */ }
+  --background-color: #212121;
+  --secondary-background-color: #1e1e1e;
+  --accent-color: #0fcc76;
+  --text-color: #ffffff;
+  --subtle-text-color: #b3b3b3;
+  --divider-color: #333333; }
 
 body {
   background-color: var(--background-color);
@@ -45,37 +45,25 @@ a {
 body.dark-mode a {
   color: #5ba4e5; }
 
-body.dark-mode dt {
-  color: #fff; }
+body.dark-mode [role='tooltip'] {
+  background-color: #333;
+  color: #fff;
+  border-color: #555; }
 
 body.dark-mode tr:hover {
-  color: #2c2c2c; }
+  color: #0fcc76; }
 
-body.dark-mode .modal-content {
-  background-color: #333;
-  color: #fff; }
-
-body.dark-mode .navbar-collapse {
-  background-color: var(--background-color);
-  color: var(--text-color); }
-
-body.dark-mode .panel-default {
-  background-color: var(--background-color);
-  color: var(--text-color); }
-
+body.dark-mode .modal-content,
+body.dark-mode .navbar-collapse,
+body.dark-mode .panel-default,
 body.dark-mode .container-fluid {
   background-color: var(--background-color);
   color: var(--text-color); }
 
+body.dark-mode .form-control,
+body.dark-mode .list-group,
+body.dark-mode .datepicker-days,
 body.dark-mode .container-fluid:hover {
-  color: var(--hover-text-color);
-  background-color: var(--hover-bg-color); }
-
-body.dark-mode .form-control {
-  color: var(--hover-text-color);
-  background-color: var(--hover-bg-color); }
-
-body.dark-mode .datepicker-days {
   color: var(--hover-text-color);
   background-color: var(--hover-bg-color); }
 
