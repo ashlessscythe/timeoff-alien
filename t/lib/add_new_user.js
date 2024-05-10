@@ -1,24 +1,24 @@
 'use strict'
 
-const By = require('selenium-webdriver').By;
-  const expect = require('chai').expect;
-  const _ = require('underscore');
-  const until = require('selenium-webdriver').until;
-  const Promise = require('bluebird');
-  const uuid = require('node-uuid');
-  const submit_form_func = require('./submit_form');
-  const build_driver = require('./build_driver');
-  const add_new_user_form_id = '#add_new_user_form';
-  let driver
+const By = require('selenium-webdriver').By
+const expect = require('chai').expect
+const _ = require('underscore')
+const until = require('selenium-webdriver').until
+const Promise = require('bluebird')
+const uuid = require('node-uuid')
+const submit_form_func = require('./submit_form')
+const build_driver = require('./build_driver')
+const add_new_user_form_id = '#add_new_user_form'
+let driver
 
 module.exports = Promise.promisify(function(args, callback) {
-  const application_host = args.application_host;
-    const result_callback = callback;
-    const department_index = args.department_index;
-    // optional parameter, if provided the user adding action is expected to fail
-    // with that error
-    const error_message = args.error_message;
-    const driver = args.driver || build_driver()
+  const application_host = args.application_host
+  const result_callback = callback
+  const department_index = args.department_index
+  // optional parameter, if provided the user adding action is expected to fail
+  // with that error
+  const error_message = args.error_message
+  const driver = args.driver || build_driver()
 
   const random_token = new Date().getTime()
   const new_user_email = args.email || random_token + '@test.com'

@@ -1,15 +1,15 @@
 'use strict'
 
-const test = require('selenium-webdriver/testing');
-  const By = require('selenium-webdriver').By;
-  const expect = require('chai').expect;
-  const _ = require('underscore');
-  const Promise = require('bluebird');
-  const login_user_func = require('../lib/login_with_user');
-  const register_new_user_func = require('../lib/register_new_user');
-  const logout_user_func = require('../lib/logout_user');
-  const config = require('../lib/config');
-  const application_host = config.get_application_host()
+const test = require('selenium-webdriver/testing')
+const By = require('selenium-webdriver').By
+const expect = require('chai').expect
+const _ = require('underscore')
+const Promise = require('bluebird')
+const login_user_func = require('../lib/login_with_user')
+const register_new_user_func = require('../lib/register_new_user')
+const logout_user_func = require('../lib/logout_user')
+const config = require('../lib/config')
+const application_host = config.get_application_host()
 
 /*
   User emails are case insensitive.

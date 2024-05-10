@@ -1,15 +1,15 @@
 'use strict'
 
-const test = require('selenium-webdriver/testing');
-  const By = require('selenium-webdriver').By;
-  const register_new_user_func = require('../lib/register_new_user');
-  const expect = require('chai').expect;
-  const login_user_func = require('../lib/login_with_user');
-  const open_page_func = require('../lib/open_page');
-  const submit_form_func = require('../lib/submit_form');
-  const config = require('../lib/config');
-  const moment = require('moment');
-  const application_host = config.get_application_host()
+const test = require('selenium-webdriver/testing')
+const By = require('selenium-webdriver').By
+const register_new_user_func = require('../lib/register_new_user')
+const expect = require('chai').expect
+const login_user_func = require('../lib/login_with_user')
+const open_page_func = require('../lib/open_page')
+const submit_form_func = require('../lib/submit_form')
+const config = require('../lib/config')
+const moment = require('moment')
+const application_host = config.get_application_host()
 
 describe('Register new user', function() {
   let driver

@@ -1,24 +1,24 @@
 'use strict'
 
-const By = require('selenium-webdriver').By;
-  const moment = require('moment');
-  const addNewUserFunc = require('../../lib/add_new_user');
-  const config = require('../../lib/config');
-  const loginUserFunc = require('../../lib/login_with_user');
-  const logoutUserFunc = require('../../lib/logout_user');
-  const openPageFunc = require('../../lib/open_page');
-  const registerNewUserFunc = require('../../lib/register_new_user');
-  const submitFormFunc = require('../../lib/submit_form');
-  const userInfoFunc = require('../../lib/user_info');
-  const application_host = config.get_application_host();
-  const checkBookingFunc = require('../../lib/check_booking_on_calendar');
-  const someWeekdayDate = moment()
-    .utc()
-    .startOf('year')
-    .add(1, 'week')
-    .startOf('isoWeek')
-    .add(2, 'day')
-    .format('YYYY-MM-DD')
+const By = require('selenium-webdriver').By
+const moment = require('moment')
+const addNewUserFunc = require('../../lib/add_new_user')
+const config = require('../../lib/config')
+const loginUserFunc = require('../../lib/login_with_user')
+const logoutUserFunc = require('../../lib/logout_user')
+const openPageFunc = require('../../lib/open_page')
+const registerNewUserFunc = require('../../lib/register_new_user')
+const submitFormFunc = require('../../lib/submit_form')
+const userInfoFunc = require('../../lib/user_info')
+const application_host = config.get_application_host()
+const checkBookingFunc = require('../../lib/check_booking_on_calendar')
+const someWeekdayDate = moment()
+  .utc()
+  .startOf('year')
+  .add(1, 'week')
+  .startOf('isoWeek')
+  .add(2, 'day')
+  .format('YYYY-MM-DD')
 
 /*
  * Aim:
