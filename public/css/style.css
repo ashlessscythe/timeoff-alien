@@ -31,10 +31,33 @@ body {
 a {
   color: #5ba4e5; }
 
+body {
+  font: 14px "Open Sans", Helvetica, Arial, sans-serif;
+  color: #61686b; }
+
+body.dark-mode {
+  color: var(--text-color); }
+
+a {
+  color: #5ba4e5; }
+
 /* Dark mode specific styles */
+body.dark-mode a {
+  color: #5ba4e5; }
+
+body.dark-mode dt {
+  color: #fff; }
+
+body.dark-mode tr:hover {
+  color: #2c2c2c; }
+
 body.dark-mode .modal-content {
   background-color: #333;
   color: #fff; }
+
+body.dark-mode .navbar-collapse {
+  background-color: var(--background-color);
+  color: var(--text-color); }
 
 body.dark-mode .panel-default {
   background-color: var(--background-color);
@@ -56,6 +79,7 @@ body.dark-mode .datepicker-days {
   color: var(--hover-text-color);
   background-color: var(--hover-bg-color); }
 
+/* end of dark mode specific styles */
 /*
   Simple class that makes its content's font size little bit bigger
  */
