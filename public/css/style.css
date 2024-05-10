@@ -48,6 +48,14 @@ body.dark-mode .container-fluid:hover {
   color: var(--hover-text-color);
   background-color: var(--hover-bg-color); }
 
+body.dark-mode .form-control {
+  color: var(--hover-text-color);
+  background-color: var(--hover-bg-color); }
+
+body.dark-mode .datepicker-days {
+  color: var(--hover-text-color);
+  background-color: var(--hover-bg-color); }
+
 /*
   Simple class that makes its content's font size little bit bigger
  */
