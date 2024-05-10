@@ -1,11 +1,11 @@
 'use strict'
 
-const expect = require('chai').expect;
-  const _ = require('underscore');
-  const model = require('../../lib/model/db');
-  const moment = require('moment');
-  const schedule = model.Schedule.build({ company_id: 1 });
-  const CalendarMonth = require('../../lib/model/calendar_month')
+const expect = require('chai').expect
+const _ = require('underscore')
+const model = require('../../lib/model/db')
+const moment = require('moment')
+const schedule = model.Schedule.build({ company_id: 1 })
+const CalendarMonth = require('../../lib/model/calendar_month')
 
 describe('Check calendar month object', function() {
   it('Normalize provided date to be at the begining of the month', function() {
@@ -72,10 +72,10 @@ describe('Check calendar month object', function() {
 
   it('Knows how to generate data structure for template', function() {
     const january = new CalendarMonth('2015-01-11', {
-        schedule,
-        today: moment.utc()
-      });
-      let object_to_test = january.as_for_template()
+      schedule,
+      today: moment.utc()
+    })
+    let object_to_test = january.as_for_template()
     delete object_to_test.moment
     object_to_test.weeks.forEach(function(week) {
       week.forEach(function(day) {

@@ -1,9 +1,9 @@
 'use strict'
 
-const expect = require('chai').expect;
-  const moment = require('moment');
-  const UserAllowance = require('../../../lib/model/user_allowance');
-  const model = require('../../../lib/model/db')
+const expect = require('chai').expect
+const moment = require('moment')
+const UserAllowance = require('../../../lib/model/user_allowance')
+const model = require('../../../lib/model/db')
 
 describe('employement_range_adjustment attribute', function() {
   describe('Employee start day is in previouse year and no end date', function() {

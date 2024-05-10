@@ -7,8 +7,8 @@
 module.exports = function(args) {
   if (!args) args = {}
 
-  const params = args.params || {};
-    const error_messages = []
+  const params = args.params || {}
+  const error_messages = []
 
   const req = {
     session: {},
