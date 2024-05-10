@@ -1,17 +1,17 @@
 'use strict'
 
-const test = require('selenium-webdriver/testing');
-  const register_new_user_func = require('../../lib/register_new_user');
-  const open_page_func = require('../../lib/open_page');
-  const submit_form_func = require('../../lib/submit_form');
-  const check_elements_func = require('../../lib/check_elements');
-  const By = require('selenium-webdriver').By;
-  const config = require('../../lib/config');
-  const Bluebird = require('bluebird');
-  const expect = require('chai').expect;
-  const application_host = config.get_application_host();
-  const leave_type_edit_form_id = '#leave_type_edit_form';
-  const leave_type_new_form_id = '#leave_type_new_form'
+const test = require('selenium-webdriver/testing')
+const register_new_user_func = require('../../lib/register_new_user')
+const open_page_func = require('../../lib/open_page')
+const submit_form_func = require('../../lib/submit_form')
+const check_elements_func = require('../../lib/check_elements')
+const By = require('selenium-webdriver').By
+const config = require('../../lib/config')
+const Bluebird = require('bluebird')
+const expect = require('chai').expect
+const application_host = config.get_application_host()
+const leave_type_edit_form_id = '#leave_type_edit_form'
+const leave_type_new_form_id = '#leave_type_new_form'
 
 describe('CRUD for leave types', function() {
   let driver

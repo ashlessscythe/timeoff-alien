@@ -1,35 +1,35 @@
 'use strict'
 
-const webdriver = require('selenium-webdriver');
-  const By = require('selenium-webdriver').By;
-  const Key = require('selenium-webdriver').Key;
-  const expect = require('chai').expect;
-  const _ = require('underscore');
-  const Promise = require('bluebird');
-  const until = require('selenium-webdriver').until;
-  const check_elements = require('./check_elements')
+const webdriver = require('selenium-webdriver')
+const By = require('selenium-webdriver').By
+const Key = require('selenium-webdriver').Key
+const expect = require('chai').expect
+const _ = require('underscore')
+const Promise = require('bluebird')
+const until = require('selenium-webdriver').until
+const check_elements = require('./check_elements')
 
 const submit_form_func = Promise.promisify(function(args, callback) {
-  let driver = args.driver;
-    const result_callback = callback;
-    // Regex to check the message that is shown after form is submitted
-    const message = args.message || /.*/;
-    // Array of object that have at least two keys: selector - css selector
-    // and value - value to be entered
-    const form_params = args.form_params || [];
-    // Defined how elemts are going to be checked in case of success,
-    // if that parameter is omitted - 'form_params' is used instead
-    const elements_to_check = args.elements_to_check || form_params;
-    // Indicates whether form submission is going to be successful
-    const should_be_successful = args.should_be_successful || false;
-    // Indicate if message to be searched through all messages shown,
-    // bu defaul it looks into firts message only
-    const multi_line_message = args.multi_line_message || false;
-    // Indicates if there is a confirmation dialog
-    const confirm_dialog = args.confirm_dialog || false;
-    // CSS selecetor for form submition button
-    const submit_button_selector =
-      args.submit_button_selector || 'button[type="submit"]'
+  let driver = args.driver
+  const result_callback = callback
+  // Regex to check the message that is shown after form is submitted
+  const message = args.message || /.*/
+  // Array of object that have at least two keys: selector - css selector
+  // and value - value to be entered
+  const form_params = args.form_params || []
+  // Defined how elemts are going to be checked in case of success,
+  // if that parameter is omitted - 'form_params' is used instead
+  const elements_to_check = args.elements_to_check || form_params
+  // Indicates whether form submission is going to be successful
+  const should_be_successful = args.should_be_successful || false
+  // Indicate if message to be searched through all messages shown,
+  // bu defaul it looks into firts message only
+  const multi_line_message = args.multi_line_message || false
+  // Indicates if there is a confirmation dialog
+  const confirm_dialog = args.confirm_dialog || false
+  // CSS selecetor for form submition button
+  const submit_button_selector =
+    args.submit_button_selector || 'button[type="submit"]'
 
   driver.call(function() {
     // Enter form parameters

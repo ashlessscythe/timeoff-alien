@@ -1,18 +1,18 @@
 'use strict'
 
-const test = require('selenium-webdriver/testing');
-  const until = require('selenium-webdriver').until;
-  const register_new_user_func = require('../../lib/register_new_user');
-  const open_page_func = require('../../lib/open_page');
-  const submit_form_func = require('../../lib/submit_form');
-  const user_info_func = require('../../lib/user_info');
-  const By = require('selenium-webdriver').By;
-  const config = require('../../lib/config');
-  const Bluebird = require('bluebird');
-  const expect = require('chai').expect;
-  const application_host = config.get_application_host();
-  const leave_type_edit_form_id = '#leave_type_edit_form';
-  const userStartsAtTheBeginingOfYear = require('../../lib/set_user_to_start_at_the_beginning_of_the_year')
+const test = require('selenium-webdriver/testing')
+const until = require('selenium-webdriver').until
+const register_new_user_func = require('../../lib/register_new_user')
+const open_page_func = require('../../lib/open_page')
+const submit_form_func = require('../../lib/submit_form')
+const user_info_func = require('../../lib/user_info')
+const By = require('selenium-webdriver').By
+const config = require('../../lib/config')
+const Bluebird = require('bluebird')
+const expect = require('chai').expect
+const application_host = config.get_application_host()
+const leave_type_edit_form_id = '#leave_type_edit_form'
+const userStartsAtTheBeginingOfYear = require('../../lib/set_user_to_start_at_the_beginning_of_the_year')
 
 /*
  *  Aim of the scenario: to ensure that half a days are highlighted correctly

@@ -1,11 +1,11 @@
 'use strict'
 
-const test = require('selenium-webdriver/testing');
-  const register_new_user_func = require('../lib/register_new_user');
-  const login_user_func = require('../lib/login_with_user');
-  const add_new_user_func = require('../lib/add_new_user');
-  const config = require('../lib/config');
-  const application_host = config.get_application_host()
+const test = require('selenium-webdriver/testing')
+const register_new_user_func = require('../lib/register_new_user')
+const login_user_func = require('../lib/login_with_user')
+const add_new_user_func = require('../lib/add_new_user')
+const config = require('../lib/config')
+const application_host = config.get_application_host()
 
 /*
  *  Scenario to check in this test:

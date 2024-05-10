@@ -20,21 +20,21 @@
  *
  * */
 
-const test = require('selenium-webdriver/testing');
-  const By = require('selenium-webdriver').By;
-  const Promise = require('bluebird');
-  const expect = require('chai').expect;
-  const add_new_user_func = require('../../lib/add_new_user');
-  const check_elements_func = require('../../lib/check_elements');
-  const config = require('../../lib/config');
-  const login_user_func = require('../../lib/login_with_user');
-  const logout_user_func = require('../../lib/logout_user');
-  const open_page_func = require('../../lib/open_page');
-  const register_new_user_func = require('../../lib/register_new_user');
-  const submit_form_func = require('../../lib/submit_form');
-  const user_info_func = require('../../lib/user_info');
-  const new_bankholiday_form_id = '#add_new_bank_holiday_form';
-  const application_host = config.get_application_host()
+const test = require('selenium-webdriver/testing')
+const By = require('selenium-webdriver').By
+const Promise = require('bluebird')
+const expect = require('chai').expect
+const add_new_user_func = require('../../lib/add_new_user')
+const check_elements_func = require('../../lib/check_elements')
+const config = require('../../lib/config')
+const login_user_func = require('../../lib/login_with_user')
+const logout_user_func = require('../../lib/logout_user')
+const open_page_func = require('../../lib/open_page')
+const register_new_user_func = require('../../lib/register_new_user')
+const submit_form_func = require('../../lib/submit_form')
+const user_info_func = require('../../lib/user_info')
+const new_bankholiday_form_id = '#add_new_bank_holiday_form'
+const application_host = config.get_application_host()
 
 describe('Case when holidays spans through more then one month and is devided by bank holiday', function() {
   this.timeout(config.get_execution_timeout())

@@ -1,19 +1,19 @@
 'use strict'
 
-const test = require('selenium-webdriver/testing');
-  const By = require('selenium-webdriver').By;
-  const Promise = require('bluebird');
-  const moment = require('moment');
-  const expect = require('chai').expect;
-  const register_new_user_func = require('../../lib/register_new_user');
-  const open_page_func = require('../../lib/open_page');
-  const submit_form_func = require('../../lib/submit_form');
-  const check_elements_func = require('../../lib/check_elements');
-  const config = require('../../lib/config');
-  const user_info_func = require('../../lib/user_info');
-  const application_host = config.get_application_host();
-  const schedule_form_id = '#company_schedule_form';
-  const userStartsAtTheBeginingOfYear = require('../../lib/set_user_to_start_at_the_beginning_of_the_year')
+const test = require('selenium-webdriver/testing')
+const By = require('selenium-webdriver').By
+const Promise = require('bluebird')
+const moment = require('moment')
+const expect = require('chai').expect
+const register_new_user_func = require('../../lib/register_new_user')
+const open_page_func = require('../../lib/open_page')
+const submit_form_func = require('../../lib/submit_form')
+const check_elements_func = require('../../lib/check_elements')
+const config = require('../../lib/config')
+const user_info_func = require('../../lib/user_info')
+const application_host = config.get_application_host()
+const schedule_form_id = '#company_schedule_form'
+const userStartsAtTheBeginingOfYear = require('../../lib/set_user_to_start_at_the_beginning_of_the_year')
 
 /*
  *  Scenario 1:

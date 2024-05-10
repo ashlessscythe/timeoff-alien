@@ -1,8 +1,8 @@
 'use strict'
 
-const expect = require('chai').expect;
-  const _ = require('underscore');
-  const model = require('../../../../lib/model/db')
+const expect = require('chai').expect
+const _ = require('underscore')
+const model = require('../../../../lib/model/db')
 
 const default_params = {
   date_start: '2015-04-09',

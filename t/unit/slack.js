@@ -1,9 +1,9 @@
 'use strict'
 
-const expect = require('chai').expect;
-  const _ = require('underscore');
-  const bluebird = require('bluebird');
-  const Slack = require('../../lib/email')
+const expect = require('chai').expect
+const _ = require('underscore')
+const bluebird = require('bluebird')
+const Slack = require('../../lib/email')
 
 describe('Check Slack', function() {
   it('Knows how to render and parse template', function(done) {

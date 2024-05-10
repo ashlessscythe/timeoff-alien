@@ -31,9 +31,9 @@ const func_to_inject = function() {
 }
 
 const user_info_func = bluebird.promisify(function(args, callback) {
-  const result_callback = callback;
-    const driver = args.driver;
-    const email = args.email
+  const result_callback = callback
+  const driver = args.driver
+  const email = args.email
 
   if (!driver) {
     throw "'driver' was not passed into the user_info!"
