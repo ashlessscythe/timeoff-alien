@@ -1,9 +1,9 @@
 'use strict'
 
 const {
-    calculateCarryOverAllowance
-  } = require('../lib/model/calculateCarryOverAllowance');
-  const models = require('../lib/model/db')
+  calculateCarryOverAllowance
+} = require('../lib/model/calculateCarryOverAllowance')
+const models = require('../lib/model/db')
 
 models.User.findAll()
   .then(users => calculateCarryOverAllowance({ users }))

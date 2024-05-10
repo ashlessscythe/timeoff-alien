@@ -1,19 +1,19 @@
 'use strict'
 
-const By = require('selenium-webdriver').By;
-  const expect = require('chai').expect;
-  const until = require('selenium-webdriver').until;
-  const _ = require('underscore');
-  const Promise = require('bluebird');
-  const build_driver = require('./build_driver');
-  let driver
+const By = require('selenium-webdriver').By
+const expect = require('chai').expect
+const until = require('selenium-webdriver').until
+const _ = require('underscore')
+const Promise = require('bluebird')
+const build_driver = require('./build_driver')
+let driver
 
 const login_with_user_func = Promise.promisify(function(args, callback) {
-  const application_host = args.application_host;
-    const user_email = args.user_email;
-    const result_callback = callback;
-    const password = args.password || '123456';
-    const should_fail = args.should_fail || false
+  const application_host = args.application_host
+  const user_email = args.user_email
+  const result_callback = callback
+  const password = args.password || '123456'
+  const should_fail = args.should_fail || false
 
   // Create new instance of driver
   driver = args.driver || build_driver()

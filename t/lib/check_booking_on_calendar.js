@@ -1,19 +1,19 @@
 'use strict'
 
-const webdriver = require('selenium-webdriver');
-  const _ = require('underscore');
-  const By = require('selenium-webdriver').By;
-  const expect = require('chai').expect;
-  const Promise = require('bluebird')
+const webdriver = require('selenium-webdriver')
+const _ = require('underscore')
+const By = require('selenium-webdriver').By
+const expect = require('chai').expect
+const Promise = require('bluebird')
 
 const check_booking_func = Promise.promisify(function(args, callback) {
-  const driver = args.driver;
-    const type = args.type;
-    const full_days = args.full_days;
-    const halfs_1st_days = args.halfs_1st_days || [];
-    const halfs_2nd_days = args.halfs_2nd_days || [];
-    const result_callback = callback;
-    let type_css_re
+  const driver = args.driver
+  const type = args.type
+  const full_days = args.full_days
+  const halfs_1st_days = args.halfs_1st_days || []
+  const halfs_2nd_days = args.halfs_2nd_days || []
+  const result_callback = callback
+  let type_css_re
 
   if (type === 'pended') {
     type_css_re = /\bleave_cell_pended\b/

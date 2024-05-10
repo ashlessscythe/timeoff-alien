@@ -1,16 +1,16 @@
 'use strict'
 
-const test = require('selenium-webdriver/testing');
-  const By = require('selenium-webdriver').By;
-  const expect = require('chai').expect;
-  const Promise = require('bluebird');
-  const rp = require('request-promise');
-  const registerNewUserFunc = require('../../lib/register_new_user');
-  const openPageFunc = require('../../lib/open_page');
-  const submitFormFunc = require('../../lib/submit_form');
-  const checkElementsFunc = require('../../lib/check_elements');
-  const config = require('../../lib/config');
-  const applicationHost = config.get_application_host()
+const test = require('selenium-webdriver/testing')
+const By = require('selenium-webdriver').By
+const expect = require('chai').expect
+const Promise = require('bluebird')
+const rp = require('request-promise')
+const registerNewUserFunc = require('../../lib/register_new_user')
+const openPageFunc = require('../../lib/open_page')
+const submitFormFunc = require('../../lib/submit_form')
+const checkElementsFunc = require('../../lib/check_elements')
+const config = require('../../lib/config')
+const applicationHost = config.get_application_host()
 
 /*
  *  Scenario to go in this test:

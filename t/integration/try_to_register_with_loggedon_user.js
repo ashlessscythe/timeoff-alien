@@ -1,12 +1,12 @@
 'use strict'
 
-const test = require('selenium-webdriver/testing');
-  const config = require('../lib/config');
-  const application_host = config.get_application_host();
-  const expect = require('chai').expect;
-  const Promise = require('bluebird');
-  const register_new_user_func = require('../lib/register_new_user');
-  const open_page_func = require('../lib/open_page')
+const test = require('selenium-webdriver/testing')
+const config = require('../lib/config')
+const application_host = config.get_application_host()
+const expect = require('chai').expect
+const Promise = require('bluebird')
+const register_new_user_func = require('../lib/register_new_user')
+const open_page_func = require('../lib/open_page')
 
 /*
   At this moment there is a bug when anyone can hijack acount if primary email

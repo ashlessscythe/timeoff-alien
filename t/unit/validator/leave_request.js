@@ -1,9 +1,9 @@
 'use strict'
 
-const expect = require('chai').expect;
-  const _ = require('underscore');
-  const MockExpressReq = require('../../lib/mock_express_request');
-  const leave_request_validator = require('../../../lib/route/validator/leave_request')
+const expect = require('chai').expect
+const _ = require('underscore')
+const MockExpressReq = require('../../lib/mock_express_request')
+const leave_request_validator = require('../../../lib/route/validator/leave_request')
 
 describe('Check validation for leave request', function() {
   it('No parameters provided', function() {
