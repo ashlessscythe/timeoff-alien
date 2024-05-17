@@ -368,22 +368,14 @@ div.feeds-holder {
   font-weight: bolder;
 }
 
-.leave_type_color_1 {
-  background: #96c521 !important;
-}
+/* Holiday Type Colour Picker */
+.input-group-addon {
+  &.color-picker {
+    padding: 0;
 
-.leave_type_color_2 {
-  background: #40c4ff !important;
-}
-
-.leave_type_color_3 {
-  background: #ff5722 !important;
-}
-
-.leave_type_color_4 {
-  background: #ff80ab !important;
-}
-
-.leave_type_color_5 {
-  background: #00bcd4 !important;
+    .picker {
+      border: 0;
+      padding: 0;
+    }
+  }
 }
