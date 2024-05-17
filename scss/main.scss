@@ -4,6 +4,28 @@
       sassc scss/main.scss public/css/style.css
 */
 
+/* Example CSS Variables setup */
+:root {
+  --background-color: #fff;
+  --text-color: #000;
+  --hover-text-color: #555; /* Hover text color for light theme */
+  --hover-bg-color: #eee; /* Hover background color for light theme */
+}
+
+.dark-mode {
+  --background-color: #212121;
+  --secondary-background-color: #1e1e1e;
+  --accent-color: #0fcc76;
+  --text-color: #ffffff;
+  --subtle-text-color: #b3b3b3;
+  --divider-color: #333333;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
 $primary-font-color: #61686b;
 $border-color: #e5e5e5;
 $link-color: #5ba4e5;
@@ -18,13 +40,72 @@ $leave_cell_font_color: #61686b;
 // 5E5E5E
 
 body {
-  font: $font-size-primary "Open Sans", Helvetica, Arial, sans-serif;
+  font: $font-size-primary 'Open Sans', Helvetica, Arial, sans-serif;
   color: $primary-font-color;
 }
 
 a {
   color: $link-color;
 }
+
+$border-color: #e5e5e5;
+$link-color: #5ba4e5;
+
+$font-size-primary: 14px;
+$font-size-bigger: 16px;
+
+$selected-item-background: #f5f7f8;
+
+$leave_cell_font_color: #61686b;
+
+// 5E5E5E
+
+body {
+  font: $font-size-primary 'Open Sans', Helvetica, Arial, sans-serif;
+  color: $primary-font-color;
+}
+
+body.dark-mode {
+  color: var(--text-color);
+}
+
+a {
+  color: $link-color;
+}
+
+/* Dark mode specific styles */
+
+body.dark-mode a {
+  color: $link-color;
+}
+
+body.dark-mode [role='tooltip'] {
+  background-color: #333; // Dark background
+  color: #fff; // White text
+  border-color: #555; // Darker border
+}
+
+body.dark-mode tr:hover {
+  color: #0fcc76; // dark text when dark mode and hover (light)
+}
+
+body.dark-mode .modal-content,
+body.dark-mode .navbar-collapse,
+body.dark-mode .panel-default,
+body.dark-mode .container-fluid {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+body.dark-mode .form-control,
+body.dark-mode .list-group,
+body.dark-mode .datepicker-days,
+body.dark-mode .container-fluid:hover {
+  color: var(--hover-text-color);
+  background-color: var(--hover-bg-color);
+}
+
+/* end of dark mode specific styles */
 
 /*
   Simple class that makes its content's font size little bit bigger
@@ -190,6 +271,7 @@ td.leave_cell_pended {
 .modal-dialog {
   max-width: 450px;
 }
+
 .left-column-cell {
   text-overflow: ellipsis;
   /* Cannot avoid specifying width with pixels... */

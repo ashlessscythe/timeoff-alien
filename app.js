@@ -11,6 +11,8 @@ const {
 } = require('@handlebars/allow-prototype-access')
 require('dotenv').config()
 
+const i18n = require('./i18n')
+
 const app = express()
 
 // Handlebars
@@ -18,11 +20,22 @@ const app = express()
 // Secure if only developers have access to the templates
 // https://stackoverflow.com/questions/59690923/handlebars-access-has-been-denied-to-resolve-the-property-from-because-it-is
 
+// helpers
+const baseHelpers = require('./lib/view/helpers')()
+
 // View engine setup
 const handlebars = require('express-handlebars').create({
   defaultLayout: 'main',
   extname: '.hbs',
-  helpers: require('./lib/view/helpers')(),
+  helpers: {
+    ...baseHelpers,
+    __: function() {
+      return i18n.__.apply(this, arguments)
+    },
+    __n: function() {
+      return i18n.__n.apply(this, arguments)
+    }
+  },
   handlebars: allowInsecurePrototypeAccess(_handlebars),
   runtimeOptions: {
     allowedProtoProperties: {
@@ -46,6 +59,12 @@ const handlebars = require('express-handlebars').create({
       get_reset_password_token: true
     }
   }
+})
+
+// Language change route
+app.get('/lang/:locale', (req, res) => {
+  res.cookie('lang', req.params.locale, { maxAge: 900000, httpOnly: true })
+  res.redirect('back')
 })
 
 app.engine('.hbs', handlebars.engine)
