@@ -1,15 +1,15 @@
 'use strict'
 
-const webdriver = require('selenium-webdriver');
-  const By = require('selenium-webdriver').By;
-  const expect = require('chai').expect;
-  const _ = require('underscore');
-  const Promise = require('bluebird')
+const webdriver = require('selenium-webdriver')
+const By = require('selenium-webdriver').By
+const expect = require('chai').expect
+const _ = require('underscore')
+const Promise = require('bluebird')
 
 const check_elements_func = Promise.promisify(function(args, callback) {
-  const driver = args.driver;
-    const result_callback = callback;
-    const elements_to_check = args.elements_to_check || []
+  const driver = args.driver
+  const result_callback = callback
+  const elements_to_check = args.elements_to_check || []
 
   Promise.all([
     _.map(elements_to_check, function(test_case) {
