@@ -16,8 +16,9 @@
     "port": 25,
     "from": "email@test.com",
     "auth": {
-      "user": "user",
-      "pass": "pass"
+      "user": "",
+      "pass": "",
+      "required": true
     }
   },
   "sessions": {
