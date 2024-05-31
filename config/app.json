@@ -1,15 +1,12 @@
 {
   "branding": {
-    "url": "http://app.timeoff.management",
-    "website": "http://timeoff.management"
+    "url": "http://config.branding.url",
+    "website": "http://config.branding.website"
   },
   "crypto_secret": "!2~`HswpPPLa22+=±§sdq qwe,appp qwwokDF_",
   "login": {
     "default": true,
     "google": false
-  },
-  "contact": {
-    "email": "email@addr.ess"
   },
   "smtp": {
     "host": "localhost",
@@ -35,9 +32,7 @@
     "auth": {
       "clientId": "123",
       "clientSecret": "123",
-      "domains": [
-        "mydomain.com"
-      ]
+      "domains": ["mydomain.com"]
     }
   },
   "slack": {
@@ -46,7 +41,7 @@
     "bot_name": "The display name for the messages being sent."
   },
   "options": {
-    "registration": false
+    "registration": true
   },
   "locale_code_for_sorting": "en",
   "force_to_explicitly_select_type_when_requesting_new_leave": false
