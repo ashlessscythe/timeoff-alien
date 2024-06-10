@@ -83,6 +83,7 @@ declare -a aliases=(
   'alias dls="watch docker ps -a"'
   'alias up="cd ../"'
   'alias dreset="dcd && yes | docker system prune -a && dcu --build"'
+  'alias glg="git log --oneline --decorate --graph --all"'
 )
 
 for alias_cmd in "${aliases[@]}"; do
