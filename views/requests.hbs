@@ -1,4 +1,3 @@
-
 {{> header }}
 
 <h1>{{logged_user.name}} {{logged_user.lastname}} messages</h1>
@@ -10,7 +9,7 @@
 </div>
 
 <div class="row">
-  {{# unless to_be_approved_leaves}}
+  {{#unless to_be_approved_leaves}}
   <div class="col-md-12 text-muted">
     There are no leave requests to decide on.
   </div>
@@ -18,60 +17,54 @@
   <div class="col-md-12">
     <p class="visible-xs-block"><em class="text-muted">Scroll table horizontally</em></p>
     <div class="table-responsive">
-    <table class="table table-hover requests-to-approve-table">
-      <thead>
-        <tr>
-          <th>Employee</th>
-          <th>Department</th>
-          <th>Date of request</th>
-          <th>Leave dates</th>
-          <th>Type</th>
-          <th>Days</th>
-          <th class="col-xs-2">Comment</th>
-          <th colspan="2"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each to_be_approved_leaves }}
-        <tr vpp="pending_for__{{this.user.email}}">
-          <td>{{#with this.user}}{{this.full_name}}
-            <i class="fa fa-question-circle user-details-summary-trigger" data-user-id="{{this.id}}"></i>{{/with}}
-          </td>
-          <td>{{this.user.department.name}}</td>
-          <td class="date_of_request">{{as_date_from_timestamp this.createdAt}}</td>
-          <td data-tom-leave-dates="1"><a class="leave-details-summary-trigger" data-leave-id="{{this.id}}" href="#">{{> leave_dates leave=this}}</a></td>
-          <td>{{#if this.is_pended_revoke_leave}}REVOKE {{/if}}{{this.leave_type.name}}</td>
-          <td data-vpp="days_used">{{ this.get_deducted_days_number }}</td>
-          <td>{{this.comment.comment}}</td>
-          <td>
-            {{!-- <form action="/requests/reject/" method="POST">
-              <input class="btn btn-warning single-click" type="submit" value="Reject">
-              <input type="hidden" value="{{this.id}}" name="request">
-            </form> --}}
-            <!-- Trigger Modal -->
-            <button class="btn btn-warning" data-toggle="modal"
-                data-target="#rejectModal"
-                data-leave-id="{{this.id}}"
+      <table class="table table-hover requests-to-approve-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Date of request</th>
+            <th>Leave dates</th>
+            <th>Type</th>
+            <th>Days</th>
+            <th class="col-xs-2">Comment</th>
+            <th colspan="2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each to_be_approved_leaves }}
+          <tr vpp="pending_for__{{this.user.email}}">
+            <td>{{#with this.user}}{{this.full_name}}
+              <i class="fa fa-question-circle user-details-summary-trigger" data-user-id="{{this.id}}"></i>{{/with}}
+            </td>
+            <td>{{this.user.department.name}}</td>
+            <td class="date_of_request">{{as_date_from_timestamp this.createdAt}}</td>
+            <td data-tom-leave-dates="1"><a class="leave-details-summary-trigger" data-leave-id="{{this.id}}"
+                href="#">{{> leave_dates leave=this}}</a></td>
+            <td>{{#if this.is_pended_revoke_leave}}REVOKE {{/if}}{{this.leave_type.name}}</td>
+            <td data-vpp="days_used">{{ this.get_deducted_days_number }}</td>
+            <td>{{this.employee_comment}}</td>
+            <td>
+              <!-- Trigger Reject Modal -->
+              <button class="btn btn-warning" data-toggle="modal" data-target="#rejectModal" data-leave-id="{{this.id}}"
                 name="reject_modal">
                 Reject
-            </button>
-          </td>
-          <td>
-            <form action="/requests/approve/" method="POST">
-            <input class="btn btn-success single-click" type="submit" value="Approve">
-            <input type="hidden" value="{{this.id}}" name="request">
-            <input type="hidden" value="" name="comment" id="comment">
-            </form>
-          </td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
+              </button>
+            </td>
+            <td>
+              <!-- Trigger Approve Modal -->
+              <button class="btn btn-success" data-toggle="modal" data-target="#approveModal"
+                data-leave-id="{{this.id}}" name="approve_modal">
+                Approve
+              </button>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </div>
   </div>
   {{/unless}}
 </div>
-
 
 <div class="main-row_header">&nbsp;</div>
 
@@ -80,22 +73,27 @@
 </div>
 
 {{> user_requests_grouped grouped_leaves=my_leaves_grouped logged_user=logged_user }}
-{{> reject_leave_modal
-  container_id="rejectModal"
-  reject_leave_modal_action='/requests/reject'
-  leave_id=data-leave-id
-}}
+{{> modal_leave_reject }}
 
-{{>footer}}
+{{> modal_leave_approve }}
+
+{{> footer }}
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  $(document).ready(function(){
+  $(document).ready(function () {
     $('#rejectModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget); // Button that triggered the modal
       var leaveId = button.data('leave-id'); // Extract info from data-* attributes
 
-      // If you need to set this somewhere in the modal
+      var modal = $(this);
+      modal.find('input[name="request"]').val(leaveId);
+    });
+
+    $('#approveModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget); // Button that triggered the modal
+      var leaveId = button.data('leave-id'); // Extract info from data-* attributes
+
       var modal = $(this);
       modal.find('input[name="request"]').val(leaveId);
     });

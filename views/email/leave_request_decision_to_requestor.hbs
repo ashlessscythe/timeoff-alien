@@ -4,19 +4,20 @@ Leave request was {{#if_equal action 'approve'}}accepted{{else}}denied{{/if_equa
 
 {{> email/leave_comments comments=comments }}
 
-<p>{{#with approver }}{{this.full_name}}{{/with}} decided to <strong>{{action}}</strong> your {{#if was_pended_revoke}}cancellation of {{/if}}leave request <strong>{{>leave_request_detail leave=leave }}</strong>.</p>
+<p>{{#with approver }}{{this.full_name}}{{/with}} decided to <strong>{{action}}</strong> your {{#if
+  was_pended_revoke}}cancellation of {{/if}}leave request <strong>{{>leave_request_detail leave=leave }}</strong>.</p>
 
 <!-- Conditionally add the approver's comment here -->
-{{#if_equal action 'reject'}}
-  <p>Rejection comment:
-    <strong>
-      {{#if leave.approver_comment}}
-        {{leave.approver_comment}}
-      {{else}}
-        No comment.
-      {{/if}}
-    </strong>
-  </p>
-{{/if_equal}}
+{{#if (or (eq action 'reject') (eq action 'approve'))}}
+<p>{{#if (eq action 'reject')}}Rejection{{else}}Approval{{/if}} comment:
+  <strong>
+    {{#if leave.approver_comment}}
+    {{leave.approver_comment}}
+    {{else}}
+    No comment.
+    {{/if}}
+  </strong>
+</p>
+{{/if}}
 
 <p>Thanks</p>
