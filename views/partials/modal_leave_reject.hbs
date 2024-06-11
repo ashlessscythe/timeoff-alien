@@ -1,0 +1,31 @@
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Reject Leave Request</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+      </div>
+      <form method="POST" action="/requests/reject">
+        <div class="modal-body">
+          <input type="hidden" value="" name="request">
+          <div class="form-group">
+            <label for="rejectComment" class="control-label">Rejection Comment:</label>
+            <textarea class="form-control" id="rejectComment" name="comment" rows="1" required
+              placeholder="{{leave_id}}"></textarea>
+            <p><em>Please enter comment (required)</em></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+          <input class="btn btn-danger single-click" type="submit" value="Reject">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  modal.find('input[name="confirm_name"]').attr('placeholder', leaveId);
+</script>
