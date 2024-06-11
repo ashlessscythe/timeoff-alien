@@ -73,11 +73,7 @@
 </div>
 
 {{> user_requests_grouped grouped_leaves=my_leaves_grouped logged_user=logged_user }}
-{{> modal_leave_reject
-container_id="rejectModal"
-modal_leave_reject_action='/requests/reject'
-leave_id=data-leave-id
-}}
+{{> modal_leave_reject }}
 
 {{> modal_leave_approve }}
 

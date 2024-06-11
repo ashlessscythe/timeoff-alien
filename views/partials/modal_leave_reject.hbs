@@ -1,19 +1,19 @@
-<div class="modal fade" id="{{container_id}}" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
   aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="POST" action="{{modal_leave_reject_action}}">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Reject Employee Leave</h4>
-        </div>
+      <div class="modal-header">
+        <h4 class="modal-title">Reject Leave Request</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+      </div>
+      <form method="POST" action="/requests/reject">
         <div class="modal-body">
+          <input type="hidden" value="" name="request">
           <div class="form-group">
-            <label for="reject_employee_leave_confirmation" class="control-label">Reject Request:</label>
-            <input type="hidden" value="" name="request">
-            <input type="text" class="form-control" id="reject_employee_leave_confirmation" name="comment" required
-              placeholder="{{leave_id}}">
+            <label for="rejectComment" class="control-label">Rejection Comment:</label>
+            <textarea class="form-control" id="rejectComment" name="comment" rows="1" required
+              placeholder="{{leave_id}}"></textarea>
             <p><em>Please enter comment (required)</em></p>
           </div>
         </div>
