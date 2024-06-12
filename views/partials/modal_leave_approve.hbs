@@ -1,0 +1,28 @@
+<!-- views/approve_leave_modal.hbs -->
+<div id="approveModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="approveModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="approveModalLabel">Approve Leave Request</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/requests/approve" method="POST">
+        <div class="modal-body">
+          <input type="hidden" name="request" value="">
+          <div class="form-group">
+            <label for="approveComment">Approval Comment (optional)</label>
+            <textarea class="form-control" name="comment" id="approveComment" rows="1"></textarea>
+            <p><em>Optional comment (resizeable textarea)</em></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Approve</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
