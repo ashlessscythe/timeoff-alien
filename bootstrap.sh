@@ -4,6 +4,13 @@
 sudo apt-get update
 sudo apt-get install -y tmux ranger tig cargo mycli postgresql-client postgresql-client-common libpq-dev
 
+# install lazygit
+LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+tar xf lazygit.tar.gz lazygit
+sudo install lazygit /usr/local/bin
+rm -rf lazygit
+
 # Remove pgcli if installed via apt
 sudo apt-get remove -y pgcli
 
@@ -83,6 +90,7 @@ declare -a aliases=(
   'alias dls="watch docker ps -a"'
   'alias up="cd ../"'
   'alias dreset="dcd && yes | docker system prune -a && dcu --build"'
+  'alias glg="git log --oneline --decorate --graph --all"'
 )
 
 for alias_cmd in "${aliases[@]}"; do
