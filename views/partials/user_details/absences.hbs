@@ -11,8 +11,21 @@
   <input type="hidden" name="admin" value="{{#if employee.admin}}1{{else}}0{{/if}}">
   <input type="hidden" name="start_date" value="{{as_date employee.start_date}}">
   <input type="hidden" name="end_date" value="{{as_date employee.end_date}}">
+  <input type="hidden" name="year" value="{{current_year}}">
 
   {{> user_details/breadcrumb employee=employee }}
+
+  <div class="row">
+    <div class="col-xs-2">
+      <a class="btn btn-default" href="/users/edit/{{employee.id}}/absences/?year={{previous_year}}"><span aria-hidden="true" class="fa fa-chevron-left"></span> {{previous_year}} </a>
+    </div>
+    <div class="col-xs-8 calendar-section-caption">
+      <h3>{{current_year}}</h3>
+    </div>
+    <div class="col-xs-2">
+      <a class="btn btn-default pull-right" href="/users/edit/{{employee.id}}/absences/?year={{next_year}}">{{next_year}} <span aria-hidden="true" class="fa fa-chevron-right"></span></a>
+    </div>
+  </div>
 
   <div class="form-group">
     <label class="control-label">Overview</label>
@@ -20,7 +33,7 @@
       <div
         class="progress-bar progress-bar-success"
         style="width: {{ leave_statistics.used_so_far_percent }}%"
-        data-content="{{# with employee }}{{this.full_name }}{{/with}} in current year used {{ leave_statistics.used_so_far }} days from allowance"
+        data-content="{{# with employee }}{{this.full_name }}{{/with}} in {{current_year}} used {{ leave_statistics.used_so_far }} days from allowance"
         data-placement="top"
         data-toggle="popover"
         data-trigger="focus hover"
@@ -35,13 +48,13 @@
         data-toggle="popover"
         data-trigger="focus hover"
       >
-        {{ leave_statistics.remaining  }} days remaining in current year
+        {{ leave_statistics.remaining  }} days remaining in {{current_year}}
       </div>
     </div>
   </div>
 
   <div class="form-group">
-    <label class="control-label">Days available for {{ employee.name }} to take this year</label>
+    <label class="control-label">Days available for {{ employee.name }} to take in {{current_year}}</label>
     <p>{{ user_allowance.number_of_days_available_in_allowance }} out of {{ user_allowance.total_number_of_days_in_allowance }} in allowance</p>
     <input id="days_remaining_inp" type="hidden" value="{{ user_allowance.number_of_days_available_in_allowance }} out of {{ user_allowance.total_number_of_days_in_allowance }}">
   </div>
@@ -88,15 +101,15 @@
   </div>
 
   <div class="form-group">
-    <label for="adjustment_inp" class="control-label">Allowance adjustment in current year</label>
+    <label for="adjustment_inp" class="control-label">Allowance adjustment in {{current_year}}</label>
     <div class="input-group col-md-4">
       <input class="form-control" id="adjustment_inp" type="number" step="0.5" name="adjustment" value="{{#if employee_adjustment }}{{employee_adjustment}}{{else}}0{{/if}}" aria-describedby="adjustment_help">
       <span class="input-group-addon">working days</span>
     </div>
     <div id="adjustment_help" class="help-block">
-      <div>Tune allowance for this user in current year.</div>
-      <div>Could be negative as well.</div>
-      <div>The value is valid during current year. Next year it needs to be re-confirmed.</div>
+      <div>Tune allowance for this user in {{current_year}}.</div>
+      <div>Can be negative as well.</div>
+      <div>If no value is set for this year, the last adjustment from previous years will be used</div>
     </div>
   </div>
 
