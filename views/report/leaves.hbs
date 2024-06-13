@@ -119,7 +119,8 @@
               <th class="col-xs-2">Approver {{#if_equal sortBy 'approver'}}<i
                   class="fa fa-sort-alpha-asc"></i>{{else}}<button class="btn btn-link btn-xs" name="sort_by"
                   type="submit" value="approver"><i class="fa fa-sort-asc"></i></button>{{/if_equal}}</th>
-              <th class="col-xs-2">Comment</th>
+              <th class="col-xs-2">Requestor Comment</th>
+              <th class="col-xs-2">Approver Comment</th>
             </tr>
           </thead>
           <tbody>
@@ -134,7 +135,8 @@
               <td>{{ this.status }}</td>
               <td>{{as_date this.createdTimeStamp}}</td>
               <td>{{ this.approver }}</td>
-              <td>{{ this.comment }}</td>
+              <td>{{ this.employee_comment }}</td>
+              <td>{{ this.approver_comment }}</td>
             </tr>
             {{/each }}
           </tbody>
