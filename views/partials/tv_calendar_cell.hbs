@@ -1,0 +1,111 @@
+
+<td class="calendar_cell half_1st day_{{ day.val }}
+    {{#if day.is_bank_holiday}}bank_holiday_cell{{/if}}
+    {{#if day.is_weekend}}weekend_cell{{/if}}
+    {{#if day.is_leave_morning }}
+      {{#if day.private_leave_morning}}
+        {{#if show_private_leaves}}
+          {{#if day.is_new_leave}}
+            leave_cell_pended
+          {{else}}
+            leave_cell
+          {{/if}}
+        {{/if}}
+      {{else}}
+        {{#if day.is_new_leave}}
+            leave_cell_pended
+        {{else}}
+            leave_cell
+        {{/if}}
+      {{/if}}
+    {{/if}}
+    {{#if day.is_current_day }}current_day_cell{{/if}}"
+    {{#if day.is_leave_morning }}
+      {{#if day.private_leave_morning}}
+        {{#if show_private_leaves}}
+          {{#unless day.is_new_leave}}
+            style="background-color: {{day.leave_color_value_morning}};"
+          {{/unless}}
+        {{/if}}
+      {{else}}
+        {{#unless day.is_new_leave}}
+          style="background-color: {{day.leave_color_value_morning}};"
+        {{/unless}}
+      {{/if}}
+    {{/if}}
+>
+<span
+  {{#unless day.is_bank_holiday}}
+    {{#unless day.is_weekend}}
+      {{#if show_private_leaves}}
+      {{# with  day.leave_obj }}
+        {{#if this }}
+          class="leave-details-summary-trigger"
+          data-leave-id="{{this.id}}"
+
+          data-toggle="tooltip"
+          data-placement="top"
+          title="
+            {{~#if ../day.leaveLabel ~}}{{~../day.leaveLabel~}}: {{/if~}}
+            {{~#if ../../day.is_current_day}}Today{{/if~}}
+            {{~#if this.is_new_leave}}New absence waiting approval{{/if~}}
+            {{~#if this.is_pended_revoke_leave}}Revoked waiting for approval{{/if~}}
+            {{~#if this.is_approved_leave~}}
+              {{~#unless this.is_pended_revoke_leave}}Approved absence{{/unless~}}
+            {{~/if}}"
+        {{/if}}
+      {{/with}}
+      {{/if}}
+    {{/unless}}
+  {{/unless}}
+
+  {{#if day.is_current_day}}
+    data-toggle="tooltip"
+    data-placement="top"
+    title="Today"
+  {{/if}}
+
+  {{#if day.is_bank_holiday}}
+    data-toggle="tooltip"
+    data-placement="top"
+    title="Bank holiday: {{day.bank_holiday_name}}"
+  {{/if}}
+
+>{{day.val}}</span>
+</td>
+<td class="calendar_cell half_2nd day_{{ day.val }}
+    {{#if day.is_bank_holiday}}bank_holiday_cell{{/if}}
+    {{#if day.is_weekend}}weekend_cell{{/if}}
+    {{#if day.is_leave_afternoon }}
+      {{#if day.private_leave_afternoon}}
+        {{#if show_private_leaves}}
+          {{#if day.is_new_leave}}
+            leave_cell_pended
+          {{else}}
+            leave_cell
+          {{/if}}
+        {{/if}}
+      {{else}}
+        {{#if day.is_new_leave}}
+          leave_cell_pended
+        {{else}}
+          leave_cell
+        {{/if}}
+      {{/if}}
+    {{/if}}
+    {{#if day.is_current_day }}current_day_cell{{/if}}"
+    {{#if day.is_leave_afternoon }}
+      {{#if day.private_leave_afternoon}}
+        {{#if show_private_leaves}}
+          {{#unless day.is_new_leave}}
+            style="background-color: {{day.leave_color_value_afternoon}};"
+          {{/unless}}
+        {{/if}}
+      {{else}}
+        {{#unless day.is_new_leave}}
+          style="background-color: {{day.leave_color_value_afternoon}};"
+        {{/unless}}
+      {{/if}}
+    {{/if}}
+>
+</td>

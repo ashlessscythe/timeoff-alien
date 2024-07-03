@@ -244,6 +244,10 @@
               <label for="manager_only__{{ this.id }}" class="control-label">Manager Only</label>
             </div>
           </div>
+          <div>
+            <input name="private_leave__{{ this.id }}" id="private_leave__{{ this.id }}" type="checkbox" {{#if private_leave}}checked="checked"{{/if}} data-tom-leave-type-order="private_{{@index}}">
+            <label for="private_leave__{{ this.id }}" class="control-label">Private Leave</label>
+          </div>
           <div class="col-md-2">
             <input type="number" class="form-control" value="{{limit}}" name="limit__{{ this.id }}" data-tom-leave-type-order="limit_{{@index}}">
           </div>
