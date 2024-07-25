@@ -13,12 +13,19 @@
   /* Hover background color for light theme */ }
 
 .dark-mode {
-  --background-color: #212121;
-  --secondary-background-color: #1e1e1e;
-  --accent-color: #0fcc76;
-  --text-color: #ffffff;
+  --background-color: #2c2c2c;
+  --secondary-background-color: #383838;
+  --accent-color: #4caf50;
+  --text-color: #e0e0e0;
   --subtle-text-color: #b3b3b3;
-  --divider-color: #333333; }
+  --divider-color: #4a4a4a;
+  --hover-bg-color: #404040;
+  --hover-text-color: #ffffff;
+  --calendar-cell-bg: #3a3a3a;
+  --leave-cell-bg: #4caf50;
+  --leave-cell-color: #ffffff;
+  --current-day-bg: #7b1fa2;
+  --dropdown-bg: #383838; }
 
 body {
   background-color: var(--background-color);
@@ -42,30 +49,67 @@ a {
   color: #5ba4e5; }
 
 /* Dark mode specific styles */
-body.dark-mode a {
-  color: #5ba4e5; }
-
-body.dark-mode [role='tooltip'] {
-  background-color: #333;
-  color: #fff;
-  border-color: #555; }
-
-body.dark-mode tr:hover {
-  color: #0fcc76; }
-
-body.dark-mode .modal-content,
-body.dark-mode .navbar-collapse,
-body.dark-mode .panel-default,
-body.dark-mode .container-fluid {
+body.dark-mode {
+  color: var(--text-color);
   background-color: var(--background-color);
-  color: var(--text-color); }
-
-body.dark-mode .form-control,
-body.dark-mode .list-group,
-body.dark-mode .datepicker-days,
-body.dark-mode .container-fluid:hover {
-  color: var(--hover-text-color);
-  background-color: var(--hover-bg-color); }
+  /* navbar */ }
+  body.dark-mode a {
+    color: var(--accent-color); }
+  body.dark-mode [role='tooltip'] {
+    background-color: var(--secondary-background-color);
+    color: var(--text-color);
+    border-color: var(--divider-color); }
+  body.dark-mode tr:hover {
+    color: var(--accent-color); }
+  body.dark-mode .modal-content,
+  body.dark-mode .panel-default,
+  body.dark-mode .container-fluid {
+    background-color: var(--background-color);
+    color: var(--text-color); }
+  body.dark-mode .navbar-collapse .navbar-nav > li > a {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin: 5px 2px; }
+    body.dark-mode .navbar-collapse .navbar-nav > li > a:hover, body.dark-mode .navbar-collapse .navbar-nav > li > a:focus {
+      background-color: var(--hover-bg-color, #e0e0e0);
+      color: var(--hover-text-color, #333); }
+  body.dark-mode .navbar-collapse .navbar-nav .navbar-form .btn-info {
+    transition: background-color 0.3s ease, color 0.3s ease; }
+    body.dark-mode .navbar-collapse .navbar-nav .navbar-form .btn-info:hover, body.dark-mode .navbar-collapse .navbar-nav .navbar-form .btn-info:focus {
+      background-color: var(--hover-bg-color, #e0e0e0);
+      color: var(--hover-text-color, #333); }
+  body.dark-mode body.dark-mode .navbar-collapse .navbar-nav > li > a:hover, body.dark-mode body.dark-mode .navbar-collapse .navbar-nav > li > a:focus {
+    background-color: var(--hover-bg-color, #4a4a4a);
+    color: var(--hover-text-color, #fff); }
+  body.dark-mode body.dark-mode .navbar-collapse .navbar-nav .navbar-form .btn-info:hover, body.dark-mode body.dark-mode .navbar-collapse .navbar-nav .navbar-form .btn-info:focus {
+    background-color: var(--hover-bg-color, #4a4a4a);
+    color: var(--hover-text-color, #fff); }
+  body.dark-mode .form-control,
+  body.dark-mode .list-group,
+  body.dark-mode .datepicker-days,
+  body.dark-mode .container-fluid:hover {
+    color: var(--hover-text-color);
+    background-color: var(--hover-bg-color); }
+  body.dark-mode .calendar_month td {
+    background-color: var(--calendar-cell-bg); }
+  body.dark-mode td.current_day_cell {
+    background: var(--current-day-bg);
+    color: var(--text-color); }
+  body.dark-mode td.weekend_cell {
+    background: var(--secondary-background-color); }
+  body.dark-mode td.bank_holiday_cell {
+    background: var(--accent-color);
+    color: var(--text-color); }
+  body.dark-mode td.leave_cell {
+    background: var(--leave-cell-bg);
+    color: var(--leave-cell-color); }
+  body.dark-mode td.leave_cell_pended {
+    background: #ffcba4;
+    color: var(--text-color); }
+  body.dark-mode .selected-item {
+    background: var(--secondary-background-color);
+    color: var(--text-color); }
 
 /* end of dark mode specific styles */
 /*
@@ -293,17 +337,9 @@ div.feeds-holder {
   background: #f5f7f8;
   font-weight: bolder; }
 
-.leave_type_color_1 {
-  background: #96c521 !important; }
-
-.leave_type_color_2 {
-  background: #40c4ff !important; }
-
-.leave_type_color_3 {
-  background: #ff5722 !important; }
-
-.leave_type_color_4 {
-  background: #ff80ab !important; }
-
-.leave_type_color_5 {
-  background: #00bcd4 !important; }
+/* Holiday Type Colour Picker */
+.input-group-addon.color-picker {
+  padding: 0; }
+  .input-group-addon.color-picker .picker {
+    border: 0;
+    padding: 0; }
