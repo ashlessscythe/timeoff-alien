@@ -5,6 +5,7 @@
 *.swm
 node_modules/
 config/
+scripts/*.sql
 mock_data/
 import_data/
 import/
