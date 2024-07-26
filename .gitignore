@@ -6,6 +6,7 @@
 node_modules/
 config/*
 scripts/*.sql
+scripts/*.dump
 mock_data/
 import_data/
 import/
