@@ -14,7 +14,7 @@ const scriptDir = path.dirname(__filename)
 const getLatestBackupFile = () => {
   const files = fs
     .readdirSync(scriptDir)
-    .filter(file => file.startsWith('backup_') && file.endsWith('.sql'))
+    .filter(file => file.startsWith('backup_') && file.endsWith('.dump'))
   return files.sort().reverse()[0]
 }
 
@@ -25,34 +25,23 @@ if (!inputFile) {
 }
 
 const inputPath = path.join(scriptDir, inputFile)
-const compressedFile = inputPath.replace('.sql', '.dump')
+const compressedFile = inputPath
 
 console.log(`Processing file: ${inputPath}`)
 
-// Convert to compressed format
-const convertCommand = `pg_restore -f "${compressedFile}" --format=c "${inputPath}"`
+// Restore from compressed format
+const restoreCommand = `psql "${dbUrl}" -f "${compressedFile}"`
 
-exec(convertCommand, (error, stdout, stderr) => {
+exec(restoreCommand, (error, stdout, stderr) => {
   if (error) {
-    console.error(`Error converting to compressed format: ${error}`)
+    console.error(`Error restoring database: ${error}`)
     return
   }
-  console.log(`Converted to compressed format: ${compressedFile}`)
+  console.log(`Database restored successfully from ${compressedFile}`)
+  console.log(`stdout: ${stdout}`)
+  console.error(`stderr: ${stderr}`)
 
-  // Restore from compressed format
-  const restoreCommand = `pg_restore -d "${dbUrl}" -c -v "${compressedFile}"`
-
-  exec(restoreCommand, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error restoring database: ${error}`)
-      return
-    }
-    console.log(`Database restored successfully from ${compressedFile}`)
-    console.log(`stdout: ${stdout}`)
-    console.error(`stderr: ${stderr}`)
-
-    // Optionally, remove the temporary compressed file
-    fs.unlinkSync(compressedFile)
-    console.log(`Temporary file removed: ${compressedFile}`)
-  })
+  // Optionally, remove the temporary compressed file
+  // fs.unlinkSync(compressedFile)
+  // console.log(`Temporary file removed: ${compressedFile}`)
 })
