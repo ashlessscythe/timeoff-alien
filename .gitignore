@@ -4,7 +4,9 @@
 *.swn
 *.swm
 node_modules/
-config/
+config/*
+scripts/*.sql
+scripts/*.dump
 mock_data/
 import_data/
 import/
