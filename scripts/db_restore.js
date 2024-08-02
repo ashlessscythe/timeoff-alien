@@ -30,18 +30,15 @@ const compressedFile = inputPath
 console.log(`Processing file: ${inputPath}`)
 
 // Restore from compressed format
-const restoreCommand = `psql "${dbUrl}" -f "${compressedFile}"`
+const restoreCommand = `pg_restore -d "${dbUrl}" "${compressedFile}"`
+// const restoreCommand = `pg_restore --clean --if-exists --no-owner --no-privileges -d "${dbUrl}" "${compressedFile}"`
 
-exec(restoreCommand, (error, stdout, stderr) => {
+exec(restoreCommand, { shell: '/bin/bash' }, (error, stdout, stderr) => {
   if (error) {
-    console.error(`Error restoring database: ${error}`)
-    return
+    console.error(`Error restoring database: ${error.message}`);
+    console.error(`Exit code: ${error.code}`);
+    console.error(`Signal: ${error.signal}`);
   }
-  console.log(`Database restored successfully from ${compressedFile}`)
-  console.log(`stdout: ${stdout}`)
-  console.error(`stderr: ${stderr}`)
-
-  // Optionally, remove the temporary compressed file
-  // fs.unlinkSync(compressedFile)
-  // console.log(`Temporary file removed: ${compressedFile}`)
-})
+  console.log(`stdout: ${stdout}`);
+  console.error(`stderr: ${stderr}`);
+});
