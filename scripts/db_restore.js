@@ -30,8 +30,8 @@ const compressedFile = inputPath
 console.log(`Processing file: ${inputPath}`)
 
 // Restore from compressed format
-const restoreCommand = `pg_restore -d "${dbUrl}" "${compressedFile}"`
-// const restoreCommand = `pg_restore --clean --if-exists --no-owner --no-privileges -d "${dbUrl}" "${compressedFile}"`
+// const restoreCommand = `pg_restore -d "${dbUrl}" "${compressedFile}"`
+const restoreCommand = `pg_restore --clean --if-exists --no-owner --no-privileges -d "${dbUrl}" "${compressedFile}"`
 
 exec(restoreCommand, { shell: '/bin/bash' }, (error, stdout, stderr) => {
   if (error) {
