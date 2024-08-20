@@ -38,22 +38,11 @@
             {{#if logged_user }}
             {{!-- TODO: add language dropdown here --}}
             <!-- Dark Mode Toggle -->
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-              <span class="fa fa-adjust"></span> Theme
+          <li>
+            <a href="#" id="theme-toggle">
+              <span class="fa {{#if darkMode}}fa-sun-o{{else}}fa-moon-o{{/if}}" id="theme-icon"></span>
+              <span id="theme-text"></span>
             </a>
-            <ul class="dropdown-menu" role="menu">
-              <li>
-                <a href="#" id="dark-mode-toggle">
-                  <span class="fa fa-moon-o"></span> Dark (beta)
-                </a>
-              </li>
-              <li>
-                <a href="#" id="light-mode-toggle">
-                  <span class="fa fa-sun-o"></span> Light
-                </a>
-              </li>
-            </ul>
           </li>
           <li class="dropdown" id="header-notification-dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -113,23 +102,48 @@
 </div>
 
 <script>
-  document.getElementById('dark-mode-toggle').addEventListener('click', function (event) {
-    event.preventDefault();
-    document.body.classList.add('dark-mode');
-    localStorage.setItem('theme', 'dark');
-  });
-
-  document.getElementById('light-mode-toggle').addEventListener('click', function (event) {
-    event.preventDefault();
-    document.body.classList.remove('dark-mode');
-    localStorage.setItem('theme', 'light');
-  });
-
-  // Apply the stored theme on page load
   document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+
+    // Function to update the toggle appearance
+    function updateToggleAppearance(isDarkMode) {
+      if (isDarkMode) {
+        themeIcon.classList.replace('fa-moon-o', 'fa-sun-o');
+        themeText.textContent = '';
+      } else {
+        themeIcon.classList.replace('fa-sun-o', 'fa-moon-o');
+        themeText.textContent = '';
+      }
     }
+
+    // Function to set the theme
+    function setTheme(isDarkMode) {
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+      }
+      updateToggleAppearance(isDarkMode);
+    }
+
+    // Apply the stored theme on page load
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark') {
+      setTheme(true);
+    } else {
+      setTheme(false);
+    }
+
+    // Toggle theme when the button is clicked
+    themeToggle.addEventListener('click', function (event) {
+      event.preventDefault();
+      const isDarkMode = !document.body.classList.contains('dark-mode');
+      setTheme(isDarkMode);
+    });
   });
 
 </script>
