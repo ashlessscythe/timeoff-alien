@@ -14,7 +14,7 @@ const scriptDir = path.dirname(__filename)
 const getLatestBackupFile = () => {
   const files = fs
     .readdirSync(scriptDir)
-    .filter(file => file.startsWith('backup_') && file.endsWith('.dump'))
+    .filter(file => file.startsWith('backup_') && file.endsWith('.sql'))
   return files.sort().reverse()[0]
 }
 
@@ -30,15 +30,16 @@ const compressedFile = inputPath
 console.log(`Processing file: ${inputPath}`)
 
 // Restore from compressed format
-const restoreCommand = `pg_restore -d "${dbUrl}" "${compressedFile}"`
+// const restoreCommand = `pg_restore -d "${dbUrl}" "${compressedFile}"`
 // const restoreCommand = `pg_restore --clean --if-exists --no-owner --no-privileges -d "${dbUrl}" "${compressedFile}"`
+const restoreCommand = `psql "${dbUrl}" -f "${sqlFile}"`
 
 exec(restoreCommand, { shell: '/bin/bash' }, (error, stdout, stderr) => {
   if (error) {
-    console.error(`Error restoring database: ${error.message}`);
-    console.error(`Exit code: ${error.code}`);
-    console.error(`Signal: ${error.signal}`);
+    console.error(`Error restoring database: ${error.message}`)
+    console.error(`Exit code: ${error.code}`)
+    console.error(`Signal: ${error.signal}`)
   }
-  console.log(`stdout: ${stdout}`);
-  console.error(`stderr: ${stderr}`);
-});
+  console.log(`stdout: ${stdout}`)
+  console.error(`stderr: ${stderr}`)
+})

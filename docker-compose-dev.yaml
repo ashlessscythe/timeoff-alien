@@ -31,16 +31,15 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres
-    env_file:
-      - .env.dev
     environment:
-      POSTGRES_DB: ${DB_DATABASE}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: pgdb
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpass
+      POSTGRES_ROOT_PASSWORD: rootpass
     volumes:
       - dev-pgsql:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT}:5432"
+      - "5432:5432"
 
   # mysql:
   #   image: mysql:latest
