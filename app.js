@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const path = require('path')
 const favicon = require('serve-favicon')
@@ -6,14 +7,17 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const moment = require('moment')
 const _handlebars = require('handlebars')
+const compression = require('compression')
 const {
   allowInsecurePrototypeAccess
 } = require('@handlebars/allow-prototype-access')
-require('dotenv').config()
 
 const i18n = require('./i18n')
 
 const app = express()
+
+// Use compression
+app.use(compression())
 
 // Handlebars
 //
@@ -44,7 +48,6 @@ const handlebars = require('express-handlebars').create({
       get_leave_type_name: true,
       get_start_leave_day: true,
       get_end_leave_day: true,
-      get_end_leave_day: true,
       ldap_auth_enabled: true,
       get_reset_password_token: true
     },
@@ -53,7 +56,6 @@ const handlebars = require('express-handlebars').create({
       name: true,
       get_leave_type_name: true,
       get_start_leave_day: true,
-      get_end_leave_day: true,
       get_end_leave_day: true,
       ldap_auth_enabled: true,
       get_reset_password_token: true
@@ -76,11 +78,25 @@ app.set('db_model', require('./lib/model/db'))
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'))
+
+// Use 'combined' format for production logging
+app.use(logger(app.get('env') === 'production' ? 'combined' : 'dev'))
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
+
+// Serve static files with caching headers
+app.use(
+  express.static(path.join(__dirname, 'public'), {
+    maxAge: app.get('env') === 'production' ? '1d' : 0,
+    setHeaders: (res, path) => {
+      if (path.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache')
+      }
+    }
+  })
+)
 
 // Setup authentication mechanism
 const passport = require('./lib/passport')()
@@ -90,7 +106,7 @@ const session = require('express-session')
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
 app.use(
   session({
-    secret: 'my dirty secret ;khjsdkjahsdajhasdam,nnsnad,',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: new SequelizeStore({
@@ -134,11 +150,17 @@ app.use(function(req, res, next) {
 })
 
 app.use(function(_req, res, next) {
+  const isProduction = app.get('env') === 'production'
   res.locals.custom_java_script = [
     '/js/bootstrap-datepicker.js',
-    '/js/global.js'
+    isProduction ? '/js/global.min.js' : '/js/global.js'
   ]
   res.locals.custom_css = ['/css/bootstrap-datepicker3.standalone.css']
+  if (isProduction) {
+    res.locals.custom_css.push('/css/style.min.css')
+  } else {
+    res.locals.custom_css.push('/css/style.css')
+  }
   next()
 })
 
