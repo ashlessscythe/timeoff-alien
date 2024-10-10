@@ -184,6 +184,7 @@ app.use(
 )
 
 app.use('/api/v1/', require('./lib/route/api'))
+app.use('/api/v1/notifications', require('./lib/route/api/notifications'))
 
 app.use('/calendar/', require('./lib/route/calendar'))
 
