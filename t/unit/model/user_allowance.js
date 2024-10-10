@@ -15,12 +15,11 @@ describe('employement_range_adjustment attribute', function() {
       const ul = new UserAllowance({
         user: employee,
         now: moment('2016-07-20'),
-
-        // Rest of parameters do not really matter
         number_of_days_taken_from_allowance: 0,
         manual_adjustment: 0,
         carry_over: 0,
-        nominal_allowance: 20
+        nominal_allowance: 20,
+        nominal_personal: 5
       })
 
       expect(ul.employement_range_adjustment).to.be.equal(0)
@@ -36,11 +35,11 @@ describe('employement_range_adjustment attribute', function() {
     const ul = new UserAllowance({
       user: employee,
       now: moment('2016-02-20'),
-
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 20
+      nominal_allowance: 20,
+      nominal_personal: 5
     })
 
     it('ajustment is made based on end date', function() {
@@ -57,11 +56,11 @@ describe('employement_range_adjustment attribute', function() {
     const ul = new UserAllowance({
       user: employee,
       now: moment('2016-07-20'),
-
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 20
+      nominal_allowance: 20,
+      nominal_personal: 5
     })
 
     it('ajustment is made based on end date', function() {
@@ -77,11 +76,11 @@ describe('employement_range_adjustment attribute', function() {
     const ul = new UserAllowance({
       user: employee,
       now: moment('2018-07-20'),
-
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 20
+      nominal_allowance: 20,
+      nominal_personal: 5 // Added this line
     })
 
     it('adjustment is made based on start date', function() {
@@ -98,11 +97,11 @@ describe('employement_range_adjustment attribute', function() {
     const ul = new UserAllowance({
       user: employee,
       now: moment('2016-07-20'),
-
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 20
+      nominal_allowance: 20,
+      nominal_personal: 5 // Added this line
     })
 
     it('adjustment is made based on start and end dates', function() {
@@ -123,7 +122,8 @@ describe('employement_range_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 20
+      nominal_allowance: 20,
+      nominal_personal: 5
     })
 
     it('adjustment is made based on start date', function() {
@@ -139,11 +139,11 @@ describe('employement_range_adjustment attribute', function() {
     const ul = new UserAllowance({
       user: employee,
       now: moment('2016-07-20'),
-
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 20
+      nominal_allowance: 20,
+      nominal_personal: 5 // Added this line
     })
 
     it('No adjustment is needed', function() {
@@ -164,7 +164,8 @@ describe('employement_range_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 20
+      nominal_allowance: 20,
+      nominal_personal: 0
     })
 
     it('No adjustment is needed', function() {
@@ -182,11 +183,11 @@ describe('accrued_adjustment attribute', function() {
     const ul = new UserAllowance({
       user: employee,
       now: moment('2017-02-01'),
-
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 5
     })
 
     it('Ensure year total alloance is correct', function() {
@@ -206,11 +207,11 @@ describe('accrued_adjustment attribute', function() {
     const ul = new UserAllowance({
       user: employee,
       now: moment('2016-07-01'),
-
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 5 // Added this line
     })
 
     it('Ensure year total alloance is correct', function() {
@@ -234,7 +235,8 @@ describe('accrued_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 10,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 5
     })
 
     it('Ensure year total alloance is correct', function() {
@@ -261,7 +263,8 @@ describe('accrued_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 4,
       carry_over: 0,
-      nominal_allowance: 20
+      nominal_allowance: 20,
+      nominal_personal: 5
     })
 
     it('Ensure year total alloance is correct', function() {
@@ -285,7 +288,8 @@ describe('accrued_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 2
     })
 
     it('Ensure year total allowance is correct', function() {
@@ -309,7 +313,8 @@ describe('accrued_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 2
     })
 
     it('Ensure year total allowance is correct', function() {
@@ -333,7 +338,8 @@ describe('accrued_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 5
     })
 
     it('Ensure year total allowance is correct', function() {
@@ -357,7 +363,8 @@ describe('accrued_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 0
     })
 
     it('Ensure year total allowance is correct', function() {
@@ -387,7 +394,8 @@ describe('accrued_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 9
     })
 
     it('Ensure available allowance is correct', function() {
@@ -413,7 +421,8 @@ describe('accrued_adjustment attribute', function() {
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
       carry_over: 0,
-      nominal_allowance: 24
+      nominal_allowance: 24,
+      nominal_personal: 5 // Added this line
     })
 
     it('Ensure available allowance is correct', function() {
