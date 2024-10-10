@@ -50,7 +50,8 @@
               <span class="label label-info notification-badge hidden"></span>
             </a>
             <ul class="dropdown-menu" role="menu">
-              <li class="dropdown-header">No notifications</li>
+              <li class="dropdown-header">Notifications</li>
+              <li><a href="/requests">See Requests</a></li>
             </ul>
           </li>
           {{#if logged_user.admin }}
@@ -144,6 +145,25 @@
       const isDarkMode = !document.body.classList.contains('dark-mode');
       setTheme(isDarkMode);
     });
-  });
 
+    // Fetch and update notification count
+    function updateNotificationCount() {
+      fetch('/api/v1/notifications/count')
+        .then(response => response.json())
+        .then(data => {
+          const badge = document.querySelector('.notification-badge');
+          if (data.count > 0) {
+            badge.textContent = data.count;
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
+        })
+        .catch(error => console.error('Error fetching notification count:', error));
+    }
+
+    // Update notification count on page load and every 5 minutes
+    updateNotificationCount();
+    setInterval(updateNotificationCount, 300000);
+  });
 </script>
