@@ -1,20 +1,22 @@
-
-<div class="modal fade" id="{{container_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="{{container_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-    <form method="POST" action="{{leave_modal_form_action}}">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="exampleModalLabel">New absence</h4>
-      </div>
-      <div class="modal-body">
+      <form method="POST" action="{{leave_modal_form_action}}" id="leaveForm" novalidate>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="exampleModalLabel">New absence</h4>
+        </div>
+        <div class="modal-body">
 
           {{# if_equal logged_user.supervised_users.length 1 }}{{else}}
           <div class="form-group">
             <label for="employee" class="control-label">For employee:</label>
-            <select class="form-control" id="employee" name="user">
+            <select class="form-control" id="employee" name="user" required>
               {{#each logged_user.supervised_users}}
-              <option value="{{@index}}" {{# if_equal this.id ../logged_user.id }}selected="selected"{{/if_equal}}>{{this.full_name}}</option>
+              <option value="{{@index}}" {{# if_equal this.id ../logged_user.id }}selected="selected" {{/if_equal}}>
+                {{this.full_name}}</option>
               {{/each}}
             </select>
           </div>
@@ -23,20 +25,20 @@
           <div class="form-group">
             <label for="leave_type" class="control-label">Leave type:</label>
             <select class="form-control" id="leave_type" name="leave_type" required>
-            {{# is_force_to_explicitly_select_type_when_requesting_new_leave}}
+              {{# is_force_to_explicitly_select_type_when_requesting_new_leave}}
               <option disabled selected value>-- select an option --</option>
-            {{/ is_force_to_explicitly_select_type_when_requesting_new_leave}}
-            {{# if_equal logged_user.supervised_users.length 1 }}
+              {{/ is_force_to_explicitly_select_type_when_requesting_new_leave}}
+              {{# if_equal logged_user.supervised_users.length 1 }}
               {{#each logged_user.company.leave_types }}
-                {{#unless this.manager_only}}
-                  <option value={{this.id}} data-tom="{{this.name}}" data-tom-index={{@index}}>{{this.name}}</option>
-                {{/unless}}
+              {{#unless this.manager_only}}
+              <option value={{this.id}} data-tom="{{this.name}}" data-tom-index={{@index}}>{{this.name}}</option>
+              {{/unless}}
               {{/each}}
-            {{else}}
+              {{else}}
               {{#each logged_user.company.leave_types }}
-                <option value={{this.id}} data-tom="{{this.name}}" data-tom-index={{@index}}>{{this.name}}</option>
+              <option value={{this.id}} data-tom="{{this.name}}" data-tom-index={{@index}}>{{this.name}}</option>
               {{/each}}
-            {{/ if_equal}}
+              {{/ if_equal}}
             </select>
           </div>
 
@@ -44,7 +46,7 @@
             <label for="from" class="control-label">From:</label>
             <div class="row">
               <div class="col-md-5">
-                <select class="form-control" name="from_date_part">
+                <select class="form-control" name="from_date_part" required>
                   <option value="1" selected="selected">All day</option>
                   <option value="2">AM</option>
                   <option value="3">PM</option>
@@ -52,8 +54,12 @@
               </div>
               <div class="col-md-7">
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                  <input type="text" class="form-control book-leave-from-input" id="from" data-provide="datepicker" data-date-autoclose="1" data-date-format="{{# with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}" data-date-week-start="1" value="{{as_date booking_start}}" name="from_date">
+                  <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                  <input type="text" class="form-control book-leave-from-input" id="from" data-provide="datepicker"
+                    data-date-autoclose="1"
+                    data-date-format="{{# with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
+                    data-date-week-start="1" value="{{as_date booking_start}}" name="from_date" required
+                    aria-label="From date">
                 </div>
               </div>
             </div>
@@ -63,7 +69,7 @@
             <label for="to" class="control-label">To:</label>
             <div class="row">
               <div class="col-md-5">
-                <select class="form-control" name="to_date_part">
+                <select class="form-control" name="to_date_part" required>
                   <option value="1" selected="selected">All day</option>
                   <option value="2">AM</option>
                   <option value="3">PM</option>
@@ -71,31 +77,78 @@
               </div>
               <div class="col-md-7">
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                  <input type="text" class="form-control book-leave-to-input" id="to" data-provide="datepicker" data-date-autoclose="1" data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}" data-date-week-start="1" value="{{as_date booking_end}}" name="to_date">
+                  <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                  <input type="text" class="form-control book-leave-to-input" id="to" data-provide="datepicker"
+                    data-date-autoclose="1"
+                    data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
+                    data-date-week-start="1" value="{{as_date booking_end}}" name="to_date" required
+                    aria-label="To date">
                 </div>
               </div>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="leave_type" class="control-label">Comment (optional):</label>
+            <label for="leave_reason" class="control-label">Comment (optional):</label>
             <textarea class="form-control" id="leave_reason" name="reason"></textarea>
           </div>
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-success single-click">Create</button>
-        {{# if redirect_back_to }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success single-click" id="submitLeaveBtn">Create</button>
+          {{# if redirect_back_to }}
           <input type="hidden" name="redirect_back_to" value="{{redirect_back_to}}">
-        {{else}}
+          {{else}}
           <input type="hidden" name="redirect_back_to" value="{{requested_path}}">
-        {{/if}}
-      </div>
-    </form>
+          {{/if}}
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var form = document.getElementById('leaveForm');
+    var submitBtn = document.getElementById('submitLeaveBtn');
+    var fromDate = document.getElementById('from');
+    var toDate = document.getElementById('to');
 
+    if (form && submitBtn && fromDate && toDate) {
+      // Add event listener to 'from' date input
+      fromDate.addEventListener('change', function () {
+        // Update 'to' date to match 'from' date
+        toDate.value = fromDate.value;
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Form validation
+        if (!form.checkValidity()) {
+          e.stopPropagation();
+          form.classList.add('was-validated');
+          return;
+        }
+
+        // Date range validation
+        if (new Date(fromDate.value) > new Date(toDate.value)) {
+          alert('The "To" date must be after the "From" date.');
+          return;
+        }
+
+        // Prevent double submission
+        if (submitBtn.disabled) {
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        // Submit the form
+        form.submit();
+      });
+    }
+  });
+</script>
