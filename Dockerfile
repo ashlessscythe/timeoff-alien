@@ -1,50 +1,39 @@
-# -------------------------------------------------------------------
-# Minimal dockerfile from alpine base
-#
-# Instructions:
-# =============
-# 1. Create an empty directory and copy this file into it.
-#
-# 2. Create image with:
-#	docker build --tag timeoff:latest .
-#
-# 3. Run with:
-#	docker run -d -p 3000:3000 --name alpine_timeoff timeoff
-#
-# --------------------------------------------------------------------
-FROM node:16-alpine
-
-RUN apk update
-#RUN apk upgrade
-
-# Install dependencies
-RUN apk add \
-  git \
-  make \
-  python3 \
-  g++ \
-  gcc \
-  libc-dev \
-  clang
+# Build stage
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-LABEL org.label-schema.schema-version="1.0"
-LABEL org.label-schema.docker.cmd="docker run -d -p 3000:3000 --name alpine_timeoff"
+# Install dependencies for building
+RUN apk add --no-cache python3 make g++ gcc libc-dev
 
-# Cache the docker layer with the node_modules
-COPY package.json /app/package.json
-COPY package-lock.json /app/package-lock.json
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm ci
 
-RUN npm install
+# Copy the rest of the application code
+COPY . .
 
-# Copy the application into the container.
-COPY . /app
+# Build the application (if necessary)
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install production dependencies
+RUN apk add --no-cache curl
+
+# Copy built artifacts from builder stage
+COPY --from=builder /app .
 
 # Add user so it doesn't run as root
-RUN adduser --system app --home /app
+RUN adduser --system --uid 1001 app
 USER app
 
 EXPOSE 3000
 
-CMD npm start
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/ || exit 1
+
+CMD ["npm", "start"]
