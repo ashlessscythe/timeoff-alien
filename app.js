@@ -153,6 +153,7 @@ app.use(function(_req, res, next) {
   const isProduction = app.get('env') === 'production'
   res.locals.custom_java_script = [
     '/js/bootstrap-datepicker.js',
+    '/js/popover-initializer.js', // popups
     isProduction ? '/js/global.min.js' : '/js/global.js'
   ]
   res.locals.custom_css = ['/css/bootstrap-datepicker3.standalone.css']

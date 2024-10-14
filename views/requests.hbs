@@ -80,20 +80,20 @@
 {{> footer }}
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/popover-initializer.js"></script>
 <script>
   $(document).ready(function () {
     $('#rejectModal').on('show.bs.modal', function (event) {
-      var button = $(event.relatedTarget); // Button that triggered the modal
-      var leaveId = button.data('leave-id'); // Extract info from data-* attributes
-
+      var button = $(event.relatedTarget);
+      var leaveId = button.data('leave-id');
       var modal = $(this);
       modal.find('input[name="request"]').val(leaveId);
+      modal.find('textarea[name="comment"]').attr('placeholder', leaveId);
     });
 
     $('#approveModal').on('show.bs.modal', function (event) {
-      var button = $(event.relatedTarget); // Button that triggered the modal
-      var leaveId = button.data('leave-id'); // Extract info from data-* attributes
-
+      var button = $(event.relatedTarget);
+      var leaveId = button.data('leave-id');
       var modal = $(this);
       modal.find('input[name="request"]').val(leaveId);
     });
