@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,277 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model SequelizeMeta {
+  name String @id @db.VarChar(255)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Sessions {
+  sid       String    @id @db.VarChar(36)
+  expires   DateTime? @db.Timestamptz(6)
+  data      String?
+  createdAt DateTime  @db.Timestamptz(6)
+  updatedAt DateTime  @db.Timestamptz(6)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model audit {
+  id          Int        @id @default(autoincrement())
+  entity_type String     @db.VarChar(255)
+  entity_id   Int
+  attribute   String     @db.VarChar(255)
+  old_value   String?    @db.VarChar(255)
+  new_value   String?    @db.VarChar(255)
+  at          DateTime   @db.Timestamptz(6)
+  company_id  Int?
+  by_user_id  Int?
+  users       users?     @relation(fields: [by_user_id], references: [id])
+  companies   companies? @relation(fields: [company_id], references: [id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model bank_holidays {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  date       DateTime  @db.Timestamptz(6)
+  created_at DateTime  @db.Timestamptz(6)
+  updated_at DateTime  @db.Timestamptz(6)
+  company_id Int
+  companies  companies @relation(fields: [company_id], references: [id], onDelete: NoAction)
+
+  @@index([company_id], map: "bank_holidays_company_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model comments {
+  id          Int       @id @default(autoincrement())
+  entity_type String    @db.VarChar(255)
+  entity_id   Int
+  comment     String
+  at          DateTime  @db.Timestamptz(6)
+  company_id  Int
+  by_user_id  Int
+  users       users     @relation(fields: [by_user_id], references: [id], onDelete: NoAction)
+  companies   companies @relation(fields: [company_id], references: [id], onDelete: NoAction)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model companies {
+  id                      Int             @id @default(autoincrement())
+  name                    String          @db.VarChar(255)
+  country                 String          @db.VarChar(255)
+  start_of_new_year       Int
+  share_all_absences      Boolean         @default(false)
+  is_team_view_hidden     Boolean         @default(false)
+  ldap_auth_enabled       Boolean         @default(false)
+  ldap_auth_config        String?
+  date_format             String          @default("YYYY-MM-DD") @db.VarChar(255)
+  company_wide_message    String?
+  mode                    Int             @default(1)
+  timezone                String?         @default("Europe/London") @db.VarChar(255)
+  integration_api_enabled Boolean         @default(false)
+  integration_api_token   String?         @db.Uuid
+  carry_over              Int?            @default(0)
+  created_at              DateTime        @db.Timestamptz(6)
+  updated_at              DateTime        @db.Timestamptz(6)
+  last_name_first         Boolean         @default(false)
+  audit                   audit[]
+  bank_holidays           bank_holidays[]
+  comments                comments[]
+  departments             departments[]
+  email_audits            email_audits[]
+  leave_types             leave_types[]
+  schedules               schedules[]
+  users                   users[]
+
+  @@index([id], map: "companies_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model department_supervisors {
+  created_at    DateTime    @db.Timestamptz(6)
+  department_id Int
+  user_id       Int
+  departments   departments @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  users         users       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([department_id, user_id])
+  @@index([department_id], map: "department_supervisors_department_id")
+  @@index([user_id], map: "department_supervisors_user_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model departments {
+  id                      Int                      @id @default(autoincrement())
+  name                    String                   @db.VarChar(255)
+  allowance               Float                    @default(20)
+  personal                Float                    @default(5)
+  include_public_holidays Boolean                  @default(true)
+  is_accrued_allowance    Boolean                  @default(false)
+  created_at              DateTime                 @db.Timestamptz(6)
+  updated_at              DateTime                 @db.Timestamptz(6)
+  company_id              Int
+  manager_id              Int?
+  department_supervisors  department_supervisors[]
+  companies               companies                @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  users                   users[]
+
+  @@index([company_id], map: "departments_company_id")
+  @@index([id], map: "departments_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model email_audits {
+  id         Int       @id @default(autoincrement())
+  email      String    @db.VarChar(255)
+  subject    String
+  body       String
+  created_at DateTime  @db.Timestamptz(6)
+  company_id Int
+  user_id    Int
+  companies  companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction)
+
+  @@index([created_at], map: "email_audits_created_at")
+  @@index([user_id], map: "email_audits_user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model leave_types {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(255)
+  color         String    @default("#ffffff") @db.VarChar(255)
+  use_allowance Boolean   @default(true)
+  use_personal  Boolean   @default(false)
+  limit         Int       @default(0)
+  sort_order    Int       @default(0)
+  auto_approve  Boolean   @default(false)
+  created_at    DateTime  @db.Timestamptz(6)
+  updated_at    DateTime  @db.Timestamptz(6)
+  company_id    Int
+  manager_only  Boolean   @default(false)
+  companies     companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  leaves        leaves[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model leaves {
+  id                              Int         @id @default(autoincrement())
+  status                          Int
+  employee_comment                String?
+  approver_comment                String?
+  decided_at                      DateTime?   @db.Timestamptz(6)
+  date_start                      DateTime    @db.Timestamptz(6)
+  day_part_start                  Int         @default(1)
+  date_end                        DateTime    @db.Timestamptz(6)
+  day_part_end                    Int         @default(1)
+  created_at                      DateTime    @db.Timestamptz(6)
+  updated_at                      DateTime    @db.Timestamptz(6)
+  user_id                         Int
+  approver_id                     Int?
+  leave_type_id                   Int
+  users_leaves_approver_idTousers users?      @relation("leaves_approver_idTousers", fields: [approver_id], references: [id])
+  leave_types                     leave_types @relation(fields: [leave_type_id], references: [id], onDelete: NoAction)
+  users_leaves_user_idTousers     users       @relation("leaves_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction)
+
+  @@index([approver_id], map: "leaves_approver_id")
+  @@index([leave_type_id], map: "leaves_leave_type_id")
+  @@index([user_id], map: "leaves_user_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model schedules {
+  id         Int        @id @default(autoincrement())
+  monday     Int        @default(1)
+  tuesday    Int        @default(1)
+  wednesday  Int        @default(1)
+  thursday   Int        @default(1)
+  friday     Int        @default(1)
+  saturday   Int        @default(2)
+  sunday     Int        @default(2)
+  created_at DateTime   @db.Timestamptz(6)
+  updated_at DateTime   @db.Timestamptz(6)
+  company_id Int?
+  user_id    Int?
+  companies  companies? @relation(fields: [company_id], references: [id])
+  users      users?     @relation(fields: [user_id], references: [id])
+
+  @@index([company_id], map: "schedules_company_id")
+  @@index([user_id], map: "schedules_user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model user_allowance_adjustment {
+  id                     Int      @id @default(autoincrement())
+  year                   Int      @default(2024)
+  adjustment             Float    @default(0)
+  carried_over_allowance Int      @default(0)
+  created_at             DateTime @db.Timestamptz(6)
+  user_id                Int
+  users                  users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, year], map: "user_allowance_adjustment_user_id_year")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model user_feeds {
+  id         Int                  @id @default(autoincrement())
+  name       String               @db.VarChar(255)
+  feed_token String               @db.VarChar(255)
+  type       enum_user_feeds_type
+  created_at DateTime             @db.Timestamptz(6)
+  updated_at DateTime             @db.Timestamptz(6)
+  user_id    Int
+  users      users                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id                               Int                         @id @default(autoincrement())
+  email                            String                      @db.VarChar(255)
+  slack_username                   String?                     @default("") @db.VarChar(255)
+  password                         String                      @db.VarChar(255)
+  name                             String                      @db.VarChar(255)
+  lastname                         String                      @db.VarChar(255)
+  activated                        Boolean                     @default(false)
+  admin                            Boolean                     @default(false)
+  manager                          Boolean                     @default(false)
+  auto_approve                     Boolean                     @default(false)
+  start_date                       DateTime                    @db.Timestamptz(6)
+  end_date                         DateTime?                   @db.Timestamptz(6)
+  created_at                       DateTime                    @db.Timestamptz(6)
+  updated_at                       DateTime                    @db.Timestamptz(6)
+  company_id                       Int
+  department_id                    Int
+  audit                            audit[]
+  comments                         comments[]
+  department_supervisors           department_supervisors[]
+  email_audits                     email_audits[]
+  leaves_leaves_approver_idTousers leaves[]                    @relation("leaves_approver_idTousers")
+  leaves_leaves_user_idTousers     leaves[]                    @relation("leaves_user_idTousers")
+  schedules                        schedules[]
+  user_allowance_adjustment        user_allowance_adjustment[]
+  user_feeds                       user_feeds[]
+  companies                        companies                   @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  departments                      departments                 @relation(fields: [department_id], references: [id], onDelete: Cascade)
+
+  @@index([company_id], map: "users_company_id")
+  @@index([department_id], map: "users_department_id")
+  @@index([lastname], map: "users_lastname")
+}
+
+enum enum_user_feeds_type {
+  calendar
+  wallchart
+  teamview
+  company
 }
