@@ -6,7 +6,6 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "type": "module",
   "optionalDependencies": {
     "mysql2": "^3.9.1",
     "pg": "^8.11.4",

@@ -6,6 +6,10 @@ import { hideBin } from 'yargs/helpers'
 const prisma = new PrismaClient()
 
 const argv = yargs(hideBin(process.argv))
+  .option('clear', {
+    type: 'boolean',
+    description: 'Clear all data from db'
+  })
   .option('use-faker', {
     type: 'number',
     description: 'Number of associates to create'
@@ -15,6 +19,11 @@ const argv = yargs(hideBin(process.argv))
     default: 3,
     description: 'Multiplier for the number of leaves per associate'
   })
+  .option('department-count', {
+    type: 'number',
+    default: 5,
+    description: 'Count of departments to create by default'
+  })
   .option('company-id', {
     type: 'number',
     default: 1,
@@ -22,9 +31,37 @@ const argv = yargs(hideBin(process.argv))
   }).argv
 
 async function main() {
+  const clearFlag = argv.clear || false
   const companyId = argv.companyId
   const associateCount = argv.useFaker || 0
   const leavesMultiplier = argv.leavesMultiplier
+  const departmentCount = argv.departmentCount
+
+  if (clearFlag) {
+    // Delete dependent tables first (child tables)
+    await prisma.department_supervisors.deleteMany() // Depends on departments and users
+    await prisma.leaves.deleteMany() // Depends on users and leave_types
+    await prisma.user_allowance_adjustment.deleteMany() // Depends on users
+    await prisma.user_feeds.deleteMany() // Depends on users
+    await prisma.email_audits.deleteMany() // Depends on users and companies
+    await prisma.comments.deleteMany() // Depends on users and companies
+    await prisma.audit.deleteMany() // Depends on users and companies
+
+    // Delete from middle-level tables
+    await prisma.schedules.deleteMany() // Depends on users and companies
+    await prisma.departments.deleteMany() // Depends on companies
+    await prisma.leave_types.deleteMany() // Depends on companies
+    await prisma.bank_holidays.deleteMany() // Depends on companies
+    await prisma.users.deleteMany() // Depends on departments and companies
+
+    // Delete from parent tables
+    await prisma.companies.deleteMany()
+
+    // Delete unrelated tables last (no FKs)
+    await prisma.sequelizeMeta.deleteMany()
+    await prisma.sessions.deleteMany()
+    return
+  }
 
   if (associateCount === 0) {
     console.log(
@@ -37,7 +74,7 @@ async function main() {
   const company = await getOrCreateCompany(companyId)
 
   // Create departments first
-  const departments = await createDepartments(company, 5)
+  const departments = await createDepartments(company, departmentCount)
 
   // Create users and assign to departments
   const users = await createUsers(company, departments, associateCount)
@@ -89,21 +126,40 @@ async function createDepartments(company, count) {
   const departments = []
 
   for (let i = 0; i < count; i++) {
-    const department = await prisma.departments.create({
-      data: {
-        name: faker.commerce.department(),
-        allowance: faker.number.float({ min: 20, max: 30, multipleOf: 0.5 }),
-        include_public_holidays: faker.datatype.boolean(),
-        is_accrued_allowance: faker.datatype.boolean(),
-        created_at: faker.date.past(),
-        updated_at: faker.date.recent(),
-        personal: faker.number.float({ min: 0, max: 5, multipleOf: 0.5 }), // Random personal days
+    const departmentName = faker.commerce.department()
+
+    // Check if the department already exists
+    let existingDepartment = await prisma.departments.findFirst({
+      where: {
+        name: departmentName,
         companies: {
-          connect: { id: company.id }
+          id: company.id
         }
       }
     })
-    departments.push(department)
+
+    // If the department doesn't exist, create it
+    if (!existingDepartment) {
+      const department = await prisma.departments.create({
+        data: {
+          name: departmentName,
+          allowance: faker.number.float({ min: 20, max: 30, multipleOf: 0.5 }),
+          include_public_holidays: faker.datatype.boolean(),
+          is_accrued_allowance: faker.datatype.boolean(),
+          created_at: faker.date.past(),
+          updated_at: faker.date.recent(),
+          personal: faker.number.float({ min: 0, max: 5, multipleOf: 0.5 }), // Random personal days
+          companies: {
+            connect: { id: company.id }
+          }
+        }
+      })
+      departments.push(department)
+      console.log(`Created new department: ${department.name}`)
+    } else {
+      console.log(`Department already exists: ${existingDepartment.name}`)
+      departments.push(existingDepartment) // Use the existing department
+    }
   }
 
   return departments
@@ -137,6 +193,7 @@ async function createUsers(company, departments, count) {
         }
       }
     })
+    console.log(`Created user ${i} of ${count}`)
     users.push(user)
   }
 
@@ -156,10 +213,16 @@ async function updateDepartmentsWithManagers(departments, managers) {
 
 async function createLeaveTypes(company) {
   const leaveTypes = [
-    { name: 'Holiday', color: '#3498db', use_allowance: true },
-    { name: 'Sick Leave', color: '#e74c3c', use_allowance: false },
-    { name: 'Personal', color: '#2ecc71', use_allowance: true },
-    { name: 'Work From Home', color: '#f39c12', use_allowance: false }
+    { name: 'Beach Bum Day', color: '#3498db', use_allowance: true },
+    { name: 'Netflix & Sick', color: '#e74c3c', use_allowance: false },
+    { name: 'Me, Myself, and I Day', color: '#2ecc71', use_allowance: true },
+    { name: 'Couch Commander', color: '#f39c12', use_allowance: false },
+    { name: 'Procrastination Paradise', color: '#9b59b6', use_allowance: true },
+    { name: 'Brain Fart Recovery', color: '#e67e22', use_allowance: false },
+    { name: 'Pretend to Be Productive', color: '#1abc9c', use_allowance: true },
+    { name: 'Secret Mission Leave', color: '#e74c3c', use_allowance: false },
+    { name: 'Spa Day for the Soul', color: '#e84393', use_allowance: true },
+    { name: 'Avoid People Pass', color: '#34495e', use_allowance: false }
   ]
 
   const createdLeaveTypes = []
@@ -209,6 +272,7 @@ async function createLeaves(users, leaveTypes, multiplier) {
           updated_at: faker.date.recent()
         }
       })
+      console.log(`Created leave ${i} of ${leaveCount}`)
     }
   }
 }
