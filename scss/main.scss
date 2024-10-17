@@ -1,224 +1,141 @@
 /*
   SYNOPSIS:
-    (from witin project rooot directory)
+    (from within project root directory)
       sassc scss/main.scss public/css/style.css
 */
 
-/* Example CSS Variables setup */
+/* Base CSS Variables */
 :root {
   --background-color: #fff;
   --text-color: #000;
-  --hover-text-color: #555; /* Hover text color for light theme */
-  --hover-bg-color: #eee; /* Hover background color for light theme */
+  --hover-text-color: #555;
+  --hover-bg-color: #eee;
+  --accent-color: #3498db;
+  --divider-color: #e5e5e5;
+  --current-day-bg: #ffcdd2;
+  --calendar-cell-bg: #f5f7f8;
+  --leave-cell-bg: #9fbb58;
+  --leave-cell-color: #61686b;
+  --secondary-background-color: #f8f9fa;
 }
 
-.dark-mode {
-  --background-color: #2c2c2c;
-  --secondary-background-color: #383838;
-  --accent-color: #4caf50; // A softer green
+/* Theme: Day (Light) */
+body.theme-day {
+  --background-color: #fefefe;
+  --text-color: #1c1c1c;
+  --hover-bg-color: #e0e0e0;
+  --hover-text-color: #333333;
+  --accent-color: #3498db;
+  --divider-color: #dcdcdc;
+  --calendar-cell-bg: #ffffff;
+  --leave-cell-bg: #9fbb58;
+  --current-day-bg: #ffdd57;
+  --secondary-background-color: #f8f9fa;
+  --leave-cell-color: #61686b;
+}
+
+/* Theme: Night (Dark) */
+body.theme-night {
+  --background-color: #1a1a1a;
   --text-color: #e0e0e0;
-  --subtle-text-color: #b3b3b3;
-  --divider-color: #4a4a4a;
-  --hover-bg-color: #404040;
+  --hover-bg-color: #333333;
   --hover-text-color: #ffffff;
-  --calendar-cell-bg: #3a3a3a;
+  --accent-color: #4caf50;
+  --divider-color: #444444;
+  --calendar-cell-bg: #2b2b2b;
+  --current-day-bg: #7b1fa2;
+  --secondary-background-color: #2c2c2c;
   --leave-cell-bg: #4caf50;
   --leave-cell-color: #ffffff;
-  --current-day-bg: #7b1fa2; // A magenta shade
-  --dropdown-bg: #383838;
 }
 
-body {
-  background-color: var(--background-color);
-  color: var(--text-color);
+/* Theme: Ocean */
+body.theme-ocean {
+  --background-color: #031b3c;
+  --text-color: #e0f7fa;
+  --hover-bg-color: #045b8e;
+  --hover-text-color: #ffffff;
+  --accent-color: #0573a6;
+  --divider-color: #4a90e2;
+  --calendar-cell-bg: #0a3d6b;
+  --current-day-bg: #0692be;
+  --secondary-background-color: #052c5c;
+  --leave-cell-bg: #0573a6;
+  --leave-cell-color: #ffffff;
 }
 
+/* Theme: Nature */
+body.theme-nature {
+  --background-color: #e8f5e9;
+  --text-color: #2e7d32;
+  --hover-bg-color: #81c784;
+  --hover-text-color: #ffffff;
+  --accent-color: #388e3c;
+  --divider-color: #a5d6a7;
+  --calendar-cell-bg: #c8e6c9;
+  --current-day-bg: #43a047;
+  --secondary-background-color: #c8e6c9;
+  --leave-cell-bg: #66bb6a;
+  --leave-cell-color: #ffffff;
+}
+
+/* Theme: Volcano */
+body.theme-volcano {
+  --background-color: #3e2723;
+  --text-color: #ff8a65;
+  --hover-bg-color: #ff5722;
+  --hover-text-color: #ffffff;
+  --accent-color: #e64a19;
+  --divider-color: #6d4c41;
+  --calendar-cell-bg: #4e342e;
+  --current-day-bg: #d84315;
+  --secondary-background-color: #4e342e;
+  --leave-cell-bg: #ff5722;
+  --leave-cell-color: #ffffff;
+}
+
+/* Theme: Sky */
+body.theme-sky {
+  --background-color: #e3f2fd;
+  --text-color: #1976d2;
+  --hover-bg-color: #bbdefb;
+  --hover-text-color: #ffffff;
+  --accent-color: #2196f3;
+  --divider-color: #90caf9;
+  --calendar-cell-bg: #bbdefb;
+  --current-day-bg: #42a5f5;
+  --secondary-background-color: #bbdefb;
+  --leave-cell-bg: #64b5f6;
+  --leave-cell-color: #ffffff;
+}
+
+/* Base styles and variables */
 $primary-font-color: #61686b;
 $border-color: #e5e5e5;
 $link-color: #5ba4e5;
-
 $font-size-primary: 14px;
 $font-size-bigger: 16px;
-
 $selected-item-background: #f5f7f8;
-
 $leave_cell_font_color: #61686b;
-
-// 5E5E5E
 
 body {
   font: $font-size-primary 'Open Sans', Helvetica, Arial, sans-serif;
-  color: $primary-font-color;
-}
-
-a {
-  color: $link-color;
-}
-
-$border-color: #e5e5e5;
-$link-color: #5ba4e5;
-
-$font-size-primary: 14px;
-$font-size-bigger: 16px;
-
-$selected-item-background: #f5f7f8;
-
-$leave_cell_font_color: #61686b;
-
-// 5E5E5E
-
-body {
-  font: $font-size-primary 'Open Sans', Helvetica, Arial, sans-serif;
-  color: $primary-font-color;
-}
-
-body.dark-mode {
-  color: var(--text-color);
-}
-
-a {
-  color: $link-color;
-}
-
-/* Dark mode specific styles */
-
-body.dark-mode {
   color: var(--text-color);
   background-color: var(--background-color);
-
-  a {
-    color: var(--accent-color);
-  }
-
-  [role='tooltip'] {
-    background-color: var(--secondary-background-color);
-    color: var(--text-color);
-    border-color: var(--divider-color);
-  }
-
-  tr:hover {
-    color: var(--accent-color);
-  }
-
-  .modal-content,
-  .panel-default,
-  .container-fluid {
-    background-color: var(--background-color);
-    color: var(--text-color);
-  }
-
-  /* navbar */
-  .navbar-collapse {
-    .navbar-nav {
-      > li {
-        > a {
-          transition: background-color 0.3s ease, color 0.3s ease;
-          padding: 10px 15px;
-          border-radius: 4px;
-          margin: 5px 2px;
-
-          &:hover,
-          &:focus {
-            background-color: var(--hover-bg-color, #e0e0e0);
-            color: var(--hover-text-color, #333);
-          }
-        }
-      }
-
-      // Style for the "New absence" button
-      .navbar-form {
-        .btn-info {
-          transition: background-color 0.3s ease, color 0.3s ease;
-
-          &:hover,
-          &:focus {
-            background-color: var(--hover-bg-color, #e0e0e0);
-            color: var(--hover-text-color, #333);
-          }
-        }
-      }
-    }
-  }
-
-  // Dark mode styles
-  body.dark-mode {
-    .navbar-collapse {
-      .navbar-nav {
-        > li > a {
-          &:hover,
-          &:focus {
-            background-color: var(--hover-bg-color, #4a4a4a);
-            color: var(--hover-text-color, #fff);
-          }
-        }
-
-        .navbar-form {
-          .btn-info {
-            &:hover,
-            &:focus {
-              background-color: var(--hover-bg-color, #4a4a4a);
-              color: var(--hover-text-color, #fff);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .form-control,
-  .list-group,
-  .datepicker-days,
-  .container-fluid:hover {
-    color: var(--hover-text-color);
-    background-color: var(--hover-bg-color);
-  }
-
-  .calendar_month {
-    td {
-      background-color: var(--calendar-cell-bg);
-    }
-  }
-
-  td {
-    &.current_day_cell {
-      background: var(--current-day-bg);
-      color: var(--text-color);
-    }
-    &.weekend_cell {
-      background: var(--secondary-background-color);
-    }
-    &.bank_holiday_cell {
-      background: var(--accent-color);
-      color: var(--text-color);
-    }
-    &.leave_cell {
-      background: var(--leave-cell-bg);
-      color: var(--leave-cell-color);
-    }
-    &.leave_cell_pended {
-      background: #ffcba4; // You might want to define a specific color for this
-      color: var(--text-color);
-    }
-  }
-
-  .selected-item {
-    background: var(--secondary-background-color);
-    color: var(--text-color);
-  }
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
-/* end of dark mode specific styles */
+a {
+  color: var(--accent-color);
+}
 
-/*
-  Simple class that makes its content's font size little bit bigger
- */
+/* Typography */
 .text-bigger {
   font-size: $font-size-bigger;
 }
 
-/*
-  Add special class to remove default buttom space
-*/
+/* Spacing */
 .no-bottom-space {
   margin-bottom: 0px;
 }
@@ -227,23 +144,15 @@ body.dark-mode {
   margin-bottom: 300px;
 }
 
-/*
-  Increase space between form groups so they are more prominent
-*/
 .form-group {
   margin-bottom: 20px;
-}
-/*
-  Make help blocks in forms to be more distinguishable
- */
-.form-group .help-block {
-  font-style: italic;
+
+  .help-block {
+    font-style: italic;
+  }
 }
 
-/*
- Make certain progress bars to be taller
- */
-
+/* Progress bars */
 .progress.bigger {
   height: 38px;
 
@@ -252,24 +161,23 @@ body.dark-mode {
   }
 }
 
-/* Space out content a bit */
-body {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-label.label-plain {
+/* Labels */
+.label.label-plain {
   font-weight: normal;
 }
 
-/* Make breadcrumbs to be transparant */
+.label.bigger {
+  font-size: large;
+}
+
+/* Breadcrumbs */
 .breadcrumb {
   background: none;
   padding-right: 0;
   padding-left: 0;
 }
 
-/* Make the masthead heading the same height as the navigation */
+/* Header */
 .header h3 {
   padding-bottom: 19px;
   margin-top: 0;
@@ -277,43 +185,33 @@ label.label-plain {
   line-height: 40px;
 }
 
-/* Custom page footer */
-
+/* Footer */
 .footer {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid var(--divider-color);
 }
 
-.header,
-.marketing,
-.footer {
-  padding-right: 0;
-  padding-left: 0;
-}
-
-/* Space out the masthead */
-.header {
-  margin-bottom: 30px;
-}
-
+/* Popovers */
 .popover {
   min-width: 300px;
 }
 
-/* styling calendar*/
-
+/* Calendar styles */
 .calendar_month {
   width: 100%;
-}
-.calendar_month td {
-  text-align: center;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-.calendar_month thead {
-  text-align: center;
-  font-weight: bolder;
+
+  td {
+    background-color: var(--calendar-cell-bg);
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  thead {
+    text-align: center;
+    font-weight: bolder;
+  }
 }
 
 div.month_container {
@@ -322,11 +220,13 @@ div.month_container {
 
 .team-view-table {
   width: 100%;
+
+  td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
 }
-.team-view-table td {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
+
 td.team-view-header {
   height: 43px;
   text-align: center;
@@ -340,51 +240,59 @@ td.calendar_cell {
   text-align: center;
   padding-top: 5px;
   padding-bottom: 5px;
+
+  span {
+    position: relative;
+    left: 9px;
+    top: -1px;
+    display: block;
+    text-align: center;
+    z-index: 10;
+  }
 }
-td.calendar_cell span {
-  position: relative;
-  left: 9px;
-  top: -1px;
-  display: block;
-  text-align: center;
-  z-index: 10;
-}
+
 td.current_day_cell {
-  background: #ffcdd2;
-  color: #ffffff;
+  background: var(--current-day-bg);
+  color: var(--text-color);
 }
+
 td.weekend_cell {
-  background: $selected-item-background;
+  background: var(--secondary-background-color);
 }
+
 td.bank_holiday_cell {
-  background: #31b0d5;
-  color: #ffffff;
+  background: var(--accent-color);
+  color: var(--text-color);
 }
+
 td.leave_cell {
-  background: #9fbb58;
-  color: $leave_cell_font_color;
+  background: var(--leave-cell-bg);
+  color: var(--leave-cell-color);
   font-weight: bolder;
 }
+
 td.leave_cell_pended {
   background: #ffcba4;
-  color: $leave_cell_font_color;
+  color: var(--text-color);
   font-weight: bolder;
 }
+
+/* Modals */
 .modal-dialog {
   max-width: 450px;
 }
 
+/* Truncation */
 .left-column-cell {
   text-overflow: ellipsis;
-  /* Cannot avoid specifying width with pixels... */
   width: 165px;
   white-space: nowrap;
   overflow: hidden;
   display: inline-block;
 }
 
+/* Headers */
 .main-row_header {
-  /* TODO refactore */
   border: none;
   font-weight: normal;
   color: $link-color;
@@ -415,33 +323,37 @@ div.feeds-holder {
   margin-top: 20px;
 }
 
-/* Calendars */
+/* Leave type statistics */
 .top-leave-type-statistics {
   text-align: center;
-}
-.top-leave-type-statistics dt {
-  font-size: 75px;
-  color: $primary-font-color;
-  font-weight: 100;
-  border-bottom: 1px solid $border-color;
-  margin-bottom: 20px;
-}
-.top-leave-type-statistics dd {
-  font-size: $font-size-bigger;
+
+  dt {
+    font-size: 75px;
+    color: $primary-font-color;
+    font-weight: 100;
+    border-bottom: 1px solid $border-color;
+    margin-bottom: 20px;
+  }
+
+  dd {
+    font-size: $font-size-bigger;
+  }
 }
 
 .secondary-leave-type-statistics {
   font-size: $font-size-bigger;
-}
-.secondary-leave-type-statistics dt {
-  text-align: center;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid $border-color;
-}
-.secondary-leave-type-statistics dd {
-  padding-left: 10px;
-  padding-right: 10px;
+
+  dt {
+    text-align: center;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  dd {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 
 .calendar-section-caption {
@@ -453,18 +365,14 @@ div.feeds-holder {
   padding-left: 30px;
 }
 
-.label.bigger {
-  font-size: large;
-}
-
-/* Fix for issue with modal scrollings on mobiles */
+/* Mobile fix for modal scrolling */
 @media (max-width: 768px) {
   body.modal-open {
     position: fixed;
   }
 }
 
-/* To be used for selected items in lists */
+/* Selected items in lists */
 .selected-item {
   background: $selected-item-background;
   font-weight: bolder;
@@ -479,5 +387,52 @@ div.feeds-holder {
       border: 0;
       padding: 0;
     }
+  }
+}
+
+/* Navbar styles */
+.navbar-collapse {
+  .navbar-nav {
+    > li {
+      > a {
+        transition: background-color 0.3s ease, color 0.3s ease;
+        padding: 10px 15px;
+        border-radius: 4px;
+        margin: 5px 2px;
+
+        &:hover,
+        &:focus {
+          background-color: var(--hover-bg-color);
+          color: var(--hover-text-color);
+        }
+      }
+    }
+
+    .navbar-form {
+      .btn-info {
+        transition: background-color 0.3s ease, color 0.3s ease;
+
+        &:hover,
+        &:focus {
+          background-color: var(--hover-bg-color);
+          color: var(--hover-text-color);
+        }
+      }
+    }
+  }
+}
+
+/* Form controls */
+.form-control,
+.list-group,
+.datepicker-days,
+.container-fluid:hover {
+  color: var(--text-color);
+  background-color: var(--background-color);
+
+  &:hover,
+  &:focus {
+    color: var(--hover-text-color);
+    background-color: var(--hover-bg-color);
   }
 }
