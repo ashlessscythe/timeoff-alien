@@ -1,5 +1,4 @@
 <div class="header">
-
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
@@ -33,17 +32,26 @@
           </li>
           {{/if}}
         </ul>
+
         <ul class="nav navbar-nav navbar-right">
           <li>
             {{#if logged_user }}
-            {{!-- TODO: add language dropdown here --}}
-            <!-- Dark Mode Toggle -->
-          <li>
-            <a href="#" id="theme-toggle">
-              <span class="fa {{#if darkMode}}fa-sun-o{{else}}fa-moon-o{{/if}}" id="theme-icon"></span>
-              <span id="theme-text"></span>
+            <!-- Theme Selector Dropdown -->
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+              <span class="fa fa-paint-brush"></span> Theme <span class="caret"></span>
             </a>
+            <ul class="dropdown-menu" id="theme-dropdown" role="menu">
+              <li><a href="#" data-theme="day">Day</a></li>
+              <li><a href="#" data-theme="night">Night</a></li>
+              <li><a href="#" data-theme="ocean">Ocean</a></li>
+              <li><a href="#" data-theme="nature">Nature</a></li>
+              <li><a href="#" data-theme="volcano">Volcano</a></li>
+              <li><a href="#" data-theme="sky">Sky</a></li>
+            </ul>
           </li>
+          </li>
+
           <li class="dropdown" id="header-notification-dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
               <span class="fa fa-bell-o"></span>
@@ -54,6 +62,7 @@
               <li><a href="/requests">See Requests</a></li>
             </ul>
           </li>
+
           {{#if logged_user.admin }}
           <li class="dropdown hidden-xs">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span
@@ -72,6 +81,7 @@
             </ul>
           </li>
           {{/if}}
+
           <li class="visible-xs-block"><a href="/requests/">Requests</a></li>
           <li class="visible-xs-block"><a href="/logout/">Logout</a></li>
           <li class="dropdown hidden-xs">
@@ -88,14 +98,13 @@
           {{else}}
           <li><a href="/login/">Login</a></li>
           {{/if}}
-          </li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
 
-  {{# if logged_user }}
-  {{# if logged_user.company.company_wide_message }}
+  {{#if logged_user }}
+  {{#if logged_user.company.company_wide_message }}
   <div class="alert alert-danger" role="alert">{{ logged_user.company.company_wide_message }}</div>
   {{/if}}
   {{/if}}
@@ -104,46 +113,34 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const themeText = document.getElementById('theme-text');
+    const themeDropdown = document.getElementById('theme-dropdown');
 
-    // Function to update the toggle appearance
-    function updateToggleAppearance(isDarkMode) {
-      if (isDarkMode) {
-        themeIcon.classList.replace('fa-moon-o', 'fa-sun-o');
-        themeText.textContent = '';
-      } else {
-        themeIcon.classList.replace('fa-sun-o', 'fa-moon-o');
-        themeText.textContent = '';
-      }
-    }
+    // Function to set the theme based on the dropdown selection
+    function setTheme(theme) {
+      // Remove all theme-related classes first
+      document.body.classList.remove('theme-day', 'theme-night', 'theme-ocean', 'theme-nature', 'theme-volcano', 'theme-sky');
 
-    // Function to set the theme
-    function setTheme(isDarkMode) {
-      if (isDarkMode) {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.remove('dark-mode');
-        localStorage.setItem('theme', 'light');
-      }
-      updateToggleAppearance(isDarkMode);
+      // Add the selected theme
+      document.body.classList.add('theme-' + theme);
+
+      // Save the theme to localStorage
+      localStorage.setItem('theme', theme);
     }
 
     // Apply the stored theme on page load
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme === 'dark') {
-      setTheme(true);
-    } else {
-      setTheme(false);
-    }
+    const storedTheme = localStorage.getItem('theme') || 'day';  // Default to 'day' theme
+    setTheme(storedTheme);
 
-    // Toggle theme when the button is clicked
-    themeToggle.addEventListener('click', function (event) {
+    // Add event listeners for each theme option in the dropdown
+    themeDropdown.addEventListener('click', (event) => {
       event.preventDefault();
-      const isDarkMode = !document.body.classList.contains('dark-mode');
-      setTheme(isDarkMode);
+
+      const selectedTheme = event.target.getAttribute('data-theme');
+
+      if (selectedTheme) {
+        setTheme(selectedTheme);
+        console.log(`Theme ${selectedTheme} selected`)
+      }
     });
 
     // Fetch and update notification count
