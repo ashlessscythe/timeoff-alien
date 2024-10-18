@@ -19,12 +19,16 @@ const app = express()
 // Use compression
 app.use(compression())
 
-// Handlebars
-//
-// Secure if only developers have access to the templates
-// https://stackoverflow.com/questions/59690923/handlebars-access-has-been-denied-to-resolve-the-property-from-because-it-is
+// Add Content Security Policy
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.cloudflareinsights.com"
+  );
+  next();
+});
 
-// helpers
+// Rest of the app.js content remains unchanged
 const baseHelpers = require('./lib/view/helpers')()
 
 // View engine setup
@@ -33,10 +37,10 @@ const handlebars = require('express-handlebars').create({
   extname: '.hbs',
   helpers: {
     ...baseHelpers,
-    __: function() {
+    __: function () {
       return i18n.__.apply(this, arguments)
     },
-    __n: function() {
+    __n: function () {
       return i18n.__n.apply(this, arguments)
     }
   },
@@ -120,7 +124,7 @@ app.use(passport.session())
 // Custom middlewares
 //
 // Make sure session and user objects are available in templates
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   // Get today given user's timezone
   let today
 
@@ -149,7 +153,7 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.use(function(_req, res, next) {
+app.use(function (_req, res, next) {
   const isProduction = app.get('env') === 'production'
   res.locals.custom_java_script = [
     '/js/bootstrap-datepicker.js',
@@ -209,7 +213,7 @@ app.use('/audit/', require('./lib/route/audit'))
 app.use('/reports/', require('./lib/route/reports'))
 
 // catch 404
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.render('not_found')
 })
 
@@ -218,7 +222,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
     console.error(err)
     res.status(err.status || 500)
     res.render('error', {
@@ -230,7 +234,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   console.error(err)
   res.status(err.status || 500)
   res.render('error', {
