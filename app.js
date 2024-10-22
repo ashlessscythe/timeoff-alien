@@ -19,12 +19,16 @@ const app = express()
 // Use compression
 app.use(compression())
 
-// Handlebars
-//
-// Secure if only developers have access to the templates
-// https://stackoverflow.com/questions/59690923/handlebars-access-has-been-denied-to-resolve-the-property-from-because-it-is
+// Add Content Security Policy (removed since it blocks internal api req {leave reject and approve})
+// app.use((req, res, next) => {
+//   res.setHeader(
+//     'Content-Security-Policy',
+//     "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.cloudflareinsights.com"
+//   );
+//   next();
+// });
 
-// helpers
+// Rest of the app.js content remains unchanged
 const baseHelpers = require('./lib/view/helpers')()
 
 // View engine setup

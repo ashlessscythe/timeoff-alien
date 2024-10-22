@@ -162,7 +162,33 @@ a {
 
 /* Popovers */
 .popover {
-  min-width: 300px; }
+  min-width: 300px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border-color: var(--divider-color); }
+  .popover .popover-title {
+    background-color: var(--secondary-background-color);
+    color: var(--text-color);
+    border-bottom: 1px solid var(--divider-color); }
+  .popover .popover-content {
+    background-color: var(--background-color);
+    color: var(--text-color); }
+  .popover.top > .arrow {
+    border-top-color: var(--divider-color); }
+    .popover.top > .arrow:after {
+      border-top-color: var(--background-color); }
+  .popover.right > .arrow {
+    border-right-color: var(--divider-color); }
+    .popover.right > .arrow:after {
+      border-right-color: var(--background-color); }
+  .popover.bottom > .arrow {
+    border-bottom-color: var(--divider-color); }
+    .popover.bottom > .arrow:after {
+      border-bottom-color: var(--background-color); }
+  .popover.left > .arrow {
+    border-left-color: var(--divider-color); }
+    .popover.left > .arrow:after {
+      border-left-color: var(--background-color); }
 
 /* Calendar styles */
 .calendar_month {
