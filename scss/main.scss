@@ -195,6 +195,48 @@ a {
 /* Popovers */
 .popover {
   min-width: 300px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border-color: var(--divider-color);
+
+  .popover-title {
+    background-color: var(--secondary-background-color);
+    color: var(--text-color);
+    border-bottom: 1px solid var(--divider-color);
+  }
+
+  .popover-content {
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+
+  &.top > .arrow {
+    border-top-color: var(--divider-color);
+    &:after {
+      border-top-color: var(--background-color);
+    }
+  }
+
+  &.right > .arrow {
+    border-right-color: var(--divider-color);
+    &:after {
+      border-right-color: var(--background-color);
+    }
+  }
+
+  &.bottom > .arrow {
+    border-bottom-color: var(--divider-color);
+    &:after {
+      border-bottom-color: var(--background-color);
+    }
+  }
+
+  &.left > .arrow {
+    border-left-color: var(--divider-color);
+    &:after {
+      border-left-color: var(--background-color);
+    }
+  }
 }
 
 /* Calendar styles */
