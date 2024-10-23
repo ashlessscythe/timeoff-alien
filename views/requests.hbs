@@ -83,12 +83,15 @@
 <script src="/js/popover-initializer.js"></script>
 <script>
   $(document).ready(function () {
+    // Handle modal initialization
     $('#rejectModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
       var leaveId = button.data('leave-id');
       var modal = $(this);
       modal.find('input[name="request"]').val(leaveId);
       modal.find('textarea[name="comment"]').attr('placeholder', leaveId);
+      // Reset button state when modal opens
+      modal.find('button[type="submit"]').prop('disabled', false);
     });
 
     $('#approveModal').on('show.bs.modal', function (event) {
@@ -96,6 +99,32 @@
       var leaveId = button.data('leave-id');
       var modal = $(this);
       modal.find('input[name="request"]').val(leaveId);
+      // Reset button state when modal opens
+      modal.find('button[type="submit"]').prop('disabled', false);
+    });
+
+    // Handle button clicks in modals
+    $('#approveModal button[type="submit"], #rejectModal button[type="submit"]').on('click', function () {
+      var $btn = $(this);
+      var $form = $btn.closest('form');
+
+      // For reject modal, check if comment is filled
+      if ($form.find('textarea[required]').length > 0) {
+        if (!$form.find('textarea[required]').val().trim()) {
+          return true; // Let the form validation handle it
+        }
+      }
+
+      // Disable the submit button
+      $btn.prop('disabled', true);
+
+      // Submit the form
+      $form.submit();
+    });
+
+    // Re-enable buttons when modal is hidden without submission
+    $('.modal').on('hidden.bs.modal', function () {
+      $(this).find('button[type="submit"]').prop('disabled', false);
     });
   });
 </script>
