@@ -96,7 +96,7 @@
     "start": "NODE_ENV=production node bin/wwww"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.mjs"
   },
   "resolutions": {
     "graceful-fs": "4.2.11"

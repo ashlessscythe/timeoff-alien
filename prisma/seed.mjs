@@ -1,9 +1,20 @@
 import { faker } from '@faker-js/faker'
 import { PrismaClient } from '@prisma/client'
+import crypto from 'crypto'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
 const prisma = new PrismaClient()
+
+const CRYPTO_SECRET = process.env.CRYPTO_SECRET || 'uhoh,youshouldreallysetthis'
+
+// Match the hashify_password function from user.js
+function hashifyPassword(password) {
+  return crypto
+    .createHash('md5')
+    .update(password + CRYPTO_SECRET, 'binary')
+    .digest('hex')
+}
 
 const argv = yargs(hideBin(process.argv))
   .option('clear', {
@@ -28,6 +39,11 @@ const argv = yargs(hideBin(process.argv))
     type: 'number',
     default: 1,
     description: 'Company ID to use for seeding data'
+  })
+  .option('create-default-user', {
+    type: 'boolean',
+    default: false,
+    description: 'Create default user (bob@local.eml) with password "bob"'
   }).argv
 
 async function main() {
@@ -36,6 +52,7 @@ async function main() {
   const associateCount = argv.useFaker || 0
   const leavesMultiplier = argv.leavesMultiplier
   const departmentCount = argv.departmentCount
+  const createDefaultUser = argv.createDefaultUser
 
   if (clearFlag) {
     // Delete dependent tables first (child tables)
@@ -63,18 +80,24 @@ async function main() {
     return
   }
 
-  if (associateCount === 0) {
-    console.log(
-      'No associates specified. Use --use-faker <number> to generate fake data.'
-    )
-    return
-  }
-
   // Check if company exists, if not create it
   const company = await getOrCreateCompany(companyId)
 
   // Create departments first
   const departments = await createDepartments(company, departmentCount)
+
+  // Create default user if flag is set
+  if (createDefaultUser) {
+    const defaultUser = await createDefaultBobUser(company, departments[0])
+    console.log('Created default user:', defaultUser.email)
+  }
+
+  if (associateCount === 0 && !createDefaultUser) {
+    console.log(
+      'No associates specified. Use --use-faker <number> to generate fake data or --create-default-user to create default user.'
+    )
+    return
+  }
 
   // Create users and assign to departments
   const users = await createUsers(company, departments, associateCount)
@@ -96,6 +119,42 @@ async function main() {
       company.id
     }`
   )
+}
+
+async function createDefaultBobUser(company, department) {
+  // Check if bob@local.eml already exists
+  const existingBob = await prisma.users.findFirst({
+    where: { email: 'bob@local.eml' }
+  })
+
+  if (existingBob) {
+    console.log('Default user bob@local.eml already exists')
+    return existingBob
+  }
+
+  const defaultUser = await prisma.users.create({
+    data: {
+      email: 'bob@local.eml',
+      password: hashifyPassword('bob'), // Hash the password
+      name: 'Bob',
+      lastname: 'Local',
+      activated: true,
+      admin: true,
+      manager: false,
+      auto_approve: true,
+      start_date: new Date(),
+      created_at: new Date(),
+      updated_at: new Date(),
+      companies: {
+        connect: { id: company.id }
+      },
+      departments: {
+        connect: { id: department.id }
+      }
+    }
+  })
+
+  return defaultUser
 }
 
 async function getOrCreateCompany(companyId) {
@@ -171,11 +230,12 @@ async function createUsers(company, departments, count) {
   for (let i = 0; i < count; i++) {
     const isAdmin = i < 2 // Make the first two users admins
     const isManager = i < 5 // Make the first five users managers
+    const password = faker.internet.password()
 
     const user = await prisma.users.create({
       data: {
         email: faker.internet.email(),
-        password: faker.internet.password(),
+        password: hashifyPassword(password), // Hash the password
         name: faker.person.firstName(),
         lastname: faker.person.lastName(),
         activated: true,
