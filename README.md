@@ -2,8 +2,6 @@
 
 📅 Web application for managing employee absences with style!
 
-<a href="https://travis-ci.org/timeoff-management/timeoff-management-application"><img align="right" src="https://travis-ci.org/timeoff-management/timeoff-management-application.svg?branch=master" alt="Build status" /></a>
-
 ## ✨ Features
 
 ### 🆕 New Features
@@ -58,9 +56,53 @@ docker run -d -p 3000:3000 --env-file ./env --name timeoff aliengen/timeoff-mana
 
 #### 🐳 Using Docker-compose
 
+1. Copy the example environment file:
+
 ```bash
-docker-compose up
+cp .env.example .env
 ```
+
+2. Choose your database configuration:
+
+   **Option 1: External Database (recommended for production)**
+
+   - Set your DATABASE_URL in .env
+   - Comment out the postgres service in docker-compose.yaml
+
+   **Option 2: Local Database (recommended for development)**
+
+   - Comment out DATABASE_URL in .env
+   - Uncomment the postgres service in docker-compose.yaml
+   - Configure DB\_\* variables in .env
+
+3. Start the application:
+
+```bash
+docker-compose up -d
+```
+
+The application will be available at http://localhost:3000 (or your configured port).
+
+### 💾 Database Configuration
+
+The application supports two database setup options:
+
+1. **External Database (recommended for production)**
+
+   - Uses a hosted database service (e.g., AWS RDS, Neon, Supabase)
+   - Set DATABASE_URL in .env
+   - Better scalability and maintenance
+   - Automatic backups and monitoring
+   - Example: `DATABASE_URL=postgresql://user:pass@host:5432/dbname?sslmode=require`
+
+2. **Local Database (recommended for development)**
+   - Runs PostgreSQL in a Docker container
+   - Data persisted in a Docker volume
+   - Easy setup for development
+   - Includes optional Adminer for database management
+   - Configure using DB\_\* variables in .env
+
+Choose the option that best fits your needs. For development, the local database option provides a simpler setup. For production, an external database offers better reliability and features.
 
 ## ⚙️ Configuration
 
@@ -107,6 +149,6 @@ npm start
 
 ## 📣 Feedback
 
-Please report any issues or feedback to <a href="https://twitter.com/FreeTimeOffApp">Twitter</a> or Email: pavlo at timeoff.management
+Please report any issues or feedback via by opening an issue
 
 Happy time off management! 🌴🏖️
