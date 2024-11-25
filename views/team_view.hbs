@@ -161,6 +161,17 @@
           <td class="team-view-header" colspan="2">
             <div class="pull-left">
               <h3>Team Members</h3>
+              <div class="sort-controls">
+                <button class="btn btn-link sort-btn" data-sort="name">
+                  Name <i class="fa fa-sort"></i>
+                </button>
+                <button class="btn btn-link sort-btn" data-sort="department">
+                  Department <i class="fa fa-sort"></i>
+                </button>
+                <button class="btn btn-link sort-btn" data-sort="deducted">
+                  Days Used <i class="fa fa-sort"></i>
+                </button>
+              </div>
             </div>
           </td>
 
@@ -271,7 +282,13 @@
     margin-left: 5px;
   }
 
-  /* Simple fix for department names */
+  /* Table layout */
+  .team-view-table {
+    width: 100%;
+    margin-bottom: 0;
+    background-color: #fff;
+  }
+
   .left-column-cell {
     width: 250px;
     white-space: nowrap;
@@ -279,19 +296,48 @@
     text-overflow: ellipsis;
   }
 
-
-  /* Table layout */
-  .team-view-table {
-    width: 100%;
-  }
-
-  .left-column-cell {
-    width: 300px;
-    padding-right: 20px;
-  }
-
   .team-view-table td:not(.left-column-cell) {
     width: 30px;
+  }
+
+  /* Sort controls styling */
+  .sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 5px 0;
+  }
+
+  .sort-btn {
+    color: #333;
+    padding: 2px 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+  .sort-btn:hover {
+    text-decoration: none;
+    color: #337ab7;
+  }
+
+  .sort-btn .fa {
+    margin-left: 5px;
+  }
+
+  .sort-btn.active .fa-sort {
+    color: #337ab7;
+  }
+
+  .sort-btn.active.asc .fa-sort:before {
+    content: "\f0de";
+  }
+
+  .sort-btn.active.desc .fa-sort:before {
+    content: "\f0dd";
   }
 </style>
 
@@ -355,6 +401,60 @@
       currentUrl.searchParams.set('save_current_department', '1');
       window.location.href = currentUrl.toString();
     });
+
+    // Sorting functionality
+    const sortButtons = document.querySelectorAll('.sort-btn');
+    const tbody = document.querySelector('.team-view-table tbody');
+
+    if (sortButtons && tbody) {
+      sortButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          const sortType = this.dataset.sort;
+          const isAsc = !this.classList.contains('asc');
+
+          // Update button states
+          sortButtons.forEach(btn => {
+            btn.classList.remove('active', 'asc', 'desc');
+          });
+          this.classList.add('active');
+          this.classList.add(isAsc ? 'asc' : 'desc');
+
+          // Get all rows and convert to array for sorting
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+
+          // Sort rows
+          rows.sort((a, b) => {
+            let aVal, bVal;
+
+            switch (sortType) {
+              case 'name':
+                aVal = a.querySelector('.user-name').textContent.trim();
+                bVal = b.querySelector('.user-name').textContent.trim();
+                break;
+              case 'department':
+                aVal = (a.querySelector('.department-name')?.textContent || '').trim().replace(/[()]/g, '');
+                bVal = (b.querySelector('.department-name')?.textContent || '').trim().replace(/[()]/g, '');
+                break;
+              case 'deducted':
+                aVal = parseFloat(a.querySelector('.teamview-deducted-days').textContent) || 0;
+                bVal = parseFloat(b.querySelector('.teamview-deducted-days').textContent) || 0;
+                break;
+            }
+
+            if (sortType === 'deducted') {
+              return isAsc ? aVal - bVal : bVal - aVal;
+            } else {
+              return isAsc ?
+                aVal.localeCompare(bVal) :
+                bVal.localeCompare(aVal);
+            }
+          });
+
+          // Reinsert sorted rows
+          rows.forEach(row => tbody.appendChild(row));
+        });
+      });
+    }
   });
 </script>
 
