@@ -24,10 +24,10 @@
 <div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
-      <div class="panel-heading" role="button" data-toggle="collapse" href="#filterPanel" aria-expanded="true"
+      <div class="panel-heading" role="button" data-toggle="collapse" href="#filterPanel" aria-expanded="false"
         aria-controls="filterPanel">
         <h4 class="panel-title">
-          <i class="fa fa-chevron-down"></i> Department Filters
+          <i class="fa fa-chevron-down collapsed"></i> Department Filters
           <span class="filter-summary">
             {{#if selected_departments}}
             <span class="badge">{{selected_departments.length}} selected</span>
@@ -40,7 +40,7 @@
           </span>
         </h4>
       </div>
-      <div class="panel-collapse collapse in" id="filterPanel">
+      <div class="panel-collapse collapse" id="filterPanel">
         <div class="panel-body department-filters">
           <div class="row">
             <div class="col-md-12">
@@ -173,9 +173,19 @@
       <tbody>
         {{#each users_and_leaves}}
         <tr class="teamview-user-list-row" data-vpp-user-list-row={{this.user.id}}>
-          <td class="left-column-cell cross-link user-details-summary-trigger" data-user-id={{this.user.id}}>{{#if
-            ../logged_user.admin}} {{#with this.user }}<a href="/users/edit/{{this.id}}/">{{ this.full_name
-              }}</a>{{/with}}{{else}}{{#with this.user }}<span>{{ this.full_name }}</span>{{/with}}{{/if}}</td>
+          <td class="left-column-cell cross-link user-details-summary-trigger" data-user-id={{this.user.id}}>
+            {{#if ../logged_user.admin}}
+            {{#with this.user }}
+            <a href="/users/edit/{{this.id}}/" class="user-name">{{ this.full_name }}</a>
+            {{#with department}}<small class="text-muted department-name" title="{{name}}">({{name}})</small>{{/with}}
+            {{/with}}
+            {{else}}
+            {{#with this.user }}
+            <span class="user-name">{{ this.full_name }}</span>
+            {{#with department}}<small class="text-muted department-name" title="{{name}}">({{name}})</small>{{/with}}
+            {{/with}}
+            {{/if}}
+          </td>
           <td>
             <span class="teamview-deducted-days" {{#if statistics }}
               data-content="In {{as_date_formatted ../base_date 'MMMM, YYYY' }} {{# with this.user }}{{this.full_name}} used {{../statistics.deducted_days }} days from allowance{{/with}}"
@@ -253,6 +263,35 @@
 
   .panel-title .fa.collapsed {
     transform: rotate(-90deg);
+  }
+
+  .text-muted {
+    color: #777;
+    font-size: 0.9em;
+    margin-left: 5px;
+  }
+
+  /* Simple fix for department names */
+  .left-column-cell {
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+
+  /* Table layout */
+  .team-view-table {
+    width: 100%;
+  }
+
+  .left-column-cell {
+    width: 300px;
+    padding-right: 20px;
+  }
+
+  .team-view-table td:not(.left-column-cell) {
+    width: 30px;
   }
 </style>
 
