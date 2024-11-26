@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { PrismaClient } from '@prisma/client'
 import crypto from 'crypto'
+import fs from 'fs'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
@@ -44,6 +45,10 @@ const argv = yargs(hideBin(process.argv))
     type: 'boolean',
     default: false,
     description: 'Create default user (bob@local.eml) with password "bob"'
+  })
+  .option('uaa', {
+    type: 'string',
+    description: 'Path to CSV file containing user allowance adjustments'
   }).argv
 
 async function main() {
@@ -53,6 +58,7 @@ async function main() {
   const leavesMultiplier = argv.leavesMultiplier
   const departmentCount = argv.departmentCount
   const createDefaultUser = argv.createDefaultUser
+  const uaaFile = argv.uaa
 
   if (clearFlag) {
     // Delete dependent tables first (child tables)
@@ -77,6 +83,12 @@ async function main() {
     // Delete unrelated tables last (no FKs)
     await prisma.sequelizeMeta.deleteMany()
     await prisma.sessions.deleteMany()
+    return
+  }
+
+  // Handle user allowance adjustments if CSV file provided
+  if (uaaFile) {
+    await updateUserAllowanceAdjustments(uaaFile)
     return
   }
 
@@ -119,6 +131,69 @@ async function main() {
       company.id
     }`
   )
+}
+
+async function updateUserAllowanceAdjustments(filePath) {
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf-8')
+    const lines = fileContent.split('\n')
+
+    // Skip header row and empty lines
+    const dataLines = lines.slice(1).filter(line => line.trim())
+
+    let updated = 0
+    let skipped = 0
+
+    for (const line of dataLines) {
+      const [year, adjustment, carried_over_allowance, user_id] = line.split(
+        ','
+      )
+
+      try {
+        // Check if user exists
+        const user = await prisma.users.findUnique({
+          where: { id: parseInt(user_id) }
+        })
+
+        if (!user) {
+          console.log(`Skipping non-existent user ID: ${user_id}`)
+          skipped++
+          continue
+        }
+
+        // Upsert the allowance adjustment
+        await prisma.user_allowance_adjustment.upsert({
+          where: {
+            user_id_year: {
+              user_id: parseInt(user_id),
+              year: parseInt(year)
+            }
+          },
+          update: {
+            adjustment: parseFloat(adjustment),
+            carried_over_allowance: parseInt(carried_over_allowance)
+          },
+          create: {
+            user_id: parseInt(user_id),
+            year: parseInt(year),
+            adjustment: parseFloat(adjustment),
+            carried_over_allowance: parseInt(carried_over_allowance),
+            created_at: new Date()
+          }
+        })
+        updated++
+      } catch (error) {
+        console.error(`Error processing line: ${line}`, error)
+        skipped++
+      }
+    }
+
+    console.log(`Updated ${updated} allowance adjustments`)
+    console.log(`Skipped ${skipped} records`)
+  } catch (error) {
+    console.error('Error reading or processing file:', error)
+    throw error
+  }
 }
 
 async function createDefaultBobUser(company, department) {
