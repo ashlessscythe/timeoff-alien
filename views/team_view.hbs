@@ -101,6 +101,20 @@
 
 {{#if grouped_mode}}
 
+{{#if selected_departments}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="alert alert-info">
+      Showing filtered departments.
+      <a href="/calendar/teamview/?{{> team_view_url_parameters selected_departments = null save_current_department = 1 }}"
+        class="btn btn-default btn-sm">
+        <i class="fa fa-times"></i> Reset Filters
+      </a>
+    </div>
+  </div>
+</div>
+{{/if}}
+
 {{#each users_and_leaves_by_departments}}
 
 {{#if @index}}
@@ -338,6 +352,16 @@
 
   .sort-btn.active.desc .fa-sort:before {
     content: "\f0dd";
+  }
+
+  .alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .alert .btn {
+    margin-left: 10px;
   }
 </style>
 
