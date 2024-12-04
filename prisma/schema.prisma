@@ -67,9 +67,9 @@ model comments {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model companies {
-  id                      Int             @id @default(autoincrement())
-  name                    String          @db.VarChar(255)
-  country                 String          @db.VarChar(255)
+  id                       Int             @id @default(autoincrement())
+  name                     String          @db.VarChar(255)
+  country                  String          @db.VarChar(255)
   start_of_new_year       Int
   share_all_absences      Boolean         @default(false)
   is_team_view_hidden     Boolean         @default(false)
@@ -77,6 +77,8 @@ model companies {
   ldap_auth_config        String?
   date_format             String          @default("YYYY-MM-DD") @db.VarChar(255)
   company_wide_message    String?
+  company_wide_message_text_color String?      @default("#000000") @db.VarChar(7)
+  company_wide_message_bg_color String?      @default("#000000") @db.VarChar(7)
   mode                    Int             @default(1)
   timezone                String?         @default("Europe/London") @db.VarChar(255)
   integration_api_enabled Boolean         @default(false)
