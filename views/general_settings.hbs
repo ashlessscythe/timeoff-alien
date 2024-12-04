@@ -26,6 +26,27 @@
                     value="{{company.name}}" name="name">
                 </div>
               </div>
+
+              <div class="form-group">
+                <label for="input_company_wide_message" class="col-md-4 control-label">Company-wide message</label>
+                <div class="col-md-8">
+                  <textarea class="form-control" id="input_company_wide_message" name="company_wide_message"
+                    rows="3">{{company.company_wide_message}}</textarea>
+                  <div class="input-group" style="margin-top: 10px;">
+                    <span class="input-group-addon">Text color</span>
+                    <input type="color" class="form-control" id="input_company_wide_message_text_color"
+                      name="company_wide_message_text_color"
+                      value="{{#if company.company_wide_message_text_color}}{{company.company_wide_message_text_color}}{{else}}#000000{{/if}}">
+                  </div>
+                  <div class="input-group" style="margin-top: 10px;">
+                    <span class="input-group-addon">Background color</span>
+                    <input type="color" class="form-control" id="input_company_wide_message_bg_color"
+                      name="company_wide_message_bg_color"
+                      value="{{#if company.company_wide_message_bg_color}}{{company.company_wide_message_bg_color}}{{else}}#f2dede{{/if}}">
+                  </div>
+                </div>
+              </div>
+
               <div class="form-group">
                 <label for="input_country" class="col-md-4 control-label">Country</label>
                 <div class="col-md-8">
@@ -322,8 +343,6 @@
   </div>
 
 </div>
-
-
 
 <div class="row">
   <div class="col-md-12">

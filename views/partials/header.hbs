@@ -105,7 +105,9 @@
 
   {{#if logged_user }}
   {{#if logged_user.company.company_wide_message }}
-  <div class="alert alert-danger" role="alert">{{ logged_user.company.company_wide_message }}</div>
+  <div class="alert alert-danger" role="alert"
+    style="color: {{logged_user.company.company_wide_message_text_color}}; background-color: {{logged_user.company.company_wide_message_bg_color}}">
+    {{ logged_user.company.company_wide_message }}</div>
   {{/if}}
   {{/if}}
 
