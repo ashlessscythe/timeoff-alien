@@ -9,6 +9,36 @@ const prisma = new PrismaClient()
 
 const CRYPTO_SECRET = process.env.CRYPTO_SECRET || 'uhoh,youshouldreallysetthis'
 
+// Default configuration
+const DEFAULT_CONFIG = {
+  departmentCount: 5,
+  userCount: 10,
+  leavesMultiplier: 3,
+  companyId: 1,
+  dateRange: {
+    from: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000), // 45 days ago
+    to: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000) // 45 days from now
+  },
+  bankHolidayCount: 8, // Standard number of bank holidays
+  customSchedulePercent: 30 // % of users that get custom schedules
+}
+
+// Fun bank holiday names for each month
+const HOLIDAY_NAMES = {
+  1: ["New Year's Day", 'Winter Blues Break'],
+  2: ["Valentine's Break", 'Groundhog Day Off'],
+  3: ['Spring Equinox Holiday', "St. Patrick's Day"],
+  4: ["April Fools' Holiday", 'Spring Break'],
+  5: ['May Day', 'Memorial Day'],
+  6: ['Summer Solstice Break', 'Midsummer Holiday'],
+  7: ['Independence Day', 'Summer Vacation Day'],
+  8: ['Summer Bank Holiday', 'Late Summer Break'],
+  9: ['Labor Day', 'Autumn Equinox Break'],
+  10: ['Halloween Holiday', 'October Fest Break'],
+  11: ['Veterans Day', 'Thanksgiving Break'],
+  12: ['Winter Holiday', "New Year's Eve"]
+}
+
 // Match the hashify_password function from user.js
 function hashifyPassword(password) {
   return crypto
@@ -20,25 +50,27 @@ function hashifyPassword(password) {
 const argv = yargs(hideBin(process.argv))
   .option('clear', {
     type: 'boolean',
-    description: 'Clear all data from db'
+    default: false,
+    description: 'Clear all data before seeding'
   })
   .option('use-faker', {
+    type: 'number',
+    description: 'Number of associates to create (alias for --user-count)'
+  })
+  .option('user-count', {
     type: 'number',
     description: 'Number of associates to create'
   })
   .option('leaves-multiplier', {
     type: 'number',
-    default: 3,
     description: 'Multiplier for the number of leaves per associate'
   })
   .option('department-count', {
     type: 'number',
-    default: 5,
     description: 'Count of departments to create by default'
   })
   .option('company-id', {
     type: 'number',
-    default: 1,
     description: 'Company ID to use for seeding data'
   })
   .option('create-default-user', {
@@ -49,70 +81,116 @@ const argv = yargs(hideBin(process.argv))
   .option('uaa', {
     type: 'string',
     description: 'Path to CSV file containing user allowance adjustments'
+  })
+  .option('date-from', {
+    type: 'string',
+    description: 'Start date for leave records (YYYY-MM-DD)'
+  })
+  .option('date-to', {
+    type: 'string',
+    description: 'End date for leave records (YYYY-MM-DD)'
+  })
+  .option('bank-holiday-count', {
+    type: 'number',
+    description: 'Number of bank holidays to create'
+  })
+  .option('custom-schedule-percent', {
+    type: 'number',
+    description: 'Percentage of users that get custom schedules (0-100)'
   }).argv
 
+async function clearDatabase() {
+  console.log('Clearing database...')
+
+  // Delete dependent tables first (child tables)
+  await prisma.department_supervisors.deleteMany()
+  await prisma.leaves.deleteMany()
+  await prisma.user_allowance_adjustment.deleteMany()
+  await prisma.user_feeds.deleteMany()
+  await prisma.email_audits.deleteMany()
+  await prisma.comments.deleteMany()
+  await prisma.audit.deleteMany()
+
+  // Delete from middle-level tables
+  await prisma.schedules.deleteMany()
+  await prisma.departments.deleteMany()
+  await prisma.leave_types.deleteMany()
+  await prisma.bank_holidays.deleteMany()
+  await prisma.users.deleteMany()
+
+  // Delete from parent tables
+  await prisma.companies.deleteMany()
+
+  // Delete unrelated tables last (no FKs)
+  await prisma.sequelizeMeta.deleteMany()
+  await prisma.sessions.deleteMany()
+
+  console.log('Database cleared successfully')
+}
+
 async function main() {
-  const clearFlag = argv.clear || false
-  const companyId = argv.companyId
-  const associateCount = argv.useFaker || 0
-  const leavesMultiplier = argv.leavesMultiplier
-  const departmentCount = argv.departmentCount
-  const createDefaultUser = argv.createDefaultUser
-  const uaaFile = argv.uaa
+  // Parse date range from arguments or use defaults
+  const dateRange = {
+    from: argv.dateFrom
+      ? new Date(argv.dateFrom)
+      : DEFAULT_CONFIG.dateRange.from,
+    to: argv.dateTo ? new Date(argv.dateTo) : DEFAULT_CONFIG.dateRange.to
+  }
 
-  if (clearFlag) {
-    // Delete dependent tables first (child tables)
-    await prisma.department_supervisors.deleteMany() // Depends on departments and users
-    await prisma.leaves.deleteMany() // Depends on users and leave_types
-    await prisma.user_allowance_adjustment.deleteMany() // Depends on users
-    await prisma.user_feeds.deleteMany() // Depends on users
-    await prisma.email_audits.deleteMany() // Depends on users and companies
-    await prisma.comments.deleteMany() // Depends on users and companies
-    await prisma.audit.deleteMany() // Depends on users and companies
+  // Validate date range
+  if (isNaN(dateRange.from.getTime()) || isNaN(dateRange.to.getTime())) {
+    throw new Error('Invalid date format. Use YYYY-MM-DD')
+  }
 
-    // Delete from middle-level tables
-    await prisma.schedules.deleteMany() // Depends on users and companies
-    await prisma.departments.deleteMany() // Depends on companies
-    await prisma.leave_types.deleteMany() // Depends on companies
-    await prisma.bank_holidays.deleteMany() // Depends on companies
-    await prisma.users.deleteMany() // Depends on departments and companies
+  // Get configuration, using defaults for missing values
+  const config = {
+    clear: argv.clear || false,
+    companyId: argv.companyId || DEFAULT_CONFIG.companyId,
+    associateCount: argv.userCount || argv.useFaker || DEFAULT_CONFIG.userCount,
+    leavesMultiplier: argv.leavesMultiplier || DEFAULT_CONFIG.leavesMultiplier,
+    departmentCount: argv.departmentCount || DEFAULT_CONFIG.departmentCount,
+    createDefaultUser: argv.createDefaultUser || false,
+    uaaFile: argv.uaa,
+    dateRange,
+    bankHolidayCount: argv.bankHolidayCount || DEFAULT_CONFIG.bankHolidayCount,
+    customSchedulePercent:
+      argv.customSchedulePercent || DEFAULT_CONFIG.customSchedulePercent
+  }
 
-    // Delete from parent tables
-    await prisma.companies.deleteMany()
-
-    // Delete unrelated tables last (no FKs)
-    await prisma.sequelizeMeta.deleteMany()
-    await prisma.sessions.deleteMany()
-    return
+  // Clear database if requested
+  if (config.clear) {
+    await clearDatabase()
   }
 
   // Handle user allowance adjustments if CSV file provided
-  if (uaaFile) {
-    await updateUserAllowanceAdjustments(uaaFile)
-    return
+  if (config.uaaFile) {
+    await updateUserAllowanceAdjustments(config.uaaFile)
+    if (!config.clear) return // Only return if not clearing, otherwise continue with seeding
   }
 
   // Check if company exists, if not create it
-  const company = await getOrCreateCompany(companyId)
+  const company = await getOrCreateCompany(config.companyId)
+
+  // Create bank holidays
+  await createBankHolidays(company, config.bankHolidayCount, config.dateRange)
+
+  // Create company default schedule
+  await createCompanySchedule(company)
 
   // Create departments first
-  const departments = await createDepartments(company, departmentCount)
+  const departments = await createDepartments(company, config.departmentCount)
 
   // Create default user if flag is set
-  if (createDefaultUser) {
+  if (config.createDefaultUser) {
     const defaultUser = await createDefaultBobUser(company, departments[0])
     console.log('Created default user:', defaultUser.email)
   }
 
-  if (associateCount === 0 && !createDefaultUser) {
-    console.log(
-      'No associates specified. Use --use-faker <number> to generate fake data or --create-default-user to create default user.'
-    )
-    return
-  }
+  // Create users and related data
+  const users = await createUsers(company, departments, config.associateCount)
 
-  // Create users and assign to departments
-  const users = await createUsers(company, departments, associateCount)
+  // Create custom schedules for some users
+  await createUserSchedules(users, config.customSchedulePercent)
 
   // Update departments with managers
   await updateDepartmentsWithManagers(
@@ -124,20 +202,153 @@ async function main() {
   const leaveTypes = await createLeaveTypes(company)
 
   // Create leaves
-  await createLeaves(users, leaveTypes, leavesMultiplier)
+  await createLeaves(
+    users,
+    leaveTypes,
+    config.leavesMultiplier,
+    config.dateRange
+  )
 
   console.log(
-    `Seed data created successfully for ${associateCount} associates with ${leavesMultiplier}x leaves in company ${
-      company.id
-    }`
+    `Seed data created successfully:
+    - Company ID: ${company.id}
+    - Departments: ${departments.length}
+    - Users: ${users.length}
+    - Leaves multiplier: ${config.leavesMultiplier}x
+    - Date range: ${config.dateRange.from.toISOString().split('T')[0]} to ${
+      config.dateRange.to.toISOString().split('T')[0]
+    }
+    - Bank holidays: ${config.bankHolidayCount}
+    - Users with custom schedules: ${Math.round(config.customSchedulePercent)}%
+    ${config.createDefaultUser ? '- Default user (bob@local.eml) created' : ''}`
   )
+}
+
+async function createBankHolidays(company, count, dateRange) {
+  console.log('Creating bank holidays...')
+  const holidays = []
+
+  // Get all months in the date range
+  const months = []
+  const currentDate = new Date(dateRange.from)
+  while (currentDate <= dateRange.to) {
+    const month = currentDate.getMonth() + 1
+    if (!months.includes(month)) {
+      months.push(month)
+    }
+    currentDate.setMonth(currentDate.getMonth() + 1)
+  }
+
+  // Randomly select months for holidays
+  const selectedMonths = faker.helpers
+    .arrayElements(months, Math.min(count, months.length))
+    .sort((a, b) => a - b) // Sort months chronologically
+
+  for (const month of selectedMonths) {
+    // Get a random day in the month that falls within our date range
+    let date
+    let attempts = 0
+    const maxAttempts = 10
+
+    do {
+      const year = dateRange.from.getFullYear()
+      const daysInMonth = new Date(year, month, 0).getDate()
+      const day = faker.number.int({ min: 1, max: daysInMonth })
+      date = new Date(year, month - 1, day)
+      attempts++
+    } while (
+      (date < dateRange.from || date > dateRange.to) &&
+      attempts < maxAttempts
+    )
+
+    if (attempts >= maxAttempts) continue
+
+    // Get a random holiday name for this month
+    const holidayName = faker.helpers.arrayElement(
+      HOLIDAY_NAMES[month] || [`Holiday ${month}`]
+    )
+
+    try {
+      const holiday = await prisma.bank_holidays.create({
+        data: {
+          name: holidayName,
+          date: date,
+          created_at: faker.date.past(),
+          updated_at: faker.date.recent(),
+          companies: {
+            connect: { id: company.id }
+          }
+        }
+      })
+      holidays.push(holiday)
+      console.log(
+        `Created bank holiday: ${holiday.name} on ${
+          holiday.date.toISOString().split('T')[0]
+        }`
+      )
+    } catch (error) {
+      console.error(`Failed to create holiday for ${month}:`, error.message)
+    }
+  }
+
+  return holidays
+}
+
+async function createCompanySchedule(company) {
+  // Create a default company schedule (Mon-Fri working, Sat-Sun off)
+  const schedule = await prisma.schedules.create({
+    data: {
+      monday: 1,
+      tuesday: 1,
+      wednesday: 1,
+      thursday: 1,
+      friday: 1,
+      saturday: 2,
+      sunday: 2,
+      created_at: faker.date.past(),
+      updated_at: faker.date.recent(),
+      company_id: company.id // Use company_id directly instead of connect
+    }
+  })
+  console.log('Created company schedule')
+  return schedule
+}
+
+async function createUserSchedules(users, percentWithCustom) {
+  // Calculate how many users should get custom schedules
+  const customCount = Math.round((users.length * percentWithCustom) / 100)
+
+  // Randomly select users to get custom schedules
+  const selectedUsers = faker.helpers.arrayElements(users, customCount)
+
+  for (const user of selectedUsers) {
+    // Create a random schedule
+    // 1 = working day, 2 = non-working day
+    const schedule = await prisma.schedules.create({
+      data: {
+        // Random working days, but ensure at least 3 working days per week
+        monday: faker.helpers.arrayElement([1, 1, 2]),
+        tuesday: faker.helpers.arrayElement([1, 1, 2]),
+        wednesday: 1, // Always working
+        thursday: faker.helpers.arrayElement([1, 1, 2]),
+        friday: faker.helpers.arrayElement([1, 1, 2]),
+        saturday: faker.helpers.arrayElement([1, 2, 2, 2]), // Mostly off
+        sunday: faker.helpers.arrayElement([1, 2, 2, 2]), // Mostly off
+        created_at: faker.date.past(),
+        updated_at: faker.date.recent(),
+        users: {
+          connect: { id: user.id }
+        }
+      }
+    })
+    console.log(`Created custom schedule for user ${user.id}`)
+  }
 }
 
 async function updateUserAllowanceAdjustments(filePath) {
   try {
     const fileContent = fs.readFileSync(filePath, 'utf-8')
     const lines = fileContent.split('\n')
-
     // Skip header row and empty lines
     const dataLines = lines.slice(1).filter(line => line.trim())
 
@@ -328,7 +539,7 @@ async function createUsers(company, departments, count) {
         }
       }
     })
-    console.log(`Created user ${i} of ${count}`)
+    console.log(`Created user ${i + 1} of ${count}`)
     users.push(user)
   }
 
@@ -379,17 +590,22 @@ async function createLeaveTypes(company) {
   return createdLeaveTypes
 }
 
-async function createLeaves(users, leaveTypes, multiplier) {
+async function createLeaves(users, leaveTypes, multiplier, dateRange) {
   for (const user of users) {
     const leaveCount = faker.number.int({ min: 1, max: 5 }) * multiplier
 
     for (let i = 0; i < leaveCount; i++) {
       const startDate = faker.date.between({
-        from: '2023-01-01',
-        to: '2024-12-31'
+        from: dateRange.from,
+        to: dateRange.to
       })
       const endDate = new Date(startDate)
       endDate.setDate(endDate.getDate() + faker.number.int({ min: 1, max: 7 }))
+
+      // Ensure end date doesn't exceed the date range
+      if (endDate > dateRange.to) {
+        endDate.setTime(dateRange.to.getTime())
+      }
 
       await prisma.leaves.create({
         data: {
@@ -407,7 +623,7 @@ async function createLeaves(users, leaveTypes, multiplier) {
           updated_at: faker.date.recent()
         }
       })
-      console.log(`Created leave ${i} of ${leaveCount}`)
+      console.log(`Created leave ${i + 1} of ${leaveCount}`)
     }
   }
 }
