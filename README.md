@@ -104,6 +104,44 @@ The application supports two database setup options:
 
 Choose the option that best fits your needs. For development, the local database option provides a simpler setup. For production, an external database offers better reliability and features.
 
+### 🌱 Database Seeding
+
+The application includes a powerful seeding system for populating your database with test data. You can run the seed with various options:
+
+```bash
+# Basic seeding with defaults
+npx prisma db seed
+
+# Clear existing data before seeding
+npx prisma db seed -- --clear
+
+# Customize the seed data
+npx prisma db seed -- --user-count 20 --leaves-multiplier 5
+```
+
+Available seed options:
+
+- `--clear`: Clear all data before seeding
+- `--user-count` or `--use-faker`: Number of users to create (default: 10)
+- `--leaves-multiplier`: Multiplier for leaves per user (default: 3)
+- `--department-count`: Number of departments to create (default: 5)
+- `--company-id`: Company ID to use (default: 1)
+- `--create-default-user`: Create default admin user (bob@local.eml/bob)
+- `--date-from`: Start date for leaves (YYYY-MM-DD)
+- `--date-to`: End date for leaves (YYYY-MM-DD)
+- `--bank-holiday-count`: Number of bank holidays to create (default: 8)
+- `--custom-schedule-percent`: Percentage of users with custom schedules (default: 30)
+- `--uaa`: Path to CSV file for user allowance adjustments
+
+The seed creates:
+
+- Company with departments (some including holidays, others not)
+- Users with various roles (admins, managers)
+- Leave types with fun names
+- Bank holidays within the specified date range
+- Custom work schedules for some users
+- Leave records distributed across the date range
+
 ## ⚙️ Configuration
 
 Configuration can be done through environment variables or JSON configuration files.
