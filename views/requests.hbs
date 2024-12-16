@@ -8,6 +8,69 @@
   <p class="col-md-12">Leave request to approve</p>
 </div>
 
+<!-- Filter Panel - Always visible -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" role="button" data-toggle="collapse" href="#filterPanel" aria-expanded="false"
+        aria-controls="filterPanel">
+        <h4 class="panel-title">
+          <i class="fa fa-chevron-down collapsed"></i> Filters
+          <span class="filter-summary">
+            {{#if selected_filters}}
+            <span class="badge">Filtered</span>
+            <small class="text-muted">
+              {{#if selected_filters.departments}}(Departments: {{selected_filters.departments}}){{/if}}
+              {{#if selected_filters.types}}(Types: {{selected_filters.types}}){{/if}}
+            </small>
+            {{else}}
+            <span class="badge">All Requests</span>
+            {{/if}}
+          </span>
+        </h4>
+      </div>
+      <div class="panel-collapse collapse" id="filterPanel">
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h5>Departments</h5>
+              <div class="filter-section">
+                {{#each departments}}
+                <label class="filter-checkbox-label">
+                  <input type="checkbox" class="filter-checkbox" name="department" value="{{this.id}}" {{#if (includes
+                    ../selected_filters.departments this.id)}}checked{{/if}}>
+                  {{this.name}}
+                </label>
+                {{/each}}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h5>Leave Types</h5>
+              <div class="filter-section">
+                {{#each leave_types}}
+                <label class="filter-checkbox-label">
+                  <input type="checkbox" class="filter-checkbox" name="type" value="{{this.id}}" {{#if (includes
+                    ../selected_filters.types this.id)}}checked{{/if}}>
+                  {{this.name}}
+                </label>
+                {{/each}}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <button class="btn btn-primary apply-filters">Apply Filters</button>
+              {{#if selected_filters}}
+              <a href="/requests" class="btn btn-default">Clear Filters</a>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row">
   {{#unless to_be_approved_leaves}}
   <div class="col-md-12 text-muted">
@@ -20,11 +83,27 @@
       <table class="table table-hover requests-to-approve-table">
         <thead>
           <tr>
-            <th>Employee</th>
-            <th>Department</th>
-            <th>Date of request</th>
+            <th>
+              <button class="btn btn-link sort-btn" data-sort="name">
+                Employee <i class="fa fa-sort"></i>
+              </button>
+            </th>
+            <th>
+              <button class="btn btn-link sort-btn" data-sort="department">
+                Department <i class="fa fa-sort"></i>
+              </button>
+            </th>
+            <th>
+              <button class="btn btn-link sort-btn" data-sort="date">
+                Date of request <i class="fa fa-sort"></i>
+              </button>
+            </th>
             <th>Leave dates</th>
-            <th>Type</th>
+            <th>
+              <button class="btn btn-link sort-btn" data-sort="type">
+                Type <i class="fa fa-sort"></i>
+              </button>
+            </th>
             <th>Days</th>
             <th class="col-xs-2">Comment</th>
             <th colspan="2"></th>
@@ -36,22 +115,20 @@
             <td>{{#with this.user}}{{this.full_name}}
               <i class="fa fa-question-circle user-details-summary-trigger" data-user-id="{{this.id}}"></i>{{/with}}
             </td>
-            <td>{{this.user.department.name}}</td>
+            <td class="department-name">{{this.user.department.name}}</td>
             <td class="date_of_request">{{as_date_from_timestamp this.createdAt}}</td>
             <td data-tom-leave-dates="1"><a class="leave-details-summary-trigger" data-leave-id="{{this.id}}"
                 href="#">{{> leave_dates leave=this}}</a></td>
-            <td>{{#if this.is_pended_revoke_leave}}REVOKE {{/if}}{{this.leave_type.name}}</td>
+            <td class="leave-type">{{#if this.is_pended_revoke_leave}}REVOKE {{/if}}{{this.leave_type.name}}</td>
             <td data-vpp="days_used">{{ this.get_deducted_days_number }}</td>
             <td>{{this.employee_comment}}</td>
             <td>
-              <!-- Trigger Reject Modal -->
               <button class="btn btn-warning" data-toggle="modal" data-target="#rejectModal" data-leave-id="{{this.id}}"
                 name="reject_modal">
                 Reject
               </button>
             </td>
             <td>
-              <!-- Trigger Approve Modal -->
               <button class="btn btn-success" data-toggle="modal" data-target="#approveModal"
                 data-leave-id="{{this.id}}" name="approve_modal">
                 Approve
@@ -74,15 +151,181 @@
 
 {{> user_requests_grouped grouped_leaves=my_leaves_grouped logged_user=logged_user }}
 {{> modal_leave_reject }}
-
 {{> modal_leave_approve }}
 
 {{> footer }}
+
+<style>
+  /* Filter panel styles */
+  .panel-heading {
+    cursor: pointer;
+  }
+
+  .panel-heading .badge {
+    background-color: #337ab7;
+  }
+
+  .panel-heading .text-muted {
+    font-size: 12px;
+    margin-left: 5px;
+  }
+
+  .filter-summary {
+    margin-left: 10px;
+  }
+
+  .panel-title .fa {
+    transition: transform 0.3s ease;
+  }
+
+  .panel-title .fa.collapsed {
+    transform: rotate(-90deg);
+  }
+
+  .filter-section {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+
+  .filter-checkbox-label {
+    display: block;
+    padding: 5px 0;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  .filter-checkbox-label:hover {
+    background-color: #f5f5f5;
+  }
+
+  /* Sort button styles */
+  .sort-btn {
+    padding: 0;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .sort-btn:hover,
+  .sort-btn:focus {
+    color: #337ab7;
+    text-decoration: none;
+  }
+
+  .sort-btn .fa {
+    margin-left: 5px;
+  }
+
+  .sort-btn.active .fa-sort {
+    color: #337ab7;
+  }
+
+  .sort-btn.active.asc .fa-sort:before {
+    content: "\f0de";
+  }
+
+  .sort-btn.active.desc .fa-sort:before {
+    content: "\f0dd";
+  }
+</style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/js/popover-initializer.js"></script>
 <script>
   $(document).ready(function () {
+    // Filter panel functionality
+    const filterPanel = $('#filterPanel');
+    const panelIcon = $('.panel-heading .fa');
+
+    filterPanel.on('show.bs.collapse', function () {
+      panelIcon.removeClass('collapsed');
+    });
+
+    filterPanel.on('hide.bs.collapse', function () {
+      panelIcon.addClass('collapsed');
+    });
+
+    // Apply filters
+    $('.apply-filters').on('click', function () {
+      const departments = [];
+      const types = [];
+
+      $('input[name="department"]:checked').each(function () {
+        departments.push($(this).val());
+      });
+
+      $('input[name="type"]:checked').each(function () {
+        types.push($(this).val());
+      });
+
+      const params = new URLSearchParams(window.location.search);
+
+      if (departments.length) {
+        params.set('departments', departments.join(','));
+      } else {
+        params.delete('departments');
+      }
+
+      if (types.length) {
+        params.set('types', types.join(','));
+      } else {
+        params.delete('types');
+      }
+
+      window.location.href = window.location.pathname + '?' + params.toString();
+    });
+
+    // Sorting functionality
+    const sortButtons = $('.sort-btn');
+    const tbody = $('.requests-to-approve-table tbody');
+
+    sortButtons.on('click', function () {
+      const sortType = $(this).data('sort');
+      const isAsc = !$(this).hasClass('asc');
+
+      // Update button states
+      sortButtons.removeClass('active asc desc');
+      $(this).addClass('active ' + (isAsc ? 'asc' : 'desc'));
+
+      // Get and sort rows
+      const rows = tbody.find('tr').get();
+      rows.sort(function (a, b) {
+        let aVal, bVal;
+
+        switch (sortType) {
+          case 'name':
+            aVal = $(a).find('td:first').text().trim();
+            bVal = $(b).find('td:first').text().trim();
+            break;
+          case 'department':
+            aVal = $(a).find('.department-name').text().trim();
+            bVal = $(b).find('.department-name').text().trim();
+            break;
+          case 'date':
+            aVal = new Date($(a).find('.date_of_request').text().trim());
+            bVal = new Date($(b).find('.date_of_request').text().trim());
+            return isAsc ? aVal - bVal : bVal - aVal;
+          case 'type':
+            aVal = $(a).find('.leave-type').text().trim();
+            bVal = $(b).find('.leave-type').text().trim();
+            break;
+        }
+
+        if (sortType !== 'date') {
+          return isAsc ?
+            aVal.localeCompare(bVal) :
+            bVal.localeCompare(aVal);
+        }
+      });
+
+      // Reattach sorted rows
+      $.each(rows, function (index, row) {
+        tbody.append(row);
+      });
+    });
+
     // Handle modal initialization
     $('#rejectModal').on('show.bs.modal', function (event) {
       var button = $(event.relatedTarget);
@@ -90,7 +333,6 @@
       var modal = $(this);
       modal.find('input[name="request"]').val(leaveId);
       modal.find('textarea[name="comment"]').attr('placeholder', leaveId);
-      // Reset button state when modal opens
       modal.find('button[type="submit"]').prop('disabled', false);
     });
 
@@ -99,7 +341,6 @@
       var leaveId = button.data('leave-id');
       var modal = $(this);
       modal.find('input[name="request"]').val(leaveId);
-      // Reset button state when modal opens
       modal.find('button[type="submit"]').prop('disabled', false);
     });
 
@@ -108,21 +349,17 @@
       var $btn = $(this);
       var $form = $btn.closest('form');
 
-      // For reject modal, check if comment is filled
       if ($form.find('textarea[required]').length > 0) {
         if (!$form.find('textarea[required]').val().trim()) {
-          return true; // Let the form validation handle it
+          return true;
         }
       }
 
-      // Disable the submit button
       $btn.prop('disabled', true);
-
-      // Submit the form
       $form.submit();
     });
 
-    // Re-enable buttons when modal is hidden without submission
+    // Re-enable buttons when modal is hidden
     $('.modal').on('hidden.bs.modal', function () {
       $(this).find('button[type="submit"]').prop('disabled', false);
     });
