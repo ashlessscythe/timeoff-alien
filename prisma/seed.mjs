@@ -190,7 +190,7 @@ async function main() {
   const users = await createUsers(company, departments, config.associateCount)
 
   // Create custom schedules for some users
-  await createUserSchedules(users, config.customSchedulePercent)
+  await createUserSchedules(users, config.customSchedulePercent, company)
 
   // Update departments with managers
   await updateDepartmentsWithManagers(
@@ -314,7 +314,7 @@ async function createCompanySchedule(company) {
   return schedule
 }
 
-async function createUserSchedules(users, percentWithCustom) {
+async function createUserSchedules(users, percentWithCustom, company) {
   // Calculate how many users should get custom schedules
   const customCount = Math.round((users.length * percentWithCustom) / 100)
 
@@ -338,6 +338,9 @@ async function createUserSchedules(users, percentWithCustom) {
         updated_at: faker.date.recent(),
         users: {
           connect: { id: user.id }
+        },
+        companies: {
+          connect: { id: company.id } // Add company_id to ensure the connection
         }
       }
     })
