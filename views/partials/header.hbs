@@ -24,12 +24,14 @@
           {{#if logged_user.admin}}
           <li><a href="/users/">Employees</a></li>
           {{/if}}
+          {{#unless is_messages_page}}
           <li class="navbar-form navbar-left">
             <div class="form-group">
               <button type="button" class="btn btn-info" data-toggle="modal" data-target="#book_leave_modal"
                 id="book_time_off_btn">New absence</button>
             </div>
           </li>
+          {{/unless}}
           {{/if}}
         </ul>
 
@@ -63,6 +65,12 @@
             </ul>
           </li>
 
+          <li>
+            <a href="/messages/new" title="Send us a message">
+              <span class="fa fa-envelope-o"></span>
+            </a>
+          </li>
+
           {{#if logged_user.admin }}
           <li class="dropdown hidden-xs">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span
@@ -78,6 +86,7 @@
               <li role="separator" class="divider"></li>
               <li><a href="/audit/email/">Emails audit</a></li>
               <li><a href="/reports/">Reports</a></li>
+              <li><a href="/messages/">User Messages</a></li>
             </ul>
           </li>
           {{/if}}
@@ -98,6 +107,7 @@
               <li role="separator" class="divider"></li>
               <li><a href="/audit/email/">Emails audit</a></li>
               <li><a href="/reports/">Reports</a></li>
+              <li><a href="/messages/">User Messages</a></li>
             </ul>
           </li>
           {{/if}}

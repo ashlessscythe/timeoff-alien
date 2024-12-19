@@ -95,6 +95,7 @@ model companies {
   leave_types             leave_types[]
   schedules               schedules[]
   users                   users[]
+  user_messages           user_messages[]
 
   @@index([id], map: "companies_id")
 }
@@ -267,6 +268,7 @@ model users {
   schedules                        schedules[]
   user_allowance_adjustment        user_allowance_adjustment[]
   user_feeds                       user_feeds[]
+  user_messages                    user_messages[]
   companies                        companies                   @relation(fields: [company_id], references: [id], onDelete: Cascade)
   departments                      departments                 @relation(fields: [department_id], references: [id], onDelete: Cascade)
 
@@ -280,4 +282,20 @@ enum enum_user_feeds_type {
   wallchart
   teamview
   company
+}
+
+model user_messages {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  email      String    @db.VarChar(255)
+  message    String
+  status     String    @default("new") @db.VarChar(50)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  company_id Int
+  user_id    Int
+  companies  companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([company_id], map: "user_messages_company_id")
+  @@index([user_id], map: "user_messages_user_id")
 }
