@@ -1,0 +1,48 @@
+{{> header }}
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <h1>Send us a message</h1>
+
+    <div class="alert alert-warning" style="color: #d9534f;">
+      <strong>Note:</strong> This form is not for submitting time off requests. To request time off, please use the "New
+      absence" button on the <a href="/" style="color: inherit; text-decoration: underline;">main dashboard</a>.
+    </div>
+
+    <div class="alert alert-info">
+      <p>Use this form to send a message to your administrators. You might want to:</p>
+      <ul>
+        <li>Report technical issues or bugs</li>
+        <li>Request new features or improvements</li>
+        <li>Ask questions about system usage</li>
+        <li>Provide general feedback</li>
+      </ul>
+      <p>We'll review your message and get back to you through your registered email address.</p>
+    </div>
+
+    {{> show_flash_messages }}
+
+    <form method="POST" action="/messages/new">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name"
+          value="{{logged_user.name}} {{logged_user.lastname}}" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" value="{{logged_user.email}}" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-success">Send Message</button>
+      <a href="/" class="btn btn-link">Cancel</a>
+    </form>
+  </div>
+</div>
+
+{{> book_leave_modal }}

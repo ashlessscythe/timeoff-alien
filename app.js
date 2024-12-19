@@ -212,6 +212,8 @@ app.use('/audit/', require('./lib/route/audit'))
 
 app.use('/reports/', require('./lib/route/reports'))
 
+app.use('/messages/', require('./lib/route/messages'))
+
 // catch 404
 app.use(function(req, res, next) {
   res.render('not_found')
