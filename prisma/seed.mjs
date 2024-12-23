@@ -110,6 +110,7 @@ async function clearDatabase() {
   await prisma.email_audits.deleteMany()
   await prisma.comments.deleteMany()
   await prisma.audit.deleteMany()
+  await prisma.user_messages.deleteMany()
 
   // Delete from middle-level tables
   await prisma.schedules.deleteMany()
@@ -208,6 +209,9 @@ async function main() {
     config.leavesMultiplier,
     config.dateRange
   )
+
+  // Create messages for some users
+  await createMessages(users, config.dateRange)
 
   console.log(
     `Seed data created successfully:
@@ -591,6 +595,130 @@ async function createLeaveTypes(company) {
   }
 
   return createdLeaveTypes
+}
+
+async function createMessages(users, dateRange) {
+  // Create messages for 30% of users
+  const usersWithMessages = faker.helpers.arrayElements(
+    users,
+    Math.ceil(users.length * 0.3)
+  )
+
+  console.log('Creating messages...')
+
+  for (const user of usersWithMessages) {
+    // Create 1-5 messages per user
+    const messageCount = faker.number.int({ min: 1, max: 5 })
+
+    for (let i = 0; i < messageCount; i++) {
+      const created_at = faker.date.between({
+        from: dateRange.from,
+        to: dateRange.to
+      })
+
+      const subjects = [
+        'Technical Issue Report',
+        'Feature Request',
+        'System Bug Found',
+        'Question about Time Off',
+        'Feedback on Interface',
+        'Calendar Sync Issue',
+        'Account Access Problem',
+        'Mobile App Suggestion',
+        'Department Settings Question',
+        'Leave Balance Inquiry'
+      ]
+
+      const messageTemplates = [
+        'I encountered an issue with {feature}. When I try to {action}, the system {problem}.',
+        'Would it be possible to add {feature}? This would help with {benefit}.',
+        'The {feature} seems to be showing incorrect data when {action}.',
+        'I need clarification on how to {action} in the system.',
+        'I have a suggestion to improve {feature} by {improvement}.'
+      ]
+
+      const features = [
+        'calendar view',
+        'leave request form',
+        'notification system',
+        'department settings',
+        'user profile',
+        'reporting dashboard',
+        'time tracking',
+        'approval workflow',
+        'holiday schedule',
+        'absence history'
+      ]
+
+      const actions = [
+        'submit a request',
+        'view my schedule',
+        'update settings',
+        'generate reports',
+        'sync calendar',
+        'approve leaves',
+        'check balances',
+        'add team members',
+        'set preferences',
+        'export data'
+      ]
+
+      const problems = [
+        'shows an error message',
+        'freezes unexpectedly',
+        'loses the entered data',
+        'displays incorrect information',
+        'takes too long to respond'
+      ]
+
+      const improvements = [
+        'adding more filtering options',
+        'simplifying the workflow',
+        'providing better notifications',
+        'including more details',
+        'making it more user-friendly'
+      ]
+
+      const benefits = [
+        'improve team coordination',
+        'save time on administrative tasks',
+        'reduce confusion',
+        'make planning easier',
+        'increase productivity'
+      ]
+
+      // Generate message content
+      const messageTemplate = faker.helpers.arrayElement(messageTemplates)
+      const message = messageTemplate
+        .replace('{feature}', faker.helpers.arrayElement(features))
+        .replace('{action}', faker.helpers.arrayElement(actions))
+        .replace('{problem}', faker.helpers.arrayElement(problems))
+        .replace('{improvement}', faker.helpers.arrayElement(improvements))
+        .replace('{benefit}', faker.helpers.arrayElement(benefits))
+
+      await prisma.user_messages.create({
+        data: {
+          name: `${user.name} ${user.lastname}`,
+          email: user.email,
+          subject: faker.helpers.arrayElement(subjects),
+          message: message,
+          status: faker.helpers.arrayElement([
+            'new',
+            'in-progress',
+            'resolved'
+          ]),
+          created_at,
+          updated_at: faker.date.between({
+            from: created_at,
+            to: dateRange.to
+          }),
+          user_id: user.id,
+          company_id: user.company_id
+        }
+      })
+    }
+    console.log(`Created messages for user ${user.id}`)
+  }
 }
 
 async function createLeaves(users, leaveTypes, multiplier, dateRange) {
