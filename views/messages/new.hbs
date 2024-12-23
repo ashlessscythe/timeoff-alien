@@ -22,7 +22,7 @@
 
     {{> show_flash_messages }}
 
-    <form method="POST" action="/messages/new">
+    <form method="POST" action="/messages">
       <div class="form-group">
         <label for="name">Name</label>
         <input type="text" class="form-control" id="name" name="name"
@@ -32,6 +32,12 @@
       <div class="form-group">
         <label for="email">Email</label>
         <input type="email" class="form-control" id="email" name="email" value="{{logged_user.email}}" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input type="text" class="form-control" id="subject" name="subject" required
+          placeholder="Brief description of your message">
       </div>
 
       <div class="form-group">

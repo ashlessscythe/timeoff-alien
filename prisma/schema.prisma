@@ -288,9 +288,12 @@ model user_messages {
   id         Int       @id @default(autoincrement())
   name       String    @db.VarChar(255)
   email      String    @db.VarChar(255)
+  subject    String    @db.VarChar(255)
   message    String
   status     String    @default("new") @db.VarChar(50)
   created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  deleted    Boolean   @default(false)
   company_id Int
   user_id    Int
   companies  companies @relation(fields: [company_id], references: [id], onDelete: Cascade)

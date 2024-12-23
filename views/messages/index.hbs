@@ -6,42 +6,66 @@
 
     {{> show_flash_messages }}
 
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Message</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each messages}}
-        <tr>
-          <td>{{as_date this.created_at}}</td>
-          <td>{{this.name}}</td>
-          <td>{{this.email}}</td>
-          <td>{{this.message}}</td>
-          <td>
-            <span class="label {{#if (eq this.status 'new')}}label-primary{{else}}label-default{{/if}}">
-              {{this.status}}
-            </span>
-          </td>
-          <td>
-            <form method="POST" action="/messages/{{this.id}}/status" class="form-inline" style="display:inline;">
-              <select name="status" class="form-control input-sm" onchange="this.form.submit()">
-                <option value="new" {{#if (eq this.status 'new' )}}selected{{/if}}>New</option>
-                <option value="in-progress" {{#if (eq this.status 'in-progress' )}}selected{{/if}}>In Progress</option>
-                <option value="resolved" {{#if (eq this.status 'resolved' )}}selected{{/if}}>Resolved</option>
-              </select>
-            </form>
-          </td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-hover messages-table" id="message-list">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each messages}}
+          <tr id="heading_{{this.id}}" class="message-row vpp-message-entry-header" data-message-id="{{this.id}}">
+            <td>{{as_date this.created_at}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.email}}</td>
+            <td class="subject-cell">
+              <a class="message-toggle collapsed" data-toggle="collapse" data-parent="#message-list"
+                href="#collapse_{{this.id}}">
+                <i class="fa fa-chevron-right"></i>
+                {{this.subject}}
+              </a>
+            </td>
+            <td>
+              <span class="label {{#if (eq this.status 'new')}}label-primary{{else}}label-default{{/if}}">
+                {{this.status}}
+              </span>
+            </td>
+            <td>
+              <form method="POST" action="/messages/{{this.id}}/status" class="form-inline" style="display:inline;">
+                <select name="status" class="form-control input-sm" onchange="this.form.submit()">
+                  <option value="new" {{#if (eq this.status 'new' )}}selected{{/if}}>New</option>
+                  <option value="in-progress" {{#if (eq this.status 'in-progress' )}}selected{{/if}}>In Progress
+                  </option>
+                  <option value="resolved" {{#if (eq this.status 'resolved' )}}selected{{/if}}>Resolved</option>
+                </select>
+              </form>
+              {{#if ../is_admin}}
+              <form method="POST" action="/messages/{{this.id}}/delete" class="form-inline" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm"
+                  onclick="return confirm('Are you sure you want to delete this message?')">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </form>
+              {{/if}}
+            </td>
+          </tr>
+          <tr id="collapse_{{this.id}}" class="collapse">
+            <td colspan="6">
+              <div class="message-content well">
+                {{this.message}}
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
 
     {{#unless messages}}
     <div class="well">No messages yet.</div>
@@ -49,4 +73,42 @@
   </div>
 </div>
 
-{{> book_leave_modal }}
+<style>
+  .message-toggle {
+    color: #333;
+    text-decoration: none;
+    display: block;
+  }
+
+  .message-toggle:hover {
+    text-decoration: none;
+    color: #337ab7;
+  }
+
+  .message-toggle .fa {
+    transition: transform 0.3s ease;
+    margin-right: 5px;
+  }
+
+
+  .message-content {
+    margin: 10px 0;
+    white-space: pre-wrap;
+  }
+
+  .subject-cell {
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  $(document).ready(function () {
+    $('#message-list').on('shown.bs.collapse', function (e) {
+      $(`a[href="#${e.target.id}"]`).find('.fa').css('transform', 'rotate(90deg)');
+    }).on('hidden.bs.collapse', function (e) {
+      $(`a[href="#${e.target.id}"]`).find('.fa').css('transform', 'rotate(0deg)');
+    });
+  });
+</script>
+
+{{> footer }}
