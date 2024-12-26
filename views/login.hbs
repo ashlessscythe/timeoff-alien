@@ -1,12 +1,16 @@
-
 {{> header }}
 
 <h1>Login</h1>
 
 {{> show_flash_messages }}
 
-  {{#if login.default}}
-      <form class="form-horizontal" action="/login" method="post">
+<div class="alert alert-warning">
+  <small><i class="fa fa-shield"></i> Security Notice: Unauthorized access attempts are prohibited and monitored. All
+    activities are logged.</small>
+</div>
+
+{{#if login.default}}
+<form class="form-horizontal" action="/login" method="post">
 
   <div class="row">&nbsp;</div>
   <div class="form-group">
@@ -28,20 +32,21 @@
       <button type="submit" class="btn btn-success single-click" id="submit_login">Login</button>
     </div>
     <div class="col-md-4">
-      <p class="pull-right"><a href="/forgot-password/">Forgot password?</a>{{#if allow_create_new_accounts }} | <a href="/register/">Register new company</a>{{/if}}</p>
+      <p class="pull-right"><a href="/forgot-password/">Forgot password?</a>{{#if allow_create_new_accounts }} | <a
+          href="/register/">Register new company</a>{{/if}}</p>
     </div>
   </div>
 
-      </form>
-    {{/if}}
+</form>
+{{/if}}
 
-    {{#if login.google}}
-        <form action="/auth/google" method="GET">
-            <button type="submit" class="btn btn-default btn-login-google">
-                <span class="provider-logo google"></span> Login with Google
-            </button>
-        </form>
-    {{/if}}
+{{#if login.google}}
+<form action="/auth/google" method="GET">
+  <button type="submit" class="btn btn-default btn-login-google">
+    <span class="provider-logo google"></span> Login with Google
+  </button>
+</form>
+{{/if}}
 
 <div class="row">&nbsp;</div>
 
