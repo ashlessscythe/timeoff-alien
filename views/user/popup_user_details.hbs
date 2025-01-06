@@ -1,4 +1,3 @@
-
 <div>
   <strong>Name:</strong> {{userFullName}}.
 </div>
@@ -6,17 +5,18 @@
   <strong>Department:</strong> {{departmentName}}.
 </div>
 {{#if userAllowance }}
-  <div>
-    <strong>Available:</strong> [{{userAllowance.number_of_days_available_in_allowance}} reg,
-      {{#if userAllowance.total_personal_available}}{{userAllowance.total_personal_available}}{{else}}0{{/if}} pers] days out of
-      {{userAllowance.total_number_of_days_in_allowance}} total.
-  </div>
+<div>
+  <strong>Available:</strong> [{{userAllowance.number_of_regular_allowance}} reg,
+  {{#if userAllowance.total_personal_available}}{{userAllowance.total_personal_available}}{{else}}0{{/if}} pers] days
+  out of
+  {{userAllowance.total_number_of_days_in_allowance}} total.
+</div>
 {{/if}}
 {{#if supervisorNames}}
-  <div>
-    <strong>Approvers:</strong>
-    <ul>
-      {{#each supervisorNames}}<li>{{this}}{{#unless @last}},{{/unless}}</li>{{/each}}
-    </ul>
-  </div>
+<div>
+  <strong>Approvers:</strong>
+  <ul>
+    {{#each supervisorNames}}<li>{{this}}{{#unless @last}},{{/unless}}</li>{{/each}}
+  </ul>
+</div>
 {{/if}}
