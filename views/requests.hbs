@@ -4,6 +4,12 @@
 
 {{> show_flash_messages }}
 
+{{#if to_be_approved_leaves}}
+<div class="alert alert-warning" id="pastPayrollWarning" style="display: none;">
+  <strong>CAUTION:</strong> Red highlighted requests are for closed payroll periods (past weeks).
+</div>
+{{/if}}
+
 <div class="row main-row_header">
   <p class="col-md-12">Leave request to approve</p>
 </div>
@@ -139,7 +145,7 @@
         </thead>
         <tbody>
           {{#each to_be_approved_leaves }}
-          <tr vpp="pending_for__{{this.user.email}}">
+          <tr vpp="pending_for__{{this.user.email}}" class="{{#if this.isPastPayroll}}past-payroll{{/if}}">
             <td>{{#with this.user}}{{this.full_name}}
               <i class="fa fa-question-circle user-details-summary-trigger" data-user-id="{{this.id}}"></i>{{/with}}
             </td>
@@ -184,6 +190,15 @@
 {{> footer }}
 
 <style>
+  /* Past payroll styling */
+  tr.past-payroll {
+    background-color: #ffebee !important;
+  }
+
+  tr.past-payroll:hover {
+    background-color: #ffcdd2 !important;
+  }
+
   /* Filter panel styles */
   .panel-heading {
     cursor: pointer;
@@ -267,6 +282,32 @@
 <script src="/js/popover-initializer.js"></script>
 <script>
   $(document).ready(function () {
+    // Show past payroll warning if any past payroll requests exist
+    if ($('.past-payroll').length > 0) {
+      $('#pastPayrollWarning').show();
+    }
+
+    // Enhance approve modal with confirmation for past payroll
+    $('#approveModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var leaveId = button.data('leave-id');
+      var row = button.closest('tr');
+      var modal = $(this);
+
+      modal.find('input[name="request"]').val(leaveId);
+      modal.find('button[type="submit"]').prop('disabled', false);
+
+      // Add warning for past payroll requests
+      if (row.hasClass('past-payroll')) {
+        var warningHtml = '<div class="alert alert-danger">Warning: This request is for a closed payroll period (past week). Are you sure you want to approve it?</div>';
+        modal.find('.modal-body').prepend(warningHtml);
+      }
+    });
+
+    // Clear warning when modal is hidden
+    $('#approveModal').on('hidden.bs.modal', function () {
+      $(this).find('.alert-danger').remove();
+    });
     // Filter panel functionality
     const filterPanel = $('#filterPanel');
     const panelIcon = $('.panel-heading .fa');
