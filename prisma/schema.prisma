@@ -164,6 +164,7 @@ model leave_types {
   updated_at    DateTime  @db.Timestamptz(6)
   company_id    Int
   manager_only  Boolean   @default(false)
+  is_special    Boolean   @default(false)
   companies     companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
   leaves        leaves[]
 }

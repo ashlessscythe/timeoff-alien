@@ -12,6 +12,14 @@
   {{userAllowance.total_number_of_days_in_allowance}} total.
 </div>
 {{/if}}
+{{#if specialLeaveTypes}}
+<div>
+  <strong>Special Leave Types:</strong>
+  <ul>
+    {{#each specialLeaveTypes}}<li>{{this.name}}{{#unless @last}},{{/unless}}</li>{{/each}}
+  </ul>
+</div>
+{{/if}}
 {{#if supervisorNames}}
 <div>
   <strong>Approvers:</strong>
