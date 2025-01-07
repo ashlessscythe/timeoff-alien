@@ -14,9 +14,12 @@
 {{/if}}
 {{#if specialLeaveTypes}}
 <div>
-  <strong>Special Leave Types:</strong>
+  <strong>Special Leave Days Taken:</strong>
   <ul>
-    {{#each specialLeaveTypes}}<li>{{this.name}}{{#unless @last}},{{/unless}}</li>{{/each}}
+    {{#each specialLeaveTypes}}
+    <li>{{this.name}}: {{this.days_taken}} {{#if this.days_taken_plural}}days{{else}}day{{/if}}{{#unless
+      @last}},{{/unless}}</li>
+    {{/each}}
   </ul>
 </div>
 {{/if}}

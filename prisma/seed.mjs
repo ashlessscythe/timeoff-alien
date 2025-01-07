@@ -565,27 +565,73 @@ async function updateDepartmentsWithManagers(departments, managers) {
 }
 
 async function createLeaveTypes(company) {
-  const leaveTypes = [
-    { name: 'Beach Bum Day', color: '#3498db', use_allowance: true },
-    { name: 'Netflix & Sick', color: '#e74c3c', use_allowance: false },
-    { name: 'Me, Myself, and I Day', color: '#2ecc71', use_allowance: true },
-    { name: 'Couch Commander', color: '#f39c12', use_allowance: false },
-    { name: 'Procrastination Paradise', color: '#9b59b6', use_allowance: true },
-    { name: 'Brain Fart Recovery', color: '#e67e22', use_allowance: false },
-    { name: 'Pretend to Be Productive', color: '#1abc9c', use_allowance: true },
-    { name: 'Secret Mission Leave', color: '#e74c3c', use_allowance: false },
-    { name: 'Spa Day for the Soul', color: '#e84393', use_allowance: true },
-    { name: 'Avoid People Pass', color: '#34495e', use_allowance: false }
+  // Generate dynamic leave type names using faker
+  const generateLeaveName = () => {
+    const prefixes = [
+      'Annual',
+      'Special',
+      'Personal',
+      'Emergency',
+      'Wellness',
+      'Family',
+      'Professional',
+      'Remote',
+      'Flexible',
+      'Extended'
+    ]
+    const activities = [
+      'Leave',
+      'Break',
+      'Time Off',
+      'Rest',
+      'Holiday',
+      'Retreat',
+      'Absence',
+      'Pause',
+      'Recovery',
+      'Recharge'
+    ]
+    const suffixes = ['Day', 'Period', 'Session', 'Duration', 'Time']
+
+    return `${faker.helpers.arrayElement(
+      prefixes
+    )} ${faker.helpers.arrayElement(activities)} ${faker.helpers.arrayElement(
+      suffixes
+    )}`
+  }
+
+  const colors = [
+    '#3498db',
+    '#e74c3c',
+    '#2ecc71',
+    '#f39c12',
+    '#9b59b6',
+    '#e67e22',
+    '#1abc9c',
+    '#e84393',
+    '#34495e',
+    '#16a085'
   ]
+  const leaveTypes = Array.from({ length: 10 }, (_, index) => ({
+    name: generateLeaveName(),
+    color: faker.helpers.arrayElement(colors),
+    use_allowance: faker.datatype.boolean(),
+    is_special: faker.datatype.boolean({ probability: 0.3 }), // 30% chance of being special
+    auto_approve: faker.datatype.boolean({ probability: 0.2 }), // 20% chance of auto-approve
+    manager_only: faker.datatype.boolean({ probability: 0.15 }) // 15% chance of manager only
+  }))
 
   const createdLeaveTypes = []
 
-  for (const leaveType of leaveTypes) {
+  for (let i = 0; i < leaveTypes.length; i++) {
+    const leaveType = leaveTypes[i]
     const createdLeaveType = await prisma.leave_types.create({
       data: {
         ...leaveType,
         created_at: faker.date.past(),
         updated_at: faker.date.recent(),
+        sort_order: i, // Add sort order based on index
+        limit: faker.number.int({ min: 0, max: 30 }), // Random limit between 0-30 days
         companies: {
           connect: { id: company.id }
         }
