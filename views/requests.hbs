@@ -92,6 +92,18 @@
             </div>
           </div>
           <div class="row">
+            {{#if is_admin}}
+            <div class="col-md-12 mb-3">
+              <div class="form-group">
+                <label class="filter-checkbox-label">
+                  <input type="checkbox" class="filter-checkbox" name="viewAll" {{#if
+                    selected_filters.viewAll}}checked{{/if}}>
+                  View All Requests (Admin Only)
+                </label>
+                <small class="text-muted d-block">Shows all pending requests across the organization</small>
+              </div>
+            </div>
+            {{/if}}
             <div class="col-md-12">
               <button class="btn btn-primary apply-filters">Apply Filters</button>
               {{#if selected_filters}}
@@ -326,6 +338,7 @@
       const types = [];
       const month = $('#monthSelect').val();
       const year = $('#yearSelect').val();
+      const viewAll = $('input[name="viewAll"]').is(':checked');
 
       $('input[name="department"]:checked').each(function () {
         departments.push($(this).val());
@@ -359,6 +372,12 @@
         params.set('year', year);
       } else {
         params.delete('year');
+      }
+
+      if (viewAll) {
+        params.set('viewAll', 'true');
+      } else {
+        params.delete('viewAll');
       }
 
       window.location.href = window.location.pathname + '?' + params.toString();
