@@ -16,3 +16,4 @@ export/
 *.DS_Store
 t/integration/test.csv
 prisma/uaa.csv
+.env.dev
