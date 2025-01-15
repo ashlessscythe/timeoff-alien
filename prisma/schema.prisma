@@ -222,6 +222,7 @@ model user_allowance_adjustment {
   id                     Int      @id @default(autoincrement())
   year                   Int      @default(2024)
   adjustment             Float    @default(0)
+  personal_adjustment    Float    @default(0)
   carried_over_allowance Int      @default(0)
   created_at             DateTime @db.Timestamptz(6)
   user_id                Int
