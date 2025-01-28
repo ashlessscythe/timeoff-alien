@@ -40,8 +40,9 @@
             {{#if logged_user }}
             <!-- Theme Selector Dropdown -->
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-              <span class="fa fa-paint-brush"></span> Theme <span class="caret"></span>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
+              title="Theme">
+              <span class="fa fa-paint-brush"></span> <span class="caret"></span>
             </a>
             <ul class="dropdown-menu" id="theme-dropdown" role="menu">
               <li><a href="#" data-theme="day">Day</a></li>
@@ -67,15 +68,15 @@
 
           <li>
             <a href="/messages/new" class="btn"
-              style="background-color: #F4A460; color: white; margin-top: 8px; padding: 6px 12px;">
-              <span class="fa fa-envelope-o"></span> Report Issue
+              style="background-color: #F4A460; color: white; margin-top: 8px; padding: 6px 12px;" title="Report Issue">
+              <span class="fa fa-envelope-o"></span>
             </a>
           </li>
 
           {{#if logged_user.admin}}
           <li>
-            <a href="/messages" class="btn btn-info" style="margin-top: 8px; padding: 6px 12px;">
-              <span class="fa fa-inbox"></span> Issue Reports
+            <a href="/messages" class="btn btn-info" style="margin-top: 8px; padding: 6px 12px;" title="Issue Reports">
+              <span class="fa fa-inbox"></span>
               <span class="label label-danger message-count hidden">0</span>
             </a>
           </li>
