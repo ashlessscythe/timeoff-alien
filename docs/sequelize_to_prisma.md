@@ -19,21 +19,21 @@
 
 ---
 
-### **Phase 2: Code Migration**
+### **Phase 2: Code Migration** ✅
 
-[ ] **Model Layer Migration**
+[x] **Model Layer Migration**
 
 - Replace Sequelize models with Prisma Client usage.
 - Update model files in `lib/model/` and `models/`.
 - Migrate any custom model methods to Prisma equivalents.
 
-**Query Migration**
+**Query Migration** ✅
 
-- Replace Sequelize queries with Prisma queries.
-- Update all `findOne`, `findAll`, and other query calls.
-- Convert complex queries with `includes`, `where` clauses, and aggregations.
-- Migrate transactions.
-- Update any raw SQL queries.
+- ✅ Replace Sequelize queries with Prisma queries.
+- ✅ Update all `findOne`, `findAll`, and other query calls.
+- ✅ Convert complex queries with `includes`, `where` clauses, and aggregations.
+- ✅ Migrate transactions.
+- ✅ Update any raw SQL queries.
 
 **Session Store Migration**
 

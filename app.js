@@ -106,18 +106,42 @@ app.use(
 const passport = require('./lib/passport')()
 
 const session = require('express-session')
-// initalize sequelize with session store
-const SequelizeStore = require('connect-session-sequelize')(session.Store)
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: new SequelizeStore({
-      db: app.get('db_model').sequelize
+// Session configuration
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET || 'secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}
+
+// If Redis URL is provided, use Redis as session store
+if (process.env.REDIS_URL) {
+  try {
+    const RedisStore = require('connect-redis')(session)
+    const redis = require('redis')
+    const redisClient = redis.createClient(process.env.REDIS_URL)
+
+    redisClient.on('error', function (err) {
+      console.error('Redis error:', err)
+      console.log('Falling back to memory session store')
     })
-  })
-)
+
+    redisClient.on('connect', function () {
+      console.log('Successfully connected to Redis')
+      sessionConfig.store = new RedisStore({ client: redisClient })
+    })
+  } catch (error) {
+    console.error('Failed to initialize Redis:', error)
+    console.log('Using memory session store')
+  }
+} else {
+  console.log('No REDIS_URL provided, using memory session store')
+}
+
+app.use(session(sessionConfig))
 app.use(passport.initialize())
 app.use(passport.session())
 
