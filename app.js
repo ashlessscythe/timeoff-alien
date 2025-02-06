@@ -109,10 +109,10 @@ const session = require('express-session')
 // Session configuration
 const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'secret',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Set to true only if using HTTPS
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }
@@ -194,7 +194,7 @@ app.use(function (_req, res, next) {
 })
 
 // Enable flash messages within session
-app.use(require('./lib/middleware/flash_messages'))
+app.use(require('./lib/middleware/flash_messages')())
 
 app.use(require('./lib/middleware/session_aware_redirect'))
 
