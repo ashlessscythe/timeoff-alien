@@ -148,33 +148,38 @@ app.use(passport.session())
 // Custom middlewares
 //
 // Make sure session and user objects are available in templates
-app.use(function (req, res, next) {
-  // Get today given user's timezone
-  let today
+app.use(async function (req, res, next) {
+  try {
+    // Get today given user's timezone
+    let today
+    const { Company } = require('./lib/model/db')
 
-  if (req.user && req.user.company) {
-    today = req.user.company.get_today()
-  } else {
-    today = moment.utc()
+    if (req.user && req.user.company) {
+      today = Company.getToday(req.user.company)
+    } else {
+      today = moment.utc()
+    }
+
+    res.locals.session = req.session
+    res.locals.logged_user = req.user
+    res.locals.url_to_the_site_root = '/'
+    // set header from env or default to static string
+    res.locals.header_title = process.env.HEADER_TITLE || 'Time Off Requests'
+    // set branding url
+    res.locals.branding_url = process.env.BRANDING_URL || 'https://timeoff.com'
+    // For book leave request modal
+    res.locals.booking_start = today
+    res.locals.booking_end = today
+    res.locals.keep_team_view_hidden = !!(
+      req.user &&
+      req.user.company.is_team_view_hidden &&
+      !req.user.admin
+    )
+
+    next()
+  } catch (error) {
+    next(error)
   }
-
-  res.locals.session = req.session
-  res.locals.logged_user = req.user
-  res.locals.url_to_the_site_root = '/'
-  // set header from env or default to static string
-  res.locals.header_title = process.env.HEADER_TITLE || 'Time Off Requests'
-  // set branding url
-  res.locals.branding_url = process.env.BRANDING_URL || 'https://timeoff.com'
-  // For book leave request modal
-  res.locals.booking_start = today
-  res.locals.booking_end = today
-  res.locals.keep_team_view_hidden = !!(
-    req.user &&
-    req.user.company.is_team_view_hidden &&
-    !req.user.admin
-  )
-
-  next()
 })
 
 app.use(function (_req, res, next) {
