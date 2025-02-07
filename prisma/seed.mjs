@@ -538,7 +538,7 @@ async function createUsers(company, departments, count) {
 
     const user = await prisma.users.create({
       data: {
-        email: faker.internet.email(),
+        email: `${faker.internet.userName()}@example.com`,
         password: hashifyPassword(password), // Hash the password
         name: faker.person.firstName(),
         lastname: faker.person.lastName(),
@@ -757,7 +757,7 @@ async function createMessages(users, dateRange) {
       await prisma.user_messages.create({
         data: {
           name: `${user.name} ${user.lastname}`,
-          email: user.email,
+          email: `${user.name.toLowerCase()}.${user.lastname.toLowerCase()}@example.com`,
           subject: faker.helpers.arrayElement(subjects),
           message: message,
           status: faker.helpers.arrayElement([
