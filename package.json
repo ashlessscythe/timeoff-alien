@@ -94,7 +94,8 @@
     "preinstall": "npx npm-force-resolutions",
     "prebuild": "npm run compile-sass && npm run minify-css && npm run minify-js && npm run copy-static && npm run sync-to-public",
     "build": "NODE_ENV=production npm run prebuild",
-    "start": "npx prisma generate && npx prisma migrate deploy && NODE_ENV=production node bin/wwww"
+    "start": "npx prisma generate && npx prisma migrate deploy && NODE_ENV=production node bin/wwww",
+    "dev": "node bin/wwww"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"

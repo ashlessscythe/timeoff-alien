@@ -8,6 +8,7 @@ import { hideBin } from 'yargs/helpers'
 const prisma = new PrismaClient()
 
 const CRYPTO_SECRET = process.env.CRYPTO_SECRET || 'uhoh,youshouldreallysetthis'
+const CRYPTO_HASH_ENCODING = process.env.CRYPTO_HASH_ENCODING || 'binary'
 
 // Default configuration
 const DEFAULT_CONFIG = {
@@ -41,9 +42,19 @@ const HOLIDAY_NAMES = {
 
 // Match the hashify_password function from user.js
 function hashifyPassword(password) {
+  // Log the values to debug
+  console.log('Seed script hashing with:', {
+    password,
+    secret: CRYPTO_SECRET,
+    encoding: CRYPTO_HASH_ENCODING,
+    result: crypto
+      .createHash('md5')
+      .update(password + CRYPTO_SECRET, CRYPTO_HASH_ENCODING)
+      .digest('hex')
+  })
   return crypto
     .createHash('md5')
-    .update(password + CRYPTO_SECRET, 'binary')
+    .update(password + CRYPTO_SECRET, CRYPTO_HASH_ENCODING)
     .digest('hex')
 }
 
@@ -547,6 +558,7 @@ async function createUsers(company, departments, count) {
       }
     })
     console.log(`Created user ${i + 1} of ${count}`)
+    console.log(`e: ${user.email} p: ${password}`)
     users.push(user)
   }
 
