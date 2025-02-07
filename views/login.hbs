@@ -1,5 +1,11 @@
 {{> header }}
 
+{{#if show_public_banner}}
+<div class="alert" role="alert" style="background-color: {{public_message_bg}}; color: {{public_message_font}}">
+  {{{public_banner_message}}}
+</div>
+{{/if}}
+
 <h1>Login</h1>
 
 {{> show_flash_messages }}

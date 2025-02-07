@@ -1,14 +1,31 @@
 import { faker } from '@faker-js/faker'
 import { PrismaClient } from '@prisma/client'
-import crypto from 'crypto'
+import bcrypt from 'bcrypt'
 import fs from 'fs'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
 const prisma = new PrismaClient()
 
-const CRYPTO_SECRET = process.env.CRYPTO_SECRET || 'uhoh,youshouldreallysetthis'
-const CRYPTO_HASH_ENCODING = process.env.CRYPTO_HASH_ENCODING || 'binary'
+// Password requirements following NIST guidelines
+const PASSWORD_MIN_LENGTH = 12
+const PASSWORD_MAX_LENGTH = 128
+const SALT_ROUNDS = 12
+
+// Function to generate a secure password that meets requirements
+function generateSecurePassword() {
+  const length = faker.number.int({
+    min: PASSWORD_MIN_LENGTH,
+    max: PASSWORD_MAX_LENGTH
+  })
+  const chars =
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'
+  let password = ''
+  for (let i = 0; i < length; i++) {
+    password += faker.helpers.arrayElement(chars.split(''))
+  }
+  return password
+}
 
 // Default configuration
 const DEFAULT_CONFIG = {
@@ -40,22 +57,9 @@ const HOLIDAY_NAMES = {
   12: ['Winter Holiday', "New Year's Eve"]
 }
 
-// Match the hashify_password function from user.js
+// Hash password using bcrypt
 function hashifyPassword(password) {
-  // Log the values to debug
-  console.log('Seed script hashing with:', {
-    password,
-    secret: CRYPTO_SECRET,
-    encoding: CRYPTO_HASH_ENCODING,
-    result: crypto
-      .createHash('md5')
-      .update(password + CRYPTO_SECRET, CRYPTO_HASH_ENCODING)
-      .digest('hex')
-  })
-  return crypto
-    .createHash('md5')
-    .update(password + CRYPTO_SECRET, CRYPTO_HASH_ENCODING)
-    .digest('hex')
+  return bcrypt.hashSync(password, SALT_ROUNDS)
 }
 
 const argv = yargs(hideBin(process.argv))
@@ -534,7 +538,7 @@ async function createUsers(company, departments, count) {
   for (let i = 0; i < count; i++) {
     const isAdmin = i < 2 // Make the first two users admins
     const isManager = i < 5 // Make the first five users managers
-    const password = faker.internet.password()
+    const password = generateSecurePassword()
 
     const user = await prisma.users.create({
       data: {
