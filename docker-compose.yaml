@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   # Main application service
   web:
-    container_name: timeoff-web
-    build: .
+    container_name: timeoff
+    image: ashless/timeoff-alien
     environment:
       # Core settings
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DOCKER_DB_URL}
       APP_PORT: ${APP_PORT}
       # Security settings
       SESSION_SECRET: ${SESSION_SECRET}
@@ -30,17 +28,17 @@ services:
   # 1. Comment out DATABASE_URL in your .env file
   # 2. Uncomment the postgres service below
   # 3. Set DB_* variables in your .env file
-  # postgres:
-  #   image: postgres:15-alpine
-  #   container_name: timeoff-db
-  #   environment:
-  #     POSTGRES_DB: ${DB_DATABASE}
-  #     POSTGRES_USER: ${DB_USER}
-  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${DB_HOST}
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   # Database Admin Tool (Optional)
   # Uncomment to use Adminer for database management

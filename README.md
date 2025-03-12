@@ -25,63 +25,47 @@
 
 ## 🛠️ Installation
 
-### ☁️ Cloud hosting
-
-Visit http://timeoff.management/ and create a company account to use the cloud-based version.
-
 ### 🏠 Self hosting
 
+1. Clone and prepare the repository:
 ```bash
-# Clone the repository
-git clone https://github.com/timeoff-management/application.git timeoff-management
-cd timeoff-management
-```
-
-#### Standalone
-
-```bash
-npm install
-npm start
-```
-
-#### 🐳 Using Docker
-
-```bash
-# Pull the image
-docker pull aliengen/timeoff-management-application:master
-
-# Run the container
-docker run -d -p 3000:3000 --env-file ./env --name timeoff aliengen/timeoff-management-application:master
-```
-
-#### 🐳 Using Docker-compose
-
-1. Copy the example environment file:
-
-```bash
+git clone https://github.com/ashlessscythe/timeoff-alien.git timeoff-alien
+cd timeoff-alien
 cp .env.example .env
 ```
 
-2. Choose your database configuration:
+2. Choose your database configuration in `.env`:
 
    **Option 1: External Database (recommended for production)**
+   - If you're using a hosted database (Neon/Render/Vercel/Supabase), set your `DATABASE_URL`
+   - Comment out Option 2 (`DOCKER_DB_URL`, `DB_*` variables)
+   - Comment out the postgres service in `docker-compose.yaml`
 
-   - Set your DATABASE_URL in .env
-   - Comment out the postgres service in docker-compose.yaml
-
-   **Option 2: Local Database (recommended for development)**
-
-   - Comment out DATABASE_URL in .env
-   - Uncomment the postgres service in docker-compose.yaml
-   - Configure DB\_\* variables in .env
+   **Option 2: Local Database (default, recommended for development)**
+   - Uses the included PostgreSQL Docker container
+   - No changes needed to `.env` or `docker-compose.yaml`
+   - Database will be automatically configured
 
 3. Start the application:
-
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-The application will be available at http://localhost:3000 (or your configured port).
+The application will be available at http://localhost:3000
+
+4. (Optional) Seed the database with sample data:
+```bash
+npx prisma db seed -- --create-default-user --use-faker --count 20
+```
+This creates a default admin user (bob@local.eml/bob) and 20 sample users with data.
+
+#### 🐳 Alternative: Using Docker without Compose
+
+If you're more tech-savvy and prefer to manage containers manually:
+```bash
+docker pull ashless/timeoff-alien
+docker run -d -p 3000:3000 --env-file .env --name timeoff ashless/timeoff-alien
+```
 
 ### 💾 Database Configuration
 
@@ -93,7 +77,7 @@ The application supports two database setup options:
    - Set DATABASE_URL in .env
    - Better scalability and maintenance
    - Automatic backups and monitoring
-   - Example: `DATABASE_URL=postgresql://user:pass@host:5432/dbname?sslmode=require`
+   - Example: `DATABASE_URL="postgresql://hosted:db@coolprovider.com/dbname?sslmode=require`
 
 2. **Local Database (recommended for development)**
    - Runs PostgreSQL in a Docker container
@@ -101,6 +85,7 @@ The application supports two database setup options:
    - Easy setup for development
    - Includes optional Adminer for database management
    - Configure using DB\_\* variables in .env
+   - Optional: there's a helper script ./start-psql.sh to start a local docker psql separately
 
 Choose the option that best fits your needs. For development, the local database option provides a simpler setup. For production, an external database offers better reliability and features.
 
@@ -113,7 +98,7 @@ The application includes a powerful seeding system for populating your database 
 npx prisma db seed
 
 # Clear existing data before seeding
-npx prisma db seed -- --clear
+npx prisma db seed -- --clear   # (CAREFUL, this is destrucive!)
 
 # Customize the seed data
 npx prisma db seed -- --user-count 20 --leaves-multiplier 5
@@ -158,7 +143,6 @@ Here's a summary of key environment variables you can set:
 - `DB_DIALECT`: Database type (mysql, postgres, sqlite, mssql)
 - `OPTION_ALLOW_NEW_REGISTRATIONS`: Set to true to allow new company registrations
 - `SMTP_*`: Various SMTP settings for email configuration
-- `CRYPTO_SECRET`: Secret key for password hashing
 - `SESSION_SECRET`: Secret key for session management
 
 For a complete list of options, refer to the `.env.example` file in the project root.
@@ -173,9 +157,9 @@ USE_CHROME=1 npm test
 
 ```bash
 git fetch
-git pull origin master
+git pull origin public
 npm install
-npm run-script db-update
+npm run build
 npm start
 ```
 

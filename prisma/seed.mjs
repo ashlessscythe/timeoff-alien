@@ -234,8 +234,7 @@ async function main() {
     - Departments: ${departments.length}
     - Users: ${users.length}
     - Leaves multiplier: ${config.leavesMultiplier}x
-    - Date range: ${config.dateRange.from.toISOString().split('T')[0]} to ${
-      config.dateRange.to.toISOString().split('T')[0]
+    - Date range: ${config.dateRange.from.toISOString().split('T')[0]} to ${config.dateRange.to.toISOString().split('T')[0]
     }
     - Bank holidays: ${config.bankHolidayCount}
     - Users with custom schedules: ${Math.round(config.customSchedulePercent)}%
@@ -301,8 +300,7 @@ async function createBankHolidays(company, count, dateRange) {
       })
       holidays.push(holiday)
       console.log(
-        `Created bank holiday: ${holiday.name} on ${
-          holiday.date.toISOString().split('T')[0]
+        `Created bank holiday: ${holiday.name} on ${holiday.date.toISOString().split('T')[0]
         }`
       )
     } catch (error) {

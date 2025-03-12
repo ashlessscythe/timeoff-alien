@@ -1,10 +1,13 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:18-slim AS builder
 
 WORKDIR /app
 
-# Install dependencies for building
-RUN apk add --no-cache python3 make g++ gcc libc-dev
+# Install OpenSSL and other build dependencies
+RUN apt-get update -y && \
+    apt-get install -y openssl python3 make g++ gcc libc-dev curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy package files and install dependencies
 COPY package*.json ./
@@ -13,22 +16,27 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
-# Build the application (if necessary)
+# Generate Prisma client and build
+RUN npx prisma generate
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine
+FROM node:18-slim
 
 WORKDIR /app
 
-# Install production dependencies
-RUN apk add --no-cache curl
+# Install OpenSSL and curl for production
+RUN apt-get update -y && \
+    apt-get install -y openssl curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts from builder stage
 COPY --from=builder /app .
 
-# Add user so it doesn't run as root
-RUN adduser --system --uid 1001 app
+# Add non-root user
+RUN groupadd -r app && useradd -r -g app app && \
+    chown -R app:app /app
 USER app
 
 EXPOSE 3000
