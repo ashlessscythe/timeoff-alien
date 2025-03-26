@@ -37,10 +37,10 @@ const handlebars = require('express-handlebars').create({
   extname: '.hbs',
   helpers: {
     ...baseHelpers,
-    __: function () {
+    __: function() {
       return i18n.__.apply(this, arguments)
     },
-    __n: function () {
+    __n: function() {
       return i18n.__n.apply(this, arguments)
     }
   },
@@ -114,7 +114,11 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: new SequelizeStore({
-      db: app.get('db_model').sequelize
+      db: app.get('db_model').sequelize,
+      // Add this option to fix the Sequelize v6 compatibility issue
+      // This tells connect-session-sequelize to use the Sequelize v6 API
+      // instead of trying to use the removed .import method
+      modelKey: 'Session'
     })
   })
 )
@@ -124,7 +128,7 @@ app.use(passport.session())
 // Custom middlewares
 //
 // Make sure session and user objects are available in templates
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   // Get today given user's timezone
   let today
 
@@ -153,7 +157,7 @@ app.use(function (req, res, next) {
   next()
 })
 
-app.use(function (_req, res, next) {
+app.use(function(_req, res, next) {
   const isProduction = app.get('env') === 'production'
   res.locals.custom_java_script = [
     '/js/bootstrap-datepicker.js',
@@ -218,7 +222,7 @@ app.use('/reports/', require('./lib/route/reports'))
 app.use('/messages/', require('./lib/route/messages'))
 
 // catch 404
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.render('not_found')
 })
 
@@ -227,7 +231,7 @@ app.use(function (req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function (err, req, res, next) {
+  app.use(function(err, req, res, next) {
     console.error(err)
     res.status(err.status || 500)
     res.render('error', {
@@ -239,7 +243,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   console.error(err)
   res.status(err.status || 500)
   res.render('error', {
