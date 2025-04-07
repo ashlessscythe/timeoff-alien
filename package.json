@@ -10,7 +10,12 @@
     "mysql2": "^3.9.1",
     "pg": "^8.11.4",
     "redis": "^3.1.2",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.7"
+  },
+  "overrides": {
+    "axios": ">=0.28.2",
+    "tar": ">=2.1.2",
+    "follow-redirects": ">=1.15.6"
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
@@ -24,7 +29,7 @@
     "connect-session-sequelize": "^7.1.7",
     "cookie-parser": "^1.4.4",
     "csv": "~5.1.1",
-    "debug": "~4.1.1",
+    "debug": ">=4.4.0",
     "express": "^4.16.4",
     "express-handlebars": "^8.0.1",
     "express-session": "^1.16.1",
@@ -36,7 +41,7 @@
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.25",
     "morgan": "^1.9.1",
-    "multer": "^1.4.1",
+    "multer": "^1.4.4",
     "nconf": "^0.12.1",
     "node-uuid": "^1.4.8",
     "nodemailer": "^6.1.1",
@@ -51,7 +56,7 @@
     "sequelize": "^6.37.6",
     "sequelize-cli": "^5.5.1",
     "serve-favicon": "^2.5.0",
-    "underscore": "^1.9.1",
+    "underscore": ">=1.12.1",
     "uuid": "^3.3.2",
     "validator": "^13.11.0",
     "yargs": "^17.7.2"
