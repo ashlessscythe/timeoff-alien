@@ -256,6 +256,8 @@ model users {
   admin                            Boolean                     @default(false)
   manager                          Boolean                     @default(false)
   auto_approve                     Boolean                     @default(false)
+  reset_password_token             String?                     @db.VarChar(255)
+  reset_password_expires           DateTime?                   @db.Timestamptz(6)
   start_date                       DateTime                    @db.Timestamptz(6)
   end_date                         DateTime?                   @db.Timestamptz(6)
   created_at                       DateTime                    @db.Timestamptz(6)
