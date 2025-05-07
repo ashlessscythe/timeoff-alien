@@ -96,7 +96,6 @@
               <li><a href="/users/import/">Import employees</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="/audit/email/">Emails audit</a></li>
-              <li><a href="/reports/">Reports</a></li>
               <li><a href="/messages/">User Messages</a></li>
             </ul>
           </li>
@@ -117,7 +116,6 @@
               <li><a href="/users/import/">Import employees</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="/audit/email/">Emails audit</a></li>
-              <li><a href="/reports/">Reports</a></li>
               <li><a href="/messages/">User Messages</a></li>
             </ul>
           </li>
@@ -129,6 +127,9 @@
             <ul class="dropdown-menu" role="menu">
               <li><a href="/requests/">Requests</a></li>
               <li><a href="/calendar/feeds/">Feeds</a></li>
+              {{#if (or logged_user.admin logged_user.manager)}}
+              <li><a href="/reports/">Reports</a></li>
+              {{/if}}
               <li role="separator" class="divider"></li>
               <li><a href="/logout/">Logout</a></li>
             </ul>
@@ -140,6 +141,9 @@
             <ul class="dropdown-menu" role="menu">
               <li><a href="/requests/">Requests</a></li>
               <li><a href="/calendar/feeds/">Feeds</a></li>
+              {{#if (or logged_user.admin logged_user.manager)}}
+              <li><a href="/reports/">Reports</a></li>
+              {{/if}}
               <li role="separator" class="divider"></li>
               <li><a href="/logout/">Logout</a></li>
             </ul>
