@@ -98,7 +98,7 @@
     "minify-css": "cleancss -o build/css/style.min.css build/css/style.css",
     "minify-js": "if [ -s public/js/global.js ]; then terser public/js/global.js -c -m -o build/js/global.min.js; else echo '// This file is intentionally left empty' > build/js/global.min.js; fi",
     "copy-static": "mkdir -p build/img build/fonts build/css build/js && cp -R public/img/* build/img/ 2>/dev/null || : && cp -R public/fonts/* build/fonts/ 2>/dev/null || : && cp -R public/css/*.css build/css/ 2>/dev/null || : && cp -R public/js/*.js build/js/ 2>/dev/null || :",
-    "sync-to-public": "rm -rf public/* && cp -R build/* public/",
+    "sync-to-public": "rm -rf public/* && cp -R build/* public/ && rm -rf build",
     "preinstall": "npx npm-force-resolutions",
     "prebuild": "npm run compile-sass && npm run minify-css && npm run minify-js && npm run copy-static && npm run sync-to-public",
     "build": "NODE_ENV=production npm run prebuild",
