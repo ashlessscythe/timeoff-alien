@@ -1,8 +1,8 @@
 $(document).ready(function() {
   console.log('Popover initializer loaded')
 
-  // User details popover
-  $('.user-details-summary-trigger').popover({
+  // User details popover - explicitly exclude leave-details-summary-trigger
+  $('.user-details-summary-trigger:not(.leave-details-summary-trigger)').popover({
     title: 'Employee summary',
     html: true,
     trigger: 'hover',
@@ -16,21 +16,6 @@ $(document).ready(function() {
         divId,
         '/users/summary/'
       )
-    }
-  })
-
-  // Leave details popover
-  $('.leave-details-summary-trigger').popover({
-    title: 'Leave summary',
-    html: true,
-    trigger: 'hover',
-    placement: 'auto',
-    delay: { show: 1000, hide: 10 },
-    content: function() {
-      console.log('Leave details popover triggered')
-      var leaveId = $(this).attr('data-leave-id')
-      var divId = 'tmp-id-' + $.now()
-      return detailsInPopup(leaveId, divId, '/calendar/leave-summary/')
     }
   })
 

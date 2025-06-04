@@ -363,10 +363,152 @@
   .alert .btn {
     margin-left: 10px;
   }
+
+  .leave-details-popup {
+    position: absolute;
+    z-index: 1050;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    max-width: 400px;
+    display: none;
+    opacity: 1 !important;
+  }
+
+  .leave-details-popup::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    width: 10px;
+    height: 10px;
+    background: white;
+    transform: rotate(45deg);
+    border-left: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+  }
+
+  /* Ensure calendar cells don't create a new stacking context */
+  .calendar_cell {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Ensure popup is above calendar cells */
+  .leave-details-popup {
+    z-index: 1050;
+  }
+
+  /* Ensure modals are above popups */
+  .modal {
+    z-index: 1060;
+  }
+
+  /* Fix calendar cell number visibility */
+  td.calendar_cell {
+    width: 15px !important;
+    min-width: 15px !important;
+    max-width: 15px !important;
+    position: relative;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  td.calendar_cell span {
+    position: relative;
+    left: 0;
+    top: 0;
+    display: block;
+    text-align: center;
+    z-index: 10;
+    width: 100%;
+    pointer-events: auto;
+  }
+
+  /* Hide any tooltips when popup is visible */
+  .tooltip {
+    display: none !important;
+  }
+
+  /* Ensure leave cell colors are visible */
+  td.leave_cell,
+  td.leave_cell_pended {
+    opacity: 1 !important;
+  }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    // First, remove ALL existing event handlers and popovers
+    $(document).off('click');
+    $('body').off('click');
+    $('.leave-details-summary-trigger').off();
+    $('[data-toggle="popover"]').popover('destroy');
+    $('.popover').remove();
+    $('#leave-details-popup').remove();
+
+    // Single popup container
+    const popupContainer = $('<div id="leave-details-popup" class="leave-details-popup"></div>').appendTo('body');
+    let currentTrigger = null;
+
+    // Single click handler for document to handle closing
+    $(document).on('click', function (e) {
+      if (!$(e.target).closest('.leave-details-summary-trigger, #leave-details-popup').length) {
+        popupContainer.hide();
+        currentTrigger = null;
+      }
+    });
+
+    // Single click handler for leave details
+    $('.leave-details-summary-trigger').on('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const trigger = $(this);
+      const leaveId = trigger.data('leave-id');
+
+      if (!leaveId) {
+        return;
+      }
+
+      // If same trigger clicked, just toggle
+      if (currentTrigger && currentTrigger[0] === trigger[0]) {
+        popupContainer.toggle();
+        return;
+      }
+
+      // Load new content
+      $.get('/calendar/leave-summary/' + leaveId + '/', function (data) {
+        popupContainer.html(data).show();
+
+        const triggerOffset = trigger.offset();
+        const triggerHeight = trigger.outerHeight();
+
+        popupContainer.css({
+          top: (triggerOffset.top + triggerHeight + 5) + 'px',
+          left: triggerOffset.left + 'px'
+        });
+
+        currentTrigger = trigger;
+      });
+    });
+
+    // Handle modal triggers within popup
+    popupContainer.on('click', 'button[data-target]', function (e) {
+      e.preventDefault();
+      const modalId = $(this).data('target');
+      const leaveId = $(this).data('leave-id');
+
+      $(modalId).find('input[name="request"]').val(leaveId);
+      $(modalId).modal('show');
+      popupContainer.hide();
+      currentTrigger = null;
+    });
+
     const allDeptCheckbox = document.querySelector('input[value="all"]');
     const deptCheckboxes = document.querySelectorAll('.dept-checkbox:not([value="all"])');
     const applyButton = document.querySelector('.apply-filters');
@@ -483,3 +625,6 @@
 </script>
 
 {{> footer }}
+
+{{> modal_leave_reject }}
+{{> modal_leave_approve }}
