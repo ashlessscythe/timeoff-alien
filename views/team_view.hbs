@@ -443,70 +443,14 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    // First, remove ALL existing event handlers and popovers
-    $(document).off('click');
-    $('body').off('click');
-    $('.leave-details-summary-trigger').off();
-    $('[data-toggle="popover"]').popover('destroy');
-    $('.popover').remove();
-    $('#leave-details-popup').remove();
+    // Note: Leave details popovers are now handled by leave-details-popover.js
+    // This script only handles department filters and sorting functionality
 
-    // Single popup container
-    const popupContainer = $('<div id="leave-details-popup" class="leave-details-popup"></div>').appendTo('body');
-    let currentTrigger = null;
-
-    // Single click handler for document to handle closing
-    $(document).on('click', function (e) {
-      if (!$(e.target).closest('.leave-details-summary-trigger, #leave-details-popup').length) {
-        popupContainer.hide();
-        currentTrigger = null;
-      }
-    });
-
-    // Single click handler for leave details
-    $('.leave-details-summary-trigger').on('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const trigger = $(this);
-      const leaveId = trigger.data('leave-id');
-
-      if (!leaveId) {
-        return;
-      }
-
-      // If same trigger clicked, just toggle
-      if (currentTrigger && currentTrigger[0] === trigger[0]) {
-        popupContainer.toggle();
-        return;
-      }
-
-      // Load new content
-      $.get('/calendar/leave-summary/' + leaveId + '/', function (data) {
-        popupContainer.html(data).show();
-
-        const triggerOffset = trigger.offset();
-        const triggerHeight = trigger.outerHeight();
-
-        popupContainer.css({
-          top: (triggerOffset.top + triggerHeight + 5) + 'px',
-          left: triggerOffset.left + 'px'
-        });
-
-        currentTrigger = trigger;
-      });
-    });
-
-    // Handle modal triggers within popup
-    popupContainer.on('click', 'button[data-target]', function (e) {
-      e.preventDefault();
-      const modalId = $(this).data('target');
+    // Handle modal triggers for leave approval/rejection
+    $(document).on('click', 'button[data-target="#approveModal"], button[data-target="#rejectModal"]', function () {
       const leaveId = $(this).data('leave-id');
-
+      const modalId = $(this).data('target');
       $(modalId).find('input[name="request"]').val(leaveId);
-      $(modalId).modal('show');
-      popupContainer.hide();
-      currentTrigger = null;
     });
 
     const allDeptCheckbox = document.querySelector('input[value="all"]');
