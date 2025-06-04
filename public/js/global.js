@@ -86,7 +86,8 @@ $(function() {
 })
 
 $(function() {
-  $('[data-toggle="popover"]').popover()
+  // Initialize popovers except for leave summary triggers which are handled separately
+  $('[data-toggle="popover"]:not(.leave-details-summary-trigger)').popover()
 })
 
 /*
@@ -221,35 +222,6 @@ $(document).ready(function() {
       }
     })
 
-    return '<div id="' + divId + '">Loading...</div>'
-  }
-})
-
-$(document).ready(function() {
-  $('.leave-details-summary-trigger').popover({
-    title: 'Leave summary',
-    html: true,
-    trigger: 'hover',
-    placement: 'auto',
-    delay: { show: 1000, hide: 10 },
-    content: function() {
-      const leaveId = $(this).attr('data-leave-id')
-      console.log('leave id: ', leaveId)
-      const divId = 'tmp-id-' + $.now()
-      return detailsInPopup(leaveId, divId)
-    }
-  })
-
-  function detailsInPopup(leaveId, divId) {
-    console.log('Fetching details for Leave ID:', leaveId) // Log the leave ID before making the AJAX request
-
-    $.ajax({
-      url: '/calendar/leave-summary/' + leaveId + '/',
-      success: function(response) {
-        console.log('Received response for Leave ID:', leaveId) // Log the leave ID after receiving the response
-        $('#' + divId).html(response)
-      }
-    })
     return '<div id="' + divId + '">Loading...</div>'
   }
 })
