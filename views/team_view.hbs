@@ -1,238 +1,310 @@
 {{> header }}
 
-<h1>Team View</h1>
+<div class="sticky-header">
+  <h1>Team View</h1>
 
-<div class="row">
-  <div class="col-md-6 lead">{{logged_user.name}} {{logged_user.lastname}}'s team <a href="/calendar/feeds/"
-      data-toggle="tooltip" data-placement="right" title="Export Team View to external calendars"><span
-        class="fa fa-rss"></span></a></div>
-  <div class="col-md-3 col-md-offset-3">
-    <div class="btn-group btn-group-sm pull-right" role="group">
-      <a href="/calendar/teamview/?{{> team_view_url_parameters grouped_mode = 0 save_grouped_mode = 1 save_current_department = 1 }}"
-        class="btn btn-default" {{#unless grouped_mode}}disabled=disabled{{/unless}}>All</a>
-      <a href="/calendar/teamview/?{{> team_view_url_parameters grouped_mode = 1 save_grouped_mode = 1 save_current_department = 1 }}"
-        class="btn btn-default" {{#if grouped_mode}}disabled=disabled{{/if}}>By department</a>
+  <div class="row">
+    <div class="col-md-6 lead">{{logged_user.name}} {{logged_user.lastname}}'s team <a href="/calendar/feeds/"
+        data-toggle="tooltip" data-placement="right" title="Export Team View to external calendars"><span
+          class="fa fa-rss"></span></a></div>
+    <div class="col-md-3 col-md-offset-3">
+      <div class="btn-group btn-group-sm pull-right" role="group">
+        <a href="/calendar/teamview/?{{> team_view_url_parameters grouped_mode = 0 save_grouped_mode = 1 save_current_department = 1 }}"
+          class="btn btn-default" {{#unless grouped_mode}}disabled=disabled{{/unless}}>All</a>
+        <a href="/calendar/teamview/?{{> team_view_url_parameters grouped_mode = 1 save_grouped_mode = 1 save_current_department = 1 }}"
+          class="btn btn-default" {{#if grouped_mode}}disabled=disabled{{/if}}>By department</a>
+      </div>
     </div>
   </div>
-</div>
 
-{{> show_flash_messages }}
+  {{> show_flash_messages }}
 
-<div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
 
-{{#unless grouped_mode}}
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading" role="button" data-toggle="collapse" href="#filterPanel" aria-expanded="false"
-        aria-controls="filterPanel">
-        <h4 class="panel-title">
-          <i class="fa fa-chevron-down collapsed"></i> Department Filters
-          <span class="filter-summary">
-            {{#if selected_departments}}
-            <span class="badge">{{selected_departments.length}} selected</span>
-            <small class="text-muted">
-              ({{#each selected_departments}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}})
-            </small>
-            {{else}}
-            <span class="badge">All Departments</span>
-            {{/if}}
-          </span>
-        </h4>
-      </div>
-      <div class="panel-collapse collapse" id="filterPanel">
-        <div class="panel-body department-filters">
-          <div class="row">
-            <div class="col-md-12">
-              <label class="dept-checkbox-label">
-                <input type="checkbox" class="dept-checkbox" value="all" {{#unless
-                  selected_departments}}checked{{/unless}}> All Departments
-              </label>
+  {{#unless grouped_mode}}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="button" data-toggle="collapse" href="#filterPanel" aria-expanded="false"
+          aria-controls="filterPanel">
+          <h4 class="panel-title">
+            <i class="fa fa-chevron-down collapsed"></i> Department Filters
+            <span class="filter-summary">
+              {{#if selected_departments}}
+              <span class="badge">{{selected_departments.length}} selected</span>
+              <small class="text-muted">
+                ({{#each selected_departments}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}})
+              </small>
+              {{else}}
+              <span class="badge">All Departments</span>
+              {{/if}}
+            </span>
+          </h4>
+        </div>
+        <div class="panel-collapse collapse" id="filterPanel">
+          <div class="panel-body department-filters">
+            <div class="row">
+              <div class="col-md-12">
+                <label class="dept-checkbox-label">
+                  <input type="checkbox" class="dept-checkbox" value="all" {{#unless
+                    selected_departments}}checked{{/unless}}> All Departments
+                </label>
+              </div>
             </div>
-          </div>
-          <div class="row department-list">
-            {{#each related_departments}}
-            <div class="col-md-4">
-              <label class="dept-checkbox-label">
-                <input type="checkbox" class="dept-checkbox" value="{{this.id}}" {{#each ../selected_departments}} {{#if
-                  (eq this.id ../this.id)}}checked{{/if}} {{/each}} {{#unless
-                  ../selected_departments}}disabled{{/unless}}>
-                {{this.name}}
-              </label>
+            <div class="row department-list">
+              {{#each related_departments}}
+              <div class="col-md-4">
+                <label class="dept-checkbox-label">
+                  <input type="checkbox" class="dept-checkbox" value="{{this.id}}" {{#each ../selected_departments}}
+                    {{#if (eq this.id ../this.id)}}checked{{/if}} {{/each}} {{#unless
+                    ../selected_departments}}disabled{{/unless}}>
+                  {{this.name}}
+                </label>
+              </div>
+              {{/each}}
             </div>
-            {{/each}}
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <button class="btn btn-primary apply-filters">Apply Filters</button>
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-primary apply-filters">Apply Filters</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-{{/unless}}
+  {{/unless}}
 
-<nav>
+  <nav>
+    <div class="row">
+      <div class="col-xs-2">
+        <a class="btn btn-link btn-lg"
+          href="/calendar/teamview/?{{> team_view_url_parameters base_date = prev_date }}"><span aria-hidden="true"
+            class="fa fa-chevron-left"></span> {{as_date_formatted prev_date 'MMM' }}</a>
+      </div>
+
+      <div class="col-xs-8 calendar-section-caption">
+        <button id="team_view_month_select_btn" class="btn btn-link btn-lg"
+          data-tom="/calendar/teamview/?{{> team_view_url_parameters base_date=0 }}" data-provide="datepicker"
+          data-date-format="yyyy-mm" data-date-autoclose="1" data-date-min-view-mode="months">{{as_date_formatted
+          base_date 'MMMM, YYYY' }} <i class="fa fa-angle-down"></i></button>
+      </div>
+
+      <div class="col-xs-2">
+        <a class="btn btn-link btn-lg pull-right"
+          href="/calendar/teamview/?{{> team_view_url_parameters base_date = next_date }}">{{as_date_formatted next_date
+          'MMM'}} <span aria-hidden="true" class="fa fa-chevron-right"></span></a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<div class="scrollable-content">
+  <div class="row">&nbsp;</div>
+
+  {{#if grouped_mode}}
+
+  {{#if selected_departments}}
   <div class="row">
-    <div class="col-xs-2">
-      <a class="btn btn-link btn-lg"
-        href="/calendar/teamview/?{{> team_view_url_parameters base_date = prev_date }}"><span aria-hidden="true"
-          class="fa fa-chevron-left"></span> {{as_date_formatted prev_date 'MMM' }}</a>
-    </div>
-
-    <div class="col-xs-8 calendar-section-caption">
-      <button id="team_view_month_select_btn" class="btn btn-link btn-lg"
-        data-tom="/calendar/teamview/?{{> team_view_url_parameters base_date=0 }}" data-provide="datepicker"
-        data-date-format="yyyy-mm" data-date-autoclose="1" data-date-min-view-mode="months">{{as_date_formatted
-        base_date 'MMMM, YYYY' }} <i class="fa fa-angle-down"></i></button>
-    </div>
-
-    <div class="col-xs-2">
-      <a class="btn btn-link btn-lg pull-right"
-        href="/calendar/teamview/?{{> team_view_url_parameters base_date = next_date }}">{{as_date_formatted next_date
-        'MMM'}} <span aria-hidden="true" class="fa fa-chevron-right"></span></a>
+    <div class="col-md-12">
+      <div class="alert alert-info">
+        Showing filtered departments.
+        <a href="/calendar/teamview/?{{> team_view_url_parameters selected_departments = null save_current_department = 1 }}"
+          class="btn btn-default btn-sm">
+          <i class="fa fa-times"></i> Reset Filters
+        </a>
+      </div>
     </div>
   </div>
-</nav>
+  {{/if}}
 
-<div class="row">&nbsp;</div>
+  {{#each users_and_leaves_by_departments}}
 
-{{#if grouped_mode}}
-
-{{#if selected_departments}}
-<div class="row">
-  <div class="col-md-12">
-    <div class="alert alert-info">
-      Showing filtered departments.
-      <a href="/calendar/teamview/?{{> team_view_url_parameters selected_departments = null save_current_department = 1 }}"
-        class="btn btn-default btn-sm">
-        <i class="fa fa-times"></i> Reset Filters
-      </a>
-    </div>
+  {{#if @index}}
+  <div class="row">
+    <div class="col-md-12">&nbsp;</div>
   </div>
-</div>
-{{/if}}
+  {{/if}}
 
-{{#each users_and_leaves_by_departments}}
-
-{{#if @index}}
-<div class="row">
-  <div class="col-md-12">&nbsp;</div>
-</div>
-{{/if}}
-
-<div class="row clearfix">
-  <div class="col-md-12">
-    <table class="team-view-table table-hover">
-      <thead>
-        <tr>
-          <td class="team-view-header" colspan="2">
-            <div class="pull-left">
-              <h3>{{this.departmentName}}</h3>
-            </div>
-          </td>
-
-          {{#each this.users_and_leaves.0.days }}
-          <td colspan="2" class="team-view-header"><b>{{as_date_formatted this.moment 'dd'}}</b></td>
-          {{/each}}
-        </tr>
-      </thead>
-
-      <tbody>
-        {{#each this.users_and_leaves}}
-        <tr class="teamview-user-list-row" data-vpp-user-list-row={{this.user.id}}>
-          <td class="left-column-cell cross-link user-details-summary-trigger" data-user-id={{this.user.id}}>{{#if
-            ../../logged_user.admin}} {{#with this.user }}<a href="/users/edit/{{this.id}}/">{{ this.full_name
-              }}</a>{{/with}}{{else}}{{#with this.user }}<span>{{ this.full_name }}</span>{{/with}}{{/if}}</td>
-          <td>
-            <span class="teamview-deducted-days" {{#if statistics }}
-              data-content="In {{as_date_formatted ../../base_date 'MMMM, YYYY' }} {{#with this.user }}{{this.full_name}} used {{../../statistics.deducted_days }} days from allowance{{/with}}"
-              data-placement="right" data-toggle="popover" data-trigger="focus hover" {{/if}}>
-              {{#if statistics }}{{ statistics.deducted_days }}{{/if}}
-            </span>
-          </td>
-          {{#each this.days}}
-          {{> calendar_cell day = this}}
-          {{/each}}
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-{{/each}}
-
-{{else}}
-
-<div class="row clearfix">
-  <div class="col-md-12">
-    <table class="team-view-table table-hover">
-      <thead>
-        <tr>
-          <td class="team-view-header" colspan="2">
-            <div class="pull-left">
-              <h3>Team Members</h3>
-              <div class="sort-controls">
-                <button class="btn btn-link sort-btn" data-sort="name">
-                  Name <i class="fa fa-sort"></i>
-                </button>
-                <button class="btn btn-link sort-btn" data-sort="department">
-                  Department <i class="fa fa-sort"></i>
-                </button>
-                <button class="btn btn-link sort-btn" data-sort="deducted">
-                  Days Used <i class="fa fa-sort"></i>
-                </button>
+  <div class="row clearfix">
+    <div class="col-md-12">
+      <table class="team-view-table table-hover">
+        <thead>
+          <tr>
+            <td class="team-view-header" colspan="2">
+              <div class="pull-left">
+                <h3>{{this.departmentName}}</h3>
               </div>
-            </div>
-          </td>
+            </td>
 
-          {{#each users_and_leaves.0.days }}
-          <td colspan="2" class="team-view-header"><b>{{as_date_formatted this.moment 'dd'}}</b></td>
-          {{/each}}
-        </tr>
-      </thead>
+            {{#each this.users_and_leaves.0.days }}
+            <td colspan="2" class="team-view-header"><b>{{as_date_formatted this.moment 'dd'}}</b></td>
+            {{/each}}
+          </tr>
+        </thead>
 
-      <tbody>
-        {{#each users_and_leaves}}
-        <tr class="teamview-user-list-row" data-vpp-user-list-row={{this.user.id}}>
-          <td class="left-column-cell cross-link user-details-summary-trigger" data-user-id={{this.user.id}}>
-            {{#if ../logged_user.admin}}
-            {{#with this.user }}
-            <a href="/users/edit/{{this.id}}/" class="user-name">{{ this.full_name }}</a>
-            {{#with department}}<small class="text-muted department-name" title="{{name}}">({{name}})</small>{{/with}}
-            {{/with}}
-            {{else}}
-            {{#with this.user }}
-            <span class="user-name">{{ this.full_name }}</span>
-            {{#with department}}<small class="text-muted department-name" title="{{name}}">({{name}})</small>{{/with}}
-            {{/with}}
-            {{/if}}
-          </td>
-          <td>
-            <span class="teamview-deducted-days" {{#if statistics }}
-              data-content="In {{as_date_formatted ../base_date 'MMMM, YYYY' }} {{# with this.user }}{{this.full_name}} used {{../statistics.deducted_days }} days from allowance{{/with}}"
-              data-placement="right" data-toggle="popover" data-trigger="focus hover" {{/if}}>
-              {{#if statistics }}{{ statistics.deducted_days }}{{/if}}
-            </span>
-          </td>
-          {{#each this.days}}
-          {{> calendar_cell day = this}}
+        <tbody>
+          {{#each this.users_and_leaves}}
+          <tr class="teamview-user-list-row" data-vpp-user-list-row={{this.user.id}}>
+            <td class="left-column-cell cross-link user-details-summary-trigger" data-user-id={{this.user.id}}>{{#if
+              ../../logged_user.admin}} {{#with this.user }}<a href="/users/edit/{{this.id}}/">{{ this.full_name
+                }}</a>{{/with}}{{else}}{{#with this.user }}<span>{{ this.full_name }}</span>{{/with}}{{/if}}</td>
+            <td>
+              <span class="teamview-deducted-days" {{#if statistics }}
+                data-content="In {{as_date_formatted ../../base_date 'MMMM, YYYY' }} {{#with this.user }}{{this.full_name}} used {{../../statistics.deducted_days }} days from allowance{{/with}}"
+                data-placement="right" data-toggle="popover" data-trigger="focus hover" {{/if}}>
+                {{#if statistics }}{{ statistics.deducted_days }}{{/if}}
+              </span>
+            </td>
+            {{#each this.days}}
+            {{> calendar_cell day = this}}
+            {{/each}}
+          </tr>
           {{/each}}
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
+
+  {{/each}}
+
+  {{else}}
+
+  <div class="row clearfix">
+    <div class="col-md-12">
+      <table class="team-view-table table-hover">
+        <thead>
+          <tr>
+            <td class="team-view-header" colspan="2">
+              <div class="pull-left">
+                <h3>Team Members</h3>
+                <div class="sort-controls">
+                  <button class="btn btn-link sort-btn" data-sort="name">
+                    Name <i class="fa fa-sort"></i>
+                  </button>
+                  <button class="btn btn-link sort-btn" data-sort="department">
+                    Department <i class="fa fa-sort"></i>
+                  </button>
+                  <button class="btn btn-link sort-btn" data-sort="deducted">
+                    Days Used <i class="fa fa-sort"></i>
+                  </button>
+                </div>
+              </div>
+            </td>
+
+            {{#each users_and_leaves.0.days }}
+            <td colspan="2" class="team-view-header"><b>{{as_date_formatted this.moment 'dd'}}</b></td>
+            {{/each}}
+          </tr>
+        </thead>
+
+        <tbody>
+          {{#each users_and_leaves}}
+          <tr class="teamview-user-list-row" data-vpp-user-list-row={{this.user.id}}>
+            <td class="left-column-cell cross-link user-details-summary-trigger" data-user-id={{this.user.id}}>
+              {{#if ../logged_user.admin}}
+              {{#with this.user }}
+              <a href="/users/edit/{{this.id}}/" class="user-name">{{ this.full_name }}</a>
+              {{#with department}}<small class="text-muted department-name" title="{{name}}">({{name}})</small>{{/with}}
+              {{/with}}
+              {{else}}
+              {{#with this.user }}
+              <span class="user-name">{{ this.full_name }}</span>
+              {{#with department}}<small class="text-muted department-name" title="{{name}}">({{name}})</small>{{/with}}
+              {{/with}}
+              {{/if}}
+            </td>
+            <td>
+              <span class="teamview-deducted-days" {{#if statistics }}
+                data-content="In {{as_date_formatted ../base_date 'MMMM, YYYY' }} {{# with this.user }}{{this.full_name}} used {{../statistics.deducted_days }} days from allowance{{/with}}"
+                data-placement="right" data-toggle="popover" data-trigger="focus hover" {{/if}}>
+                {{#if statistics }}{{ statistics.deducted_days }}{{/if}}
+              </span>
+            </td>
+            {{#each this.days}}
+            {{> calendar_cell day = this}}
+            {{/each}}
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {{/if}}
+
+  <div class="row clearfix">&nbsp;</div>
 </div>
-
-{{/if}}
-
-<div class="row clearfix">&nbsp;</div>
 
 <style>
+  /* Sticky header styles */
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 100;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .scrollable-content {
+    overflow-y: auto;
+    height: calc(100vh - 350px);
+    position: relative;
+  }
+
+  /* Sticky table header styles */
+  .team-view-table {
+    position: relative;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .team-view-table thead {
+    position: sticky;
+    top: 0;
+    /* Stick to top of scrollable-content */
+    background: white;
+    z-index: 90;
+  }
+
+  .team-view-table thead tr {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* When in grouped mode, make department headers sticky too */
+  .team-view-table.grouped-mode thead {
+    top: -1px;
+    /* Adjust for border */
+  }
+
+  /* Ensure the sort controls stay visible */
+  .sort-controls {
+    background: white;
+    padding: 5px 0;
+  }
+
+  /* Adjust z-index stacking */
+  .sticky-header {
+    z-index: 100;
+  }
+
+  .team-view-header {
+    background: white;
+    position: sticky;
+    top: 0;
+    /* Stick to top of scrollable-content */
+  }
+
+  /* Ensure table headers don't get hidden */
+  .team-view-table thead tr td {
+    position: sticky;
+    top: 0;
+    background: white;
+  }
+
+  /* Existing styles */
   .department-filters {
     padding: 15px;
   }
@@ -564,6 +636,12 @@
           rows.forEach(row => tbody.appendChild(row));
         });
       });
+    }
+
+    // Add class to tables in grouped mode
+    const tables = document.querySelectorAll('.team-view-table');
+    if (document.querySelector('.grouped-mode')) {
+      tables.forEach(table => table.classList.add('grouped-mode'));
     }
   });
 </script>
