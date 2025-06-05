@@ -17,6 +17,8 @@ describe('employement_range_adjustment attribute', function() {
         now: moment('2016-07-20'),
         number_of_days_taken_from_allowance: 0,
         manual_adjustment: 0,
+      personal_adjustment: 0,
+        personal_adjustment: 0,
         carry_over: 0,
         nominal_allowance: 20,
         nominal_personal: 5
@@ -37,6 +39,7 @@ describe('employement_range_adjustment attribute', function() {
       now: moment('2016-02-20'),
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 20,
       nominal_personal: 5
@@ -58,6 +61,7 @@ describe('employement_range_adjustment attribute', function() {
       now: moment('2016-07-20'),
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 20,
       nominal_personal: 5
@@ -78,6 +82,7 @@ describe('employement_range_adjustment attribute', function() {
       now: moment('2018-07-20'),
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 20,
       nominal_personal: 5 // Added this line
@@ -99,6 +104,7 @@ describe('employement_range_adjustment attribute', function() {
       now: moment('2016-07-20'),
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 20,
       nominal_personal: 5 // Added this line
@@ -121,6 +127,7 @@ describe('employement_range_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 20,
       nominal_personal: 5
@@ -141,6 +148,7 @@ describe('employement_range_adjustment attribute', function() {
       now: moment('2016-07-20'),
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 20,
       nominal_personal: 5 // Added this line
@@ -163,6 +171,7 @@ describe('employement_range_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 20,
       nominal_personal: 0
@@ -185,6 +194,7 @@ describe('accrued_adjustment attribute', function() {
       now: moment('2017-02-01'),
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 24,
       nominal_personal: 5
@@ -209,6 +219,7 @@ describe('accrued_adjustment attribute', function() {
       now: moment('2016-07-01'),
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 24,
       nominal_personal: 5 // Added this line
@@ -234,6 +245,7 @@ describe('accrued_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 10,
       nominal_allowance: 24,
       nominal_personal: 5
@@ -262,6 +274,7 @@ describe('accrued_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 4,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 20,
       nominal_personal: 5
@@ -287,6 +300,7 @@ describe('accrued_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 24,
       nominal_personal: 2
@@ -312,6 +326,7 @@ describe('accrued_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 24,
       nominal_personal: 2
@@ -337,6 +352,7 @@ describe('accrued_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 24,
       nominal_personal: 5
@@ -362,6 +378,7 @@ describe('accrued_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 24,
       nominal_personal: 0
@@ -393,6 +410,7 @@ describe('accrued_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 24,
       nominal_personal: 9
@@ -420,6 +438,7 @@ describe('accrued_adjustment attribute', function() {
 
       number_of_days_taken_from_allowance: 0,
       manual_adjustment: 0,
+      personal_adjustment: 0,
       carry_over: 0,
       nominal_allowance: 24,
       nominal_personal: 5 // Added this line
