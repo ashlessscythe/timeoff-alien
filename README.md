@@ -74,18 +74,22 @@ The application supports two database setup options:
 1. **External Database (recommended for production)**
 
    - Uses a hosted database service (e.g., AWS RDS, Neon, Supabase)
-   - Set DATABASE_URL in .env
+   - Set `DATABASE_URL` in `.env` (not `DOCKER_DB_URL`)
+   - Comment out or remove `DOCKER_DB_URL` and `DB_*` variables
+   - Comment out the postgres service in `docker-compose.yaml`
    - Better scalability and maintenance
    - Automatic backups and monitoring
-   - Example: `DATABASE_URL="postgresql://hosted:db@coolprovider.com/dbname?sslmode=require`
+   - Example: `DATABASE_URL="postgresql://hosted:db@coolprovider.com/dbname?sslmode=require"`
 
 2. **Local Database (recommended for development)**
    - Runs PostgreSQL in a Docker container
    - Data persisted in a Docker volume
    - Easy setup for development
    - Includes optional Adminer for database management
-   - Configure using DB\_\* variables in .env
-   - Optional: there's a helper script ./start-psql.sh to start a local docker psql separately
+   - Configure using `DOCKER_DB_URL` and `DB_*` variables in `.env`
+   - Optional: there's a helper script `./start-psql.sh` to start a local docker psql separately
+
+**Important**: When using an external database, make sure to use `DATABASE_URL` (not `DOCKER_DB_URL`) and comment out the postgres service in your docker-compose file to avoid conflicts.
 
 Choose the option that best fits your needs. For development, the local database option provides a simpler setup. For production, an external database offers better reliability and features.
 
@@ -138,12 +142,18 @@ Here's a summary of key environment variables you can set:
 - `BRANDING_URI`: URL of the TimeOff.Management application
 - `BRANDING_WEBSITE`: URL of your company's website
 - `HEADER_TITLE`: Custom header title for the application
-- `DATABASE_URL`: Full database URL (for external databases)
+- `DATABASE_URL`: Full database URL (for external databases - use this, not DOCKER_DB_URL)
+- `DOCKER_DB_URL`: Database URL for local Docker database (for development only)
 - `DB_DATABASE`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`: Database configuration (for local databases)
 - `DB_DIALECT`: Database type (mysql, postgres, sqlite, mssql)
 - `OPTION_ALLOW_NEW_REGISTRATIONS`: Set to true to allow new company registrations
 - `SMTP_*`: Various SMTP settings for email configuration
 - `SESSION_SECRET`: Secret key for session management
+
+**Database URL Notes**:
+- Use `DATABASE_URL` for external/hosted databases (production)
+- Use `DOCKER_DB_URL` for local Docker databases (development)
+- Don't use both simultaneously - choose one based on your setup
 
 For a complete list of options, refer to the `.env.example` file in the project root.
 
