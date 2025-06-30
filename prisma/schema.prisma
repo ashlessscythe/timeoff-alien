@@ -88,6 +88,7 @@ model companies {
   updated_at              DateTime        @db.Timestamptz(6)
   last_name_first         Boolean         @default(false)
   payroll_close_time      Int             @default(10)  // 10 am in defined timezone (UTC-7)
+  first_day_of_week       Int             @default(1)   // 0 for Sunday, 1 for Monday
   audit                   audit[]
   bank_holidays           bank_holidays[]
   comments                comments[]

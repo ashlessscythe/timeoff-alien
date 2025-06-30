@@ -117,11 +117,19 @@
   <div class="col-md-3 month_container">
     <table class="calendar_month month_{{ this.month }}">
       <thead>
-        <tr>
-          <td colspan="14">{{#if ../show_full_year}}{{this.month}}{{else}}{{as_date_formatted this.moment 'MMMM,
-            YYYY'}}{{/if}}</td>
+        <td colspan="14">{{#if ../show_full_year}}{{this.month}}{{else}}{{as_date_formatted this.moment 'MMMM,
+          YYYY'}}{{/if}}</td>
         </tr>
         <tr>
+          {{#if_equal ../company.first_day_of_week 0}}
+          <td colspan="2">S</td>
+          <td colspan="2">M</td>
+          <td colspan="2">T</td>
+          <td colspan="2">W</td>
+          <td colspan="2">T</td>
+          <td colspan="2">F</td>
+          <td colspan="2">S</td>
+          {{else}}
           <td colspan="2">M</td>
           <td colspan="2">T</td>
           <td colspan="2">W</td>
@@ -129,6 +137,7 @@
           <td colspan="2">F</td>
           <td colspan="2">S</td>
           <td colspan="2">S</td>
+          {{/if_equal}}
         </tr>
       </thead>
       <tbody>
