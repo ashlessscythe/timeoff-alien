@@ -53,6 +53,12 @@
   </script>
   {{~/ is_ga_analitics_on ~}}
 
+  {{#if logged_user.company.first_day_of_week}}
+  <script>
+    window.companyFirstDayOfWeek = {{ logged_user.company.first_day_of_week }};
+  </script>
+  {{/if}}
+
 </body>
 
 </html>

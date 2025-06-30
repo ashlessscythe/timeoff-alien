@@ -58,8 +58,8 @@
                   <input type="text" class="form-control book-leave-from-input" id="from" data-provide="datepicker"
                     data-date-autoclose="1"
                     data-date-format="{{# with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
-                    data-date-week-start="1" value="{{as_date booking_start}}" name="from_date" required
-                    aria-label="From date">
+                    data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_start}}"
+                    name="from_date" required aria-label="From date">
                 </div>
               </div>
             </div>
@@ -81,8 +81,8 @@
                   <input type="text" class="form-control book-leave-to-input" id="to" data-provide="datepicker"
                     data-date-autoclose="1"
                     data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
-                    data-date-week-start="1" value="{{as_date booking_end}}" name="to_date" required
-                    aria-label="To date">
+                    data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_end}}"
+                    name="to_date" required aria-label="To date">
                 </div>
               </div>
             </div>

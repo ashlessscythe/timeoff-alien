@@ -11,7 +11,8 @@ describe('Check calendar month object', function() {
   it('Normalize provided date to be at the begining of the month', function() {
     const january = new CalendarMonth('2015-01-10', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
 
     expect(january.get_base_date().date()).to.be.equal(1)
@@ -20,13 +21,15 @@ describe('Check calendar month object', function() {
   it('Knows on which week day month starts', function() {
     const january = new CalendarMonth('2015-01-21', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     expect(january.week_day()).to.be.equal(4)
 
     const feb = new CalendarMonth('2015-02-21', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     expect(feb.week_day()).to.be.equal(7)
   })
@@ -34,13 +37,15 @@ describe('Check calendar month object', function() {
   it('Knows how many blanks to put before first day of the month', function() {
     const january = new CalendarMonth('2015-01-11', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     expect(january.how_many_blanks_at_the_start()).to.be.equal(3)
 
     const feb = new CalendarMonth('2015-02-11', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     expect(feb.how_many_blanks_at_the_start()).to.be.equal(6)
   })
@@ -48,13 +53,15 @@ describe('Check calendar month object', function() {
   it('Knows how many blanks to put after the last day of the month', function() {
     const january = new CalendarMonth('2015-01-11', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     expect(january.how_many_blanks_at_the_end()).to.be.equal(1)
 
     const feb = new CalendarMonth('2015-02-11', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     expect(feb.how_many_blanks_at_the_end()).to.be.equal(1)
   })
@@ -62,7 +69,8 @@ describe('Check calendar month object', function() {
   it('Knows whether day is weekend', function() {
     const feb = new CalendarMonth('2015-02-12', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     expect(feb.is_weekend(12)).not.to.be.ok
     expect(feb.is_weekend(21)).to.be.ok
@@ -73,7 +81,8 @@ describe('Check calendar month object', function() {
   it('Knows how to generate data structure for template', function() {
     const january = new CalendarMonth('2015-01-11', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     let object_to_test = january.as_for_template()
     delete object_to_test.moment
@@ -135,7 +144,8 @@ describe('Check calendar month object', function() {
 
     const apr = new CalendarMonth('2015-04-11', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
     object_to_test = apr.as_for_template()
     delete object_to_test.moment
@@ -199,7 +209,8 @@ describe('Check calendar month object', function() {
   it('Sanity checks pass', function() {
     const apr = new CalendarMonth('2015-04-01', {
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
 
     expect(apr).to.be.a('object')
@@ -211,10 +222,23 @@ describe('Check calendar month object', function() {
     const mar = new CalendarMonth('2015-03-19', {
       bank_holidays: [{ date: '2015-03-08' }],
       schedule,
-      today: moment.utc()
+      today: moment.utc(),
+      first_day_of_week: 1
     })
 
     expect(mar.is_bank_holiday(8)).to.be.ok
     expect(mar.is_bank_holiday(10)).not.to.be.ok
+  })
+
+  it('Supports Sunday as first day of week', function() {
+    const january = new CalendarMonth('2015-01-11', {
+      schedule,
+      today: moment.utc(),
+      first_day_of_week: 0
+    })
+
+    // With Sunday as first day, January 1, 2015 (Thursday) should be day 5
+    expect(january.week_day()).to.be.equal(5)
+    expect(january.how_many_blanks_at_the_start()).to.be.equal(4)
   })
 })

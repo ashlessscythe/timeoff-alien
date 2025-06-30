@@ -79,6 +79,14 @@ $(document).ready(function() {
     weekStart: 1,
     format: 'dd/mm/yyyy'
   }
+
+  // Set default weekStart based on company setting if available
+  $(function() {
+    // Check if company first day of week is available in the page
+    if (typeof window.companyFirstDayOfWeek !== 'undefined') {
+      $.fn.datepicker.defaults.weekStart = window.companyFirstDayOfWeek;
+    }
+  });
 })(jQuery)
 
 $(function() {
