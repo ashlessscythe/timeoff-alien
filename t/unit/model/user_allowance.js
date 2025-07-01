@@ -449,3 +449,77 @@ describe('accrued_adjustment attribute', function() {
     })
   })
 })
+
+describe('negative balance prevention when user is deactivated', function() {
+  describe('User deactivated with end date, has taken more days than prorated allowance', function() {
+    const employee = model.User.build({
+      start_date: moment('2015-01-01'),
+      end_date: moment('2016-06-30') // Deactivated mid-year
+    })
+
+    // Add department property to avoid undefined error
+    employee.department = {
+      is_accrued_allowance: false
+    }
+
+    const ul = new UserAllowance({
+      user: employee,
+      now: moment('2016-07-01'),
+      number_of_days_taken_from_allowance: 15, // Taken more than prorated allowance
+      manual_adjustment: 0,
+      personal_adjustment: 0,
+      carry_over: 0,
+      nominal_allowance: 20,
+      nominal_personal: 5
+    })
+
+    it('employment range adjustment should be negative due to early termination', function() {
+      // Should be negative because user left mid-year (around -10 days)
+      expect(ul.employement_range_adjustment).to.be.below(0)
+    })
+
+    it('available allowance should never go below zero', function() {
+      // Even though the user has taken more days than their prorated allowance,
+      // the available allowance should not go below zero
+      expect(ul.number_of_days_available_in_allowance).to.be.equal(0)
+    })
+
+    it('personal allowance should never go below zero', function() {
+      // If user has taken more personal days than available, should return 0
+      expect(ul.total_personal_available).to.be.at.least(0)
+    })
+
+    it('regular allowance should never go below zero', function() {
+      // If user has taken more regular days than available, should return 0
+      expect(ul.remaining_regular_allowance).to.be.at.least(0)
+    })
+  })
+
+  describe('User deactivated with end date, has taken fewer days than prorated allowance', function() {
+    const employee = model.User.build({
+      start_date: moment('2015-01-01'),
+      end_date: moment('2016-06-30') // Deactivated mid-year
+    })
+
+    // Add department property to avoid undefined error
+    employee.department = {
+      is_accrued_allowance: false
+    }
+
+    const ul = new UserAllowance({
+      user: employee,
+      now: moment('2016-07-01'),
+      number_of_days_taken_from_allowance: 5, // Taken fewer than prorated allowance
+      manual_adjustment: 0,
+      personal_adjustment: 0,
+      carry_over: 0,
+      nominal_allowance: 20,
+      nominal_personal: 5
+    })
+
+    it('available allowance should show remaining positive balance', function() {
+      // Should show remaining positive balance
+      expect(ul.number_of_days_available_in_allowance).to.be.above(0)
+    })
+  })
+})
