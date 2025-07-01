@@ -10,6 +10,7 @@ scripts/*.sql
 scripts/*.dump
 mock_data/
 import_data/
+testing_data/
 import/
 export/
 .env
