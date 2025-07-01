@@ -5,6 +5,7 @@
 <div class="row">
   <div class="col-md-6 lead">
     Public holidays for {{company.name}}`s account in {{yearCurrent}}
+    <br>First day of week: {{first_day_of_week}}
   </div>
   <div class="col-md-3 col-md-offset-3">
     <div class="btn-group pull-right">
@@ -50,11 +51,12 @@
       <div class="col-md-4 month_container">
         <table class="calendar_month month_{{ this.month }}">
           <thead>
-            <tr>
-              <td colspan="14">{{this.month}}</td>
+            <td colspan="14">{{this.month}}</td>
             </tr>
             <tr>
-              {{#if_equal company.first_day_of_week 0}}
+              <!-- need to use ../first_day_of_week because it is a local variable in the template -->
+              {{#if_equal ../first_day_of_week 0}}
+              <!-- DEBUG: Using Sunday-first layout -->
               <td colspan="2">S</td>
               <td colspan="2">M</td>
               <td colspan="2">T</td>
@@ -63,6 +65,7 @@
               <td colspan="2">F</td>
               <td colspan="2">S</td>
               {{else}}
+              <!-- DEBUG: Using Monday-first layout -->
               <td colspan="2">M</td>
               <td colspan="2">T</td>
               <td colspan="2">W</td>
