@@ -15,35 +15,42 @@ const application_host = config.get_application_host()
  *
  * */
 
-describe('Admin tries to add user with email used for other one', function() {
+describe('Admin tries to add user with email used for other one', function () {
   this.timeout(config.get_execution_timeout())
 
   let new_user_email, driver
 
-  it('Create new company', function(done) {
+  it('Create new company', function (done) {
     register_new_user_func({
       application_host
-    }).then(function(data) {
+    }).then(function (data) {
       driver = data.driver
       new_user_email = data.email
       done()
     })
   })
 
-  it('Create new non-admin user', function(done) {
+  it('Create new non-admin user', function (done) {
     add_new_user_func({
       application_host,
       driver,
       email: new_user_email,
       error_message: 'Email is already in use'
-    }).then(function() {
+    }).then(function () {
       done()
     })
   })
 
-  after(function(done) {
-    driver.quit().then(function() {
+  after(function (done) {
+    if (driver) {
+      driver.quit().then(function () {
+        done()
+      }).catch(function (err) {
+        console.log('Error quitting driver:', err.message)
+        done()
+      })
+    } else {
       done()
-    })
+    }
   })
 })

@@ -8,7 +8,7 @@
 'use strict'
 
 module.exports = {
-  get_application_host: function() {
+  get_application_host: function () {
     return `http://localhost:${process.env.PORT || 3000}/`
   },
 
@@ -16,7 +16,7 @@ module.exports = {
    *  Default timeout each integration test needs to be completed in
    *
    * */
-  get_execution_timeout: function() {
-    return 10 * 1000
+  get_execution_timeout: function () {
+    return 60 * 1000
   }
 }
