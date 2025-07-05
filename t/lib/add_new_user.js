@@ -5,13 +5,13 @@ const expect = require('chai').expect
 const _ = require('underscore')
 const until = require('selenium-webdriver').until
 const Promise = require('bluebird')
-const uuid = require('node-uuid')
+const { v4: uuidv4 } = require('uuid')
 const submit_form_func = require('./submit_form')
 const build_driver = require('./build_driver')
 const add_new_user_form_id = '#add_new_user_form'
 let driver
 
-module.exports = Promise.promisify(function(args, callback) {
+module.exports = Promise.promisify(function (args, callback) {
   const application_host = args.application_host
   const result_callback = callback
   const department_index = args.department_index
@@ -73,7 +73,7 @@ module.exports = Promise.promisify(function(args, callback) {
     })
   })
 
-  driver.call(function() {
+  driver.call(function () {
     // "export"
     result_callback(null, {
       driver,
