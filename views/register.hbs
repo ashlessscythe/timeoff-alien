@@ -1,4 +1,3 @@
-
 {{> header }}
 
 <h1>New company</h1>
@@ -59,7 +58,8 @@
       <div class="form-group">
         <label for="confirm_pass_inp" class="col-md-2 control-label">Confirm Password</label>
         <div class="col-md-6">
-          <input class="form-control" id="confirm_pass_inp" type="password" placeholder="Password" name="password_confirmed" required>
+          <input class="form-control" id="confirm_pass_inp" type="password" placeholder="Password"
+            name="password_confirmed" required>
         </div>
       </div>
 
@@ -79,11 +79,20 @@
         <div class="col-md-6">
           <select class="form-control" id="timezone_inp" placeholder="Time zone" name="timezone">
             {{#each timezones_available}}
-            <option value="{{this}}" {{#if_equal this 'Europe/London' }} selected="selected" {{/if_equal}}>{{this}}</option>
+            <option value="{{this}}" {{#if_equal this 'Europe/London' }} selected="selected" {{/if_equal}}>{{this}}
+            </option>
             {{/each}}
           </select>
         </div>
       </div>
+
+      {{#if turnstile_site_key}}
+      <div class="form-group">
+        <div class="col-md-offset-2 col-md-6">
+          <div class="cf-turnstile" data-sitekey="{{turnstile_site_key}}"></div>
+        </div>
+      </div>
+      {{/if}}
 
       <div class="form-group">
         <div class="col-md-offset-2 col-md-6">

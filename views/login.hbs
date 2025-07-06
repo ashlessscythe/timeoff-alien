@@ -33,6 +33,14 @@
     </div>
   </div>
 
+  {{#if turnstile_site_key}}
+  <div class="form-group">
+    <div class="col-md-offset-4 col-md-5">
+      <div class="cf-turnstile" data-sitekey="{{turnstile_site_key}}"></div>
+    </div>
+  </div>
+  {{/if}}
+
   <div class="form-group">
     <div class="col-md-offset-4 col-md-1">
       <button type="submit" class="btn btn-success single-click" id="submit_login">Login</button>
