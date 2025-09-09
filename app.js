@@ -213,6 +213,9 @@ app.use(
   require('./lib/route/users')
 )
 
+// Prisma-based users route for performance testing
+app.use('/users-prisma/', require('./lib/route/users/prisma-users'))
+
 app.use('/requests/', require('./lib/route/requests'))
 
 app.use('/audit/', require('./lib/route/audit'))
