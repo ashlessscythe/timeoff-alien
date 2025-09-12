@@ -24,9 +24,17 @@
       {{#with current_user }}
       <dt data-tom-days-available-in-allowance{{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
         class="negative" {{/if}}>{{ ../user_allowance.number_of_days_available_in_allowance }}</dt>
+      {{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
+      <dd class="text-danger small">You're overbooked!</dd>
+      {{/if}}
       <dd>Personal remaining: {{ ../user_allowance.total_personal_available }}</dd>
       <dd>out of <span data-tom-total-days-in-allowance>{{ ../user_allowance.total_number_of_days_in_allowance }}</span>
         in total allowance</dd>
+      {{#if ../pending_requests_count}}
+      <dd class="text-info small">{{ ../pending_requests_count }} request{{#if (gt ../pending_requests_count
+        1)}}s{{/if}}
+        pending</dd>
+      {{/if}}
       {{/with}}
     </dl>
   </div>
