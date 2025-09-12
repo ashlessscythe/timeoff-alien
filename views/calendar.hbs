@@ -22,7 +22,8 @@
   <div class="col-md-3 top-leave-type-statistics">
     <dl>
       {{#with current_user }}
-      <dt data-tom-days-available-in-allowance>{{ ../user_allowance.number_of_days_available_in_allowance }}</dt>
+      <dt data-tom-days-available-in-allowance{{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
+        class="negative" {{/if}}>{{ ../user_allowance.number_of_days_available_in_allowance }}</dt>
       <dd>Personal remaining: {{ ../user_allowance.total_personal_available }}</dd>
       <dd>out of <span data-tom-total-days-in-allowance>{{ ../user_allowance.total_number_of_days_in_allowance }}</span>
         in total allowance</dd>

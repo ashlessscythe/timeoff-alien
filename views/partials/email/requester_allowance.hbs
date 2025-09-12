@@ -1,6 +1,7 @@
-
 <p>
   This year {{#with requester}}{{this.full_name}}{{/with}} has taken
   {{~#with requesterAllowance}} {{this.number_of_days_taken_from_allowance}} {{/with~}}
-   days from holiday allowance. While {{#with requesterAllowance}} {{this.number_of_days_available_in_allowance}} days are still available. {{/with}}
+  days from holiday allowance. While {{#with requesterAllowance}} {{this.number_of_days_available_in_allowance}} days
+  are still available{{#if (lt this.number_of_days_available_in_allowance 0)}} (overbooked by {{abs
+  this.number_of_days_available_in_allowance}} days){{/if}}. {{/with}}
 </p>
