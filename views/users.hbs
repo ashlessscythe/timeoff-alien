@@ -19,6 +19,13 @@
         <li><a href="/users/add/" id="add_new_department">Add single employee</a></li>
       </ul>
     </div>
+    <div class="btn-group pull-right" style="margin-right: 10px;">
+      <button type="button" class="btn btn-default" id="toggle-deactivated-users"
+        data-content="Toggle visibility of deactivated users" data-placement="top" data-toggle="tooltip"
+        data-trigger="hover">
+        <i class="fa fa-eye-slash"></i> Hide deactivated
+      </button>
+    </div>
     <form action="/users/" method="GET">
       <input type="hidden" name="department" value="{{department_id}}">
       <input type="hidden" name="as-csv" value="1">
@@ -55,7 +62,7 @@
     </thead>
     <tbody>
       {{# each users_info}}
-      <tr data-vpp-user-row="{{this.user_id}}">
+      <tr data-vpp-user-row="{{this.user_id}}" class="{{#unless this.is_active}}deactivated-user{{/unless}}">
         <td class="user-link-cell"><a href="/users/edit/{{this.user_id}}/">{{#unless
             this.is_active}}<s>{{/unless}}{{this.user_full_name}}{{#unless this.is_active}}</s>{{/unless}}</a></td>
         <td class="user_department"><a
@@ -72,5 +79,78 @@
 </div>
 
 <div class="row">&nbsp;</div>
+
+<style>
+  .deactivated-user {
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+
+  .deactivated-user.hidden {
+    display: none !important;
+  }
+
+  #toggle-deactivated-users.active {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+    color: white;
+  }
+
+  #toggle-deactivated-users.active .fa-eye-slash:before {
+    content: "\f06e";
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let showDeactivated = true;
+    const toggleButton = document.getElementById('toggle-deactivated-users');
+    const deactivatedUsers = document.querySelectorAll('.deactivated-user');
+
+    console.log('Toggle button found:', toggleButton);
+    console.log('Deactivated users found:', deactivatedUsers.length);
+
+    if (!toggleButton) {
+      console.error('Toggle button not found!');
+      return;
+    }
+
+    // Initialize tooltip with jQuery if available
+    if (typeof $ !== 'undefined') {
+      $(toggleButton).tooltip();
+    }
+
+    // Toggle functionality
+    toggleButton.addEventListener('click', function (e) {
+      e.preventDefault();
+      console.log('Toggle clicked, current state:', showDeactivated);
+
+      showDeactivated = !showDeactivated;
+
+      if (showDeactivated) {
+        deactivatedUsers.forEach(function (user) {
+          user.classList.remove('hidden');
+        });
+        toggleButton.classList.remove('active');
+        toggleButton.innerHTML = '<i class="fa fa-eye-slash"></i> Hide deactivated';
+        toggleButton.setAttribute('data-content', 'Hide deactivated users');
+        console.log('Showing deactivated users');
+      } else {
+        deactivatedUsers.forEach(function (user) {
+          user.classList.add('hidden');
+        });
+        toggleButton.classList.add('active');
+        toggleButton.innerHTML = '<i class="fa fa-eye"></i> Show deactivated';
+        toggleButton.setAttribute('data-content', 'Show deactivated users');
+        console.log('Hiding deactivated users');
+      }
+
+      // Update tooltip content with jQuery if available
+      if (typeof $ !== 'undefined') {
+        $(toggleButton).tooltip('destroy').tooltip();
+      }
+    });
+  });
+</script>
 
 {{> footer }}
