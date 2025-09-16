@@ -33,7 +33,14 @@
         <dt data-tom-days-available-in-allowance{{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
           class="negative" {{/if}}>{{ ../user_allowance.number_of_days_available_in_allowance }}</dt>
         {{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
-        <dd class="text-danger small">You're overbooked!</dd>
+        <dd class="text-danger small">
+          You're overbooked!
+          <a href="#" class="text-danger" data-toggle="tooltip" data-placement="right"
+            title="Cancel some requests so your balance is not negative" aria-label="Overbooked help" role="button"
+            tabindex="0">
+            <i class="fa fa-info-circle" aria-hidden="true"></i>
+          </a>
+        </dd>
         {{/if}}
         <dd>Personal remaining: {{ ../user_allowance.total_personal_available }}</dd>
         <dd>out of <span data-tom-total-days-in-allowance>{{ ../user_allowance.total_number_of_days_in_allowance
