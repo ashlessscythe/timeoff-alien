@@ -1,6 +1,6 @@
 # 🚀 TimeOff.Management
 
-📅 Web application for managing employee absences with style!
+📅 Web application for managing employee leave requests with style!
 
 ## ✨ Features
 
@@ -28,6 +28,7 @@
 ### 🏠 Self hosting
 
 1. Clone and prepare the repository:
+
 ```bash
 git clone https://github.com/ashlessscythe/timeoff-alien.git timeoff-alien
 cd timeoff-alien
@@ -37,16 +38,19 @@ cp .env.example .env
 2. Choose your database configuration in `.env`:
 
    **Option 1: External Database (recommended for production)**
+
    - If you're using a hosted database (Neon/Render/Vercel/Supabase), set your `DATABASE_URL`
    - Comment out Option 2 (`DOCKER_DB_URL`, `DB_*` variables)
    - Comment out the postgres service in `docker-compose.yaml`
 
    **Option 2: Local Database (default, recommended for development)**
+
    - Uses the included PostgreSQL Docker container
    - No changes needed to `.env` or `docker-compose.yaml`
    - Database will be automatically configured
 
 3. Start the application:
+
 ```bash
 docker compose up -d
 ```
@@ -54,14 +58,17 @@ docker compose up -d
 The application will be available at http://localhost:3000
 
 4. (Optional) Seed the database with sample data:
+
 ```bash
 npx prisma db seed -- --create-default-user --use-faker --count 20
 ```
+
 This creates a default admin user (bob@local.eml/bob) and 20 sample users with data.
 
 #### 🐳 Alternative: Using Docker without Compose
 
 If you're more tech-savvy and prefer to manage containers manually:
+
 ```bash
 docker pull ashless/timeoff-alien
 docker run -d -p 3000:3000 --env-file .env --name timeoff ashless/timeoff-alien
@@ -151,6 +158,7 @@ Here's a summary of key environment variables you can set:
 - `SESSION_SECRET`: Secret key for session management
 
 **Database URL Notes**:
+
 - Use `DATABASE_URL` for external/hosted databases (production)
 - Use `DOCKER_DB_URL` for local Docker databases (development)
 - Don't use both simultaneously - choose one based on your setup
