@@ -11,6 +11,11 @@
   out of
   {{userAllowance.total_number_of_days_in_allowance}} total.
 </div>
+{{#if (lt userAllowance.number_of_days_available_in_allowance 0)}}
+<div class="text-danger">
+  <strong>⚠️ Overbooked!</strong> Negative balance - user must cancel requests before approval.
+</div>
+{{/if}}
 {{/if}}
 {{#if specialLeaveTypes}}
 <div>
