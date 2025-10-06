@@ -133,3 +133,22 @@
   </div>
 
 </form>
+
+<div class="row" style="margin-top: 15px;">
+  <div class="col-md-7">
+    <form method="POST" action="/users/edit/{{employee.id}}/email/resend-welcome/"
+      style="display:inline-block; margin-right:10px;">
+      <button type="submit" class="btn btn-default single-click" data-toggle="tooltip" data-placement="top"
+        title="Resend the original welcome email with set-password link">
+        <i class="fa fa-envelope"></i> Resend welcome email
+      </button>
+    </form>
+
+    <form method="POST" action="/users/edit/{{employee.id}}/email/send-signin/" style="display:inline-block;">
+      <button type="submit" class="btn btn-default single-click" data-toggle="tooltip" data-placement="top"
+        title="Send a fresh sign-in/reset link">
+        <i class="fa fa-paper-plane"></i> Send sign-in link
+      </button>
+    </form>
+  </div>
+</div>

@@ -2,16 +2,34 @@ New TimeOff.Management account for {{#with new_user }}{{this.full_name}}{{/with}
 =====
 <p>Hello <strong>{{new_user.name}}</strong>,</p>
 
-<p><strong>{{#with admin_user}}{{this.full_name}}{{/with}}</strong> just registered new account for you as an employee of <strong>{{company.name}}</strong>.</p>
+<p><strong>{{#with admin_user}}{{this.full_name}}{{/with}}</strong> just registered new account for you as an employee
+  of <strong>{{company.name}}</strong>.</p>
 
-<p>Please contact <strong>{{admin_user.name}}</strong> about your new password and login at {{> email/link href=(get_application_domain) text="TimeOff.Management" }}</p>
+<p>Please contact <strong>{{admin_user.name}}</strong> about your new password and login at {{> email/link
+  href=(get_application_domain) text="TimeOff.Management" }}</p>
 
 <p>Alternatively follow the link below to set a new password:
 
-{{# with new_user ~}}
-{{> email/link href=(concatenate (get_application_domain) '/reset-password/?t=' (this.get_reset_password_token)) text='Set new password'}}
-{{/ with }}
+  {{# with new_user ~}}
+  {{> email/link href=(concatenate (get_application_domain) '/reset-password/?t=' ../token) text='Set new password'}}
+  {{/ with }}
 
 </p>
+
+<hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
+
+<p>You can access your Time Off site anytime here:
+  {{> email/link href=(get_application_domain) text=(get_application_domain) }}
+</p>
+
+<div style="margin-top:10px; padding:12px; background:#f8f9fa; border-left:4px solid #5ba4e5; border-radius:3px;">
+  <p style="margin:0 0 8px 0;"><strong>Save the site to your home screen</strong></p>
+  <ul style="margin:0; padding-left:18px;">
+    <li style="margin-bottom:6px;"><strong>iOS (Safari):</strong> Open the site → tap the <em>Share</em> icon → choose
+      <em>Add to Home Screen</em> → <em>Add</em>.</li>
+    <li style="margin-bottom:0;"><strong>Android (Chrome):</strong> Open the site → tap the <em>⋮</em> menu → choose
+      <em>Add to Home screen</em> (or <em>Install app</em>) → <em>Add</em>.</li>
+  </ul>
+</div>
 
 <p>Thanks</p>
