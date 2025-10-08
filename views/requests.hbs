@@ -1,101 +1,144 @@
 {{> header }}
 
-<h1>{{logged_user.name}} {{logged_user.lastname}} messages</h1>
+<!-- Hero Section -->
+<div class="requests-hero">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <div class="hero-content">
+          <i class="fa fa-clipboard-list hero-icon"></i>
+          <h1 class="hero-title">{{logged_user.name}} {{logged_user.lastname}} Messages</h1>
+          <p class="hero-subtitle">Manage leave requests and approvals</p>
+          <div class="hero-divider"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 {{> show_flash_messages }}
 
 {{#if to_be_approved_leaves}}
-<div class="alert alert-warning" id="pastPayrollWarning" style="display: none;">
-  <strong>CAUTION:</strong> Red highlighted requests are for closed payroll periods (past weeks).
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="alert alert-warning" id="pastPayrollWarning" style="display: none;">
+        <i class="fa fa-exclamation-triangle"></i>
+        <strong>CAUTION:</strong> Red highlighted requests are for closed payroll periods (past weeks).
+      </div>
+    </div>
+  </div>
 </div>
 {{/if}}
 
-<div class="row main-row_header">
-  <p class="col-md-12">Leave request to approve</p>
+<div class="container requests-content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="section-header">
+        <i class="fa fa-tasks section-icon"></i>
+        <h2>Leave Requests to Approve</h2>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Filter Panel - Always visible -->
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading" role="button" data-toggle="collapse" href="#filterPanel" aria-expanded="false"
-        aria-controls="filterPanel">
-        <h4 class="panel-title">
-          <i class="fa fa-chevron-down collapsed"></i> Filters
-          <span class="filter-summary">
-            {{#if selected_filters}}
-            <span class="badge">Filtered</span>
-            <small class="text-muted">
-              {{#if selected_filters.departments}}(Departments: {{selected_filters.departments}}){{/if}}
-              {{#if selected_filters.types}}(Types: {{selected_filters.types}}){{/if}}
-              {{#if selected_filters.month}}(Month: {{selected_filters.month}}){{/if}}
-              {{#if selected_filters.year}}(Year: {{selected_filters.year}}){{/if}}
-            </small>
-            {{else}}
-            <span class="badge">All Requests</span>
-            {{/if}}
-          </span>
-        </h4>
-      </div>
-      <div class="panel-collapse collapse" id="filterPanel">
-        <div class="panel-body">
-          <div class="row">
-            <div class="col-md-6">
-              <h5>Departments</h5>
-              <div class="filter-section">
-                {{#each departments}}
-                <label class="filter-checkbox-label">
-                  <input type="checkbox" class="filter-checkbox" name="department" value="{{this.id}}" {{#if (includes
-                    ../selected_filters.departments this.id)}}checked{{/if}}>
-                  {{this.name}}
-                </label>
-                {{/each}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <h5>Leave Types</h5>
-              <div class="filter-section">
-                {{#each leave_types}}
-                <label class="filter-checkbox-label">
-                  <input type="checkbox" class="filter-checkbox" name="type" value="{{this.id}}" {{#if (includes
-                    ../selected_filters.types this.id)}}checked{{/if}}>
-                  {{this.name}}
-                </label>
-                {{/each}}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <h5>Date Filter</h5>
-              <div class="filter-section date-filters">
-                <div class="form-group">
-                  <label for="monthSelect">Month:</label>
-                  <select id="monthSelect" class="form-control" name="month">
-                    <option value="">All Months</option>
-                    {{#each unique_months}}
-                    <option value="{{this}}" {{#if (eq ../selected_filters.month this)}}selected{{/if}}>{{this}}
-                    </option>
-                    {{/each}}
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="yearSelect">Year:</label>
-                  <select id="yearSelect" class="form-control" name="year">
-                    <option value="">All Years</option>
-                    {{#each unique_years}}
-                    <option value="{{this}}" {{#if (eq ../selected_filters.year this)}}selected{{/if}}>{{this}}</option>
-                    {{/each}}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <button class="btn btn-primary apply-filters">Apply Filters</button>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="filter-card">
+        <div class="filter-header" role="button" data-toggle="collapse" href="#filterPanel" aria-expanded="false"
+          aria-controls="filterPanel">
+          <div class="filter-title">
+            <i class="fa fa-filter"></i>
+            <h3>Filters</h3>
+            <span class="filter-summary">
               {{#if selected_filters}}
-              <a href="/requests" class="btn btn-default">Clear Filters</a>
+              <span class="badge filtered">Filtered</span>
+              <small class="text-muted">
+                {{#if selected_filters.departments}}(Departments: {{selected_filters.departments}}){{/if}}
+                {{#if selected_filters.types}}(Types: {{selected_filters.types}}){{/if}}
+                {{#if selected_filters.month}}(Month: {{selected_filters.month}}){{/if}}
+                {{#if selected_filters.year}}(Year: {{selected_filters.year}}){{/if}}
+              </small>
+              {{else}}
+              <span class="badge all">All Requests</span>
+              {{/if}}
+            </span>
+          </div>
+          <i class="fa fa-chevron-down filter-toggle collapsed"></i>
+        </div>
+        <div class="filter-content collapse" id="filterPanel">
+          <div class="filter-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="filter-group">
+                  <h4><i class="fa fa-building"></i> Departments</h4>
+                  <div class="filter-section">
+                    {{#each departments}}
+                    <label class="filter-checkbox-label">
+                      <input type="checkbox" class="filter-checkbox" name="department" value="{{this.id}}" {{#if
+                        (includes ../selected_filters.departments this.id)}}checked{{/if}}>
+                      <span class="checkmark"></span>
+                      {{this.name}}
+                    </label>
+                    {{/each}}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="filter-group">
+                  <h4><i class="fa fa-calendar"></i> Leave Types</h4>
+                  <div class="filter-section">
+                    {{#each leave_types}}
+                    <label class="filter-checkbox-label">
+                      <input type="checkbox" class="filter-checkbox" name="type" value="{{this.id}}" {{#if (includes
+                        ../selected_filters.types this.id)}}checked{{/if}}>
+                      <span class="checkmark"></span>
+                      {{this.name}}
+                    </label>
+                    {{/each}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="filter-group">
+                  <h4><i class="fa fa-calendar-alt"></i> Date Filter</h4>
+                  <div class="filter-section date-filters">
+                    <div class="form-group">
+                      <label for="monthSelect">Month:</label>
+                      <select id="monthSelect" class="form-control" name="month">
+                        <option value="">All Months</option>
+                        {{#each unique_months}}
+                        <option value="{{this}}" {{#if (eq ../selected_filters.month this)}}selected{{/if}}>{{this}}
+                        </option>
+                        {{/each}}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="yearSelect">Year:</label>
+                      <select id="yearSelect" class="form-control" name="year">
+                        <option value="">All Years</option>
+                        {{#each unique_years}}
+                        <option value="{{this}}" {{#if (eq ../selected_filters.year this)}}selected{{/if}}>{{this}}
+                        </option>
+                        {{/each}}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button class="btn btn-primary apply-filters">
+                <i class="fa fa-check"></i> Apply Filters
+              </button>
+              {{#if selected_filters}}
+              <a href="/requests" class="btn btn-outline-secondary">
+                <i class="fa fa-times"></i> Clear Filters
+              </a>
               {{/if}}
             </div>
           </div>
@@ -105,82 +148,96 @@
   </div>
 </div>
 
-<div class="row">
-  {{#unless to_be_approved_leaves}}
-  <div class="col-md-12 text-muted">
-    There are no leave requests to decide on.
-  </div>
-  {{else}}
-  <div class="col-md-12">
-    <p class="visible-xs-block"><em class="text-muted">Scroll table horizontally</em></p>
-    <div class="table-responsive">
-      <table class="table table-hover requests-to-approve-table">
-        <thead>
-          <tr>
-            <th>
-              <button class="btn btn-link sort-btn" data-sort="name">
-                Employee <i class="fa fa-sort"></i>
-              </button>
-            </th>
-            <th>
-              <button class="btn btn-link sort-btn" data-sort="department">
-                Department <i class="fa fa-sort"></i>
-              </button>
-            </th>
-            <th>
-              <button class="btn btn-link sort-btn" data-sort="date">
-                Date of request <i class="fa fa-sort"></i>
-              </button>
-            </th>
-            <th>Leave dates</th>
-            <th>
-              <button class="btn btn-link sort-btn" data-sort="type">
-                Type <i class="fa fa-sort"></i>
-              </button>
-            </th>
-            <th>Days</th>
-            <th class="col-xs-2">Comment</th>
-            <th colspan="2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each to_be_approved_leaves }}
-          <tr vpp="pending_for__{{this.user.email}}" class="{{#if this.isPastPayroll}}past-payroll{{/if}}">
-            <td>{{#with this.user}}{{this.full_name}}
-              <i class="fa fa-question-circle user-details-summary-trigger" data-user-id="{{this.id}}"></i>{{/with}}
-            </td>
-            <td class="department-name">{{this.user.department.name}}</td>
-            <td class="date_of_request">{{as_date_from_timestamp this.createdAt}}</td>
-            <td data-tom-leave-dates="1"><a class="leave-details-summary-trigger" data-leave-id="{{this.id}}"
-                href="#">{{> leave_dates leave=this}}</a></td>
-            <td class="leave-type">{{#if this.is_pended_revoke_leave}}REVOKE {{/if}}{{this.leave_type.name}}</td>
-            <td data-vpp="days_used">{{ this.get_deducted_days_number }}</td>
-            <td>{{this.employee_comment}}</td>
-            <td>
-              <button class="btn btn-warning" data-toggle="modal" data-target="#rejectModal" data-leave-id="{{this.id}}"
-                name="reject_modal">
-                Reject
-              </button>
-            </td>
-            <td>
-              <button class="btn btn-success" data-toggle="modal" data-target="#approveModal"
-                data-leave-id="{{this.id}}" name="approve_modal">
-                Approve
-              </button>
-            </td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
+<div class="container">
+  <div class="row">
+    {{#unless to_be_approved_leaves}}
+    <div class="col-md-12">
+      <div class="no-requests-card">
+        <i class="fa fa-inbox"></i>
+        <h3>No Leave Requests</h3>
+        <p>There are no leave requests to decide on at this time.</p>
+      </div>
     </div>
+    {{else}}
+    <div class="col-md-12">
+      <div class="table-container">
+        <p class="table-hint visible-xs-block"><i class="fa fa-info-circle"></i> Scroll table horizontally to view all
+          columns</p>
+        <div class="table-responsive">
+          <table class="table table-hover requests-to-approve-table">
+            <thead>
+              <tr>
+                <th>
+                  <button class="btn btn-link sort-btn" data-sort="name">
+                    Employee <i class="fa fa-sort"></i>
+                  </button>
+                </th>
+                <th>
+                  <button class="btn btn-link sort-btn" data-sort="department">
+                    Department <i class="fa fa-sort"></i>
+                  </button>
+                </th>
+                <th>
+                  <button class="btn btn-link sort-btn" data-sort="date">
+                    Date of request <i class="fa fa-sort"></i>
+                  </button>
+                </th>
+                <th>Leave dates</th>
+                <th>
+                  <button class="btn btn-link sort-btn" data-sort="type">
+                    Type <i class="fa fa-sort"></i>
+                  </button>
+                </th>
+                <th>Days</th>
+                <th class="col-xs-2">Comment</th>
+                <th colspan="2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each to_be_approved_leaves }}
+              <tr vpp="pending_for__{{this.user.email}}" class="{{#if this.isPastPayroll}}past-payroll{{/if}}">
+                <td>{{#with this.user}}{{this.full_name}}
+                  <i class="fa fa-question-circle user-details-summary-trigger" data-user-id="{{this.id}}"></i>{{/with}}
+                </td>
+                <td class="department-name">{{this.user.department.name}}</td>
+                <td class="date_of_request">{{as_date_from_timestamp this.createdAt}}</td>
+                <td data-tom-leave-dates="1"><a class="leave-details-summary-trigger" data-leave-id="{{this.id}}"
+                    href="#">{{> leave_dates leave=this}}</a></td>
+                <td class="leave-type">{{#if this.is_pended_revoke_leave}}REVOKE {{/if}}{{this.leave_type.name}}</td>
+                <td data-vpp="days_used">{{ this.get_deducted_days_number }}</td>
+                <td>{{this.employee_comment}}</td>
+                <td>
+                  <button class="btn btn-warning" data-toggle="modal" data-target="#rejectModal"
+                    data-leave-id="{{this.id}}" name="reject_modal">
+                    Reject
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-success" data-toggle="modal" data-target="#approveModal"
+                    data-leave-id="{{this.id}}" name="approve_modal">
+                    Approve
+                  </button>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {{/unless}}
   </div>
-  {{/unless}}
 </div>
 
-<div class="main-row_header">&nbsp;</div>
-
-<div class="row main-row_header">
-  <p class="col-md-12">All my absences</p>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="section-header">
+        <i class="fa fa-history section-icon"></i>
+        <h2>All My Absences</h2>
+      </div>
+    </div>
+  </div>
 </div>
 
 {{> user_requests_grouped grouped_leaves=my_leaves_grouped logged_user=logged_user }}
@@ -190,6 +247,442 @@
 {{> footer }}
 
 <style>
+  /* Hero Section Styling */
+  .requests-hero {
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--hover-bg-color) 100%);
+    color: var(--text-color);
+    padding: 40px 0;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .requests-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    opacity: 0.9;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.05);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+
+  .hero-divider {
+    width: 60px;
+    height: 3px;
+    background: var(--background-color);
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
+  /* Main Content Styling */
+  .requests-content {
+    padding-bottom: 40px;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, var(--secondary-background-color) 0%, var(--hover-bg-color) 100%);
+    padding: 25px 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .section-icon {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    width: 40px;
+    text-align: center;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  /* Alert Styling */
+  .alert {
+    border-radius: 8px;
+    border: none;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.4rem;
+  }
+
+  .alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+    border-left: 4px solid #ffc107;
+  }
+
+  .alert i {
+    font-size: 1.2rem;
+  }
+
+  /* Filter Card Styling */
+  .filter-card {
+    background: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    overflow: hidden;
+  }
+
+  .filter-header {
+    background: linear-gradient(135deg, var(--secondary-background-color) 0%, var(--hover-bg-color) 100%);
+    padding: 25px 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.3s ease;
+  }
+
+  .filter-header:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  }
+
+  .filter-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .filter-title i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+  }
+
+  .filter-title h3 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .filter-summary {
+    margin-left: 20px;
+  }
+
+  .badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .badge.filtered {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .badge.all {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+  }
+
+  .filter-toggle {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    transition: transform 0.3s ease;
+  }
+
+  .filter-toggle.collapsed {
+    transform: rotate(-90deg);
+  }
+
+  .filter-content {
+    border-top: 1px solid #dee2e6;
+  }
+
+  .filter-body {
+    padding: 30px;
+  }
+
+  .filter-group {
+    margin-bottom: 30px;
+  }
+
+  .filter-group h4 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .filter-group h4 i {
+    color: var(--accent-color);
+    font-size: 1.3rem;
+  }
+
+  .filter-section {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--secondary-background-color);
+  }
+
+  .filter-checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: var(--text-color);
+    position: relative;
+    transition: background 0.3s ease;
+  }
+
+  .filter-checkbox-label:hover {
+    background-color: var(--hover-bg-color);
+    border-radius: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .filter-checkbox {
+    margin-right: 15px;
+    transform: scale(1.5);
+    accent-color: #667eea;
+  }
+
+  .date-filters .form-group {
+    margin-bottom: 20px;
+  }
+
+  .date-filters label {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 10px;
+  }
+
+  .date-filters .form-control {
+    font-size: 1.4rem;
+    padding: 15px 18px;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    transition: border-color 0.3s ease;
+    min-height: 50px;
+  }
+
+  .date-filters .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+  }
+
+  /* Custom checkbox styling */
+  .filter-checkbox-label input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    background: var(--background-color);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .filter-checkbox-label input[type="checkbox"]:checked {
+    background: #667eea;
+    border-color: #667eea;
+  }
+
+  .filter-checkbox-label input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .filter-checkbox-label input[type="checkbox"]:hover {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+  }
+
+  .btn {
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-outline-secondary {
+    background: transparent;
+    color: var(--hover-text-color);
+    border: 2px solid #6c757d;
+  }
+
+  .btn-outline-secondary:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+    text-decoration: none;
+  }
+
+  /* No Requests Card */
+  .no-requests-card {
+    background: var(--background-color);
+    border-radius: 12px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin: 30px 0;
+  }
+
+  .no-requests-card i {
+    font-size: 4rem;
+    color: var(--hover-text-color);
+    margin-bottom: 20px;
+  }
+
+  .no-requests-card h3 {
+    font-size: 2.2rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+  }
+
+  .no-requests-card p {
+    font-size: 1.3rem;
+    color: var(--hover-text-color);
+    margin: 0;
+  }
+
+  /* Table Styling */
+  .table-container {
+    background: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 30px;
+  }
+
+  .table-hint {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 10px 15px;
+    margin: 0;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #bbdefb;
+  }
+
+  .table-hint i {
+    margin-right: 8px;
+  }
+
+  .requests-to-approve-table {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .requests-to-approve-table thead th {
+    background: linear-gradient(135deg, var(--secondary-background-color) 0%, var(--hover-bg-color) 100%);
+    border: none;
+    padding: 20px 15px;
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 1.3rem;
+  }
+
+  .requests-to-approve-table tbody td {
+    padding: 15px;
+    border-top: 1px solid #dee2e6;
+    vertical-align: middle;
+    font-size: 1.2rem;
+  }
+
+  .requests-to-approve-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
   /* Past payroll styling */
   tr.past-payroll {
     background-color: #ffebee !important;
@@ -199,74 +692,32 @@
     background-color: #ffcdd2 !important;
   }
 
-  /* Filter panel styles */
-  .panel-heading {
-    cursor: pointer;
-  }
-
-  .panel-heading .badge {
-    background-color: #337ab7;
-  }
-
-  .panel-heading .text-muted {
-    font-size: 12px;
-    margin-left: 5px;
-  }
-
-  .filter-summary {
-    margin-left: 10px;
-  }
-
-  .panel-title .fa {
-    transition: transform 0.3s ease;
-  }
-
-  .panel-title .fa.collapsed {
-    transform: rotate(-90deg);
-  }
-
-  .filter-section {
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 15px;
-  }
-
-  .filter-checkbox-label {
-    display: block;
-    padding: 5px 0;
-    font-weight: normal;
-    cursor: pointer;
-  }
-
-  .filter-checkbox-label:hover {
-    background-color: #f5f5f5;
-  }
-
-  .date-filters .form-group {
-    margin-bottom: 10px;
-  }
-
   /* Sort button styles */
   .sort-btn {
     padding: 0;
     color: #333;
     text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
   }
 
   .sort-btn:hover,
   .sort-btn:focus {
-    color: #337ab7;
+    color: var(--accent-color);
     text-decoration: none;
   }
 
   .sort-btn .fa {
-    margin-left: 5px;
+    margin-left: 8px;
+    font-size: 1.1rem;
   }
 
   .sort-btn.active .fa-sort {
-    color: #337ab7;
+    color: var(--accent-color);
   }
 
   .sort-btn.active.asc .fa-sort:before {
@@ -275,6 +726,100 @@
 
   .sort-btn.active.desc .fa-sort:before {
     content: "\f0dd";
+  }
+
+  /* Action buttons */
+  .btn-warning,
+  .btn-success {
+    padding: 8px 16px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+    color: white;
+  }
+
+  .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+  }
+
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .requests-hero {
+      padding: 30px 0;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .section-header {
+      padding: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 2.2rem;
+    }
+
+    .filter-body {
+      padding: 20px;
+    }
+
+    .filter-group h4 {
+      font-size: 1.6rem;
+    }
+
+    .filter-checkbox-label {
+      font-size: 1.3rem;
+    }
+
+    .date-filters label {
+      font-size: 1.3rem;
+    }
+
+    .date-filters .form-control {
+      font-size: 1.3rem;
+      padding: 12px 15px;
+    }
+
+    .requests-to-approve-table {
+      font-size: 1.1rem;
+    }
+
+    .requests-to-approve-table thead th {
+      font-size: 1.2rem;
+      padding: 15px 10px;
+    }
+
+    .requests-to-approve-table tbody td {
+      font-size: 1.1rem;
+      padding: 12px 10px;
+    }
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
   }
 </style>
 
@@ -310,7 +855,7 @@
     });
     // Filter panel functionality
     const filterPanel = $('#filterPanel');
-    const panelIcon = $('.panel-heading .fa');
+    const panelIcon = $('.filter-toggle');
 
     filterPanel.on('show.bs.collapse', function () {
       panelIcon.removeClass('collapsed');

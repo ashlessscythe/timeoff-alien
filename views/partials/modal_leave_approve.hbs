@@ -1,10 +1,13 @@
 <!-- views/approve_leave_modal.hbs -->
 <div id="approveModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="approveModalLabel"
   aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content professional-modal">
       <div class="modal-header">
-        <h5 class="modal-title" id="approveModalLabel">Approve Leave Request</h5>
+        <div class="modal-title-section">
+          <i class="fa fa-check-circle modal-icon"></i>
+          <h4 class="modal-title" id="approveModalLabel">Approve Leave Request</h4>
+        </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -13,16 +16,173 @@
         <div class="modal-body">
           <input type="hidden" name="request" value="">
           <div class="form-group">
-            <label for="approveComment">Approval Comment (optional)</label>
-            <textarea class="form-control" name="comment" id="approveComment" rows="1"></textarea>
-            <p><em>Optional comment (resizeable textarea)</em></p>
+            <label for="approveComment" class="form-label">
+              <i class="fa fa-comment"></i> Approval Comment (optional)
+            </label>
+            <textarea class="form-control modal-textarea" name="comment" id="approveComment" rows="3"
+              placeholder="Enter any additional comments about this approval..."></textarea>
+            <p class="form-help"><em>Optional comment - you can provide additional context for this approval</em></p>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-success">Approve</button>
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+            <i class="fa fa-times"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fa fa-check"></i> Approve Request
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+<style>
+  .professional-modal {
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+  }
+
+  .professional-modal .modal-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #dee2e6;
+    padding: 25px 30px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal-title-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .modal-icon {
+    font-size: 1.8rem;
+    color: #28a745;
+  }
+
+  .professional-modal .modal-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+  }
+
+  .professional-modal .modal-body {
+    padding: 30px;
+  }
+
+  .form-label {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-label i {
+    color: var(--accent-color);
+    font-size: 1.2rem;
+  }
+
+  .modal-textarea {
+    font-size: 1.3rem;
+    padding: 15px 18px;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .modal-textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+  }
+
+  .form-help {
+    font-size: 1.1rem;
+    color: var(--hover-text-color);
+    margin-top: 8px;
+    margin-bottom: 0;
+  }
+
+  .professional-modal .modal-footer {
+    background: var(--secondary-background-color);
+    border-top: 1px solid #dee2e6;
+    padding: 20px 30px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .professional-modal .btn {
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-secondary {
+    background: transparent;
+    color: var(--hover-text-color);
+    border: 2px solid #6c757d;
+  }
+
+  .btn-outline-secondary:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+  }
+
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    color: white;
+  }
+
+  .close {
+    font-size: 1.8rem;
+    color: var(--hover-text-color);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .close:hover {
+    opacity: 1;
+    color: #dc3545;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .professional-modal .modal-title {
+      font-size: 1.8rem;
+    }
+
+    .form-label {
+      font-size: 1.2rem;
+    }
+
+    .modal-textarea {
+      font-size: 1.1rem;
+    }
+
+    .professional-modal .btn {
+      font-size: 1.1rem;
+      padding: 10px 20px;
+    }
+  }
+</style>
