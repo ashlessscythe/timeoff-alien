@@ -1,34 +1,45 @@
 <div class="header">
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-default professional-navbar">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+        <button type="button" class="navbar-toggle collapsed professional-toggle" data-toggle="collapse"
           data-target="#bs-example-navbar-collapse-1">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="{{url_to_the_site_root}}">{{header_title}}</a>
+        <a class="navbar-brand professional-brand" href="{{url_to_the_site_root}}">
+          <i class="fa fa-calendar-check-o"></i>
+          {{header_title}}
+        </a>
       </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-left">
           {{#if logged_user}}
-          <li><a href="/calendar/">Calendar</a></li>
+          <li><a href="/calendar/" class="nav-link">
+              <i class="fa fa-calendar"></i> Calendar
+            </a></li>
           {{#if (or (not keep_team_view_hidden) logged_user.manager)}}
-          <li><a href="/calendar/teamview/">Team View</a></li>
+          <li><a href="/calendar/teamview/" class="nav-link">
+              <i class="fa fa-users"></i> Team View
+            </a></li>
           {{/if}}
           {{#if logged_user.admin}}
-          <li><a href="/users/">Employees</a></li>
+          <li><a href="/users/" class="nav-link">
+              <i class="fa fa-user"></i> Employees
+            </a></li>
           {{/if}}
           {{#unless is_messages_page}}
           <li class="navbar-form navbar-left">
             <div class="form-group">
-              <button type="button" class="btn btn-info" data-toggle="modal" data-target="#book_leave_modal"
-                id="book_time_off_btn">New absence</button>
+              <button type="button" class="btn btn-primary professional-btn" data-toggle="modal"
+                data-target="#book_leave_modal" id="book_time_off_btn">
+                <i class="fa fa-plus"></i> New Absence
+              </button>
             </div>
           </li>
           {{/unless}}
@@ -40,42 +51,54 @@
             {{#if logged_user }}
             <!-- Theme Selector Dropdown -->
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
-              title="Theme">
-              <span class="fa fa-paint-brush"></span> <span class="caret"></span>
+            <a href="#" class="dropdown-toggle professional-dropdown" data-toggle="dropdown" role="button"
+              aria-expanded="false" title="Theme">
+              <span class="fa fa-paint-brush"></span> Theme <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu" id="theme-dropdown" role="menu">
-              <li><a href="#" data-theme="day">Day</a></li>
-              <li><a href="#" data-theme="night">Night</a></li>
-              <li><a href="#" data-theme="ocean">Ocean</a></li>
-              <li><a href="#" data-theme="nature">Nature</a></li>
-              <li><a href="#" data-theme="volcano">Volcano</a></li>
-              <li><a href="#" data-theme="sky">Sky</a></li>
+            <ul class="dropdown-menu professional-dropdown-menu" id="theme-dropdown" role="menu">
+              <li><a href="#" data-theme="day" class="theme-option">
+                  <i class="fa fa-sun-o"></i> Day
+                </a></li>
+              <li><a href="#" data-theme="night" class="theme-option">
+                  <i class="fa fa-moon-o"></i> Night
+                </a></li>
+              <li><a href="#" data-theme="ocean" class="theme-option">
+                  <i class="fa fa-tint"></i> Ocean
+                </a></li>
+              <li><a href="#" data-theme="nature" class="theme-option">
+                  <i class="fa fa-leaf"></i> Nature
+                </a></li>
+              <li><a href="#" data-theme="volcano" class="theme-option">
+                  <i class="fa fa-fire"></i> Volcano
+                </a></li>
+              <li><a href="#" data-theme="sky" class="theme-option">
+                  <i class="fa fa-cloud"></i> Sky
+                </a></li>
             </ul>
           </li>
           </li>
 
           <li class="dropdown" id="header-notification-dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <a href="#" class="dropdown-toggle professional-dropdown" data-toggle="dropdown" role="button"
+              aria-expanded="false">
               <span class="fa fa-bell-o"></span>
               <span class="label label-info notification-badge hidden"></span>
             </a>
-            <ul class="dropdown-menu" role="menu">
+            <ul class="dropdown-menu professional-dropdown-menu" role="menu">
               <li class="dropdown-header">Notifications</li>
               <li><a href="/requests">See Requests</a></li>
             </ul>
           </li>
 
           <li>
-            <a href="/messages/new" class="btn"
-              style="background-color: #F4A460; color: white; margin-top: 8px; padding: 6px 12px;" title="Report Issue">
+            <a href="/messages/new" class="btn professional-btn report-btn" title="Report Issue">
               <span class="fa fa-envelope-o"></span>
             </a>
           </li>
 
           {{#if logged_user.admin}}
           <li>
-            <a href="/messages" class="btn btn-info" style="margin-top: 8px; padding: 6px 12px;" title="Issue Reports">
+            <a href="/messages" class="btn professional-btn admin-btn" title="Issue Reports">
               <span class="fa fa-inbox"></span>
               <span class="label label-danger message-count hidden">0</span>
             </a>
@@ -84,72 +107,127 @@
 
           {{#if logged_user.admin }}
           <li class="dropdown hidden-xs">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span
-                class="fa fa-gears"></span> <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/settings/general/">General</a></li>
+            <a href="#" class="dropdown-toggle professional-dropdown" data-toggle="dropdown" role="button"
+              aria-expanded="false">
+              <span class="fa fa-gears"></span> Settings <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu professional-dropdown-menu" role="menu">
+              <li><a href="/settings/general/">
+                  <i class="fa fa-cog"></i> General
+                </a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="/settings/departments/">Departments</a></li>
-              <li><a href="/settings/bankholidays/">Bank Holidays</a></li>
-              <li><a href="/settings/company/authentication/">LDAP configuration</a></li>
-              <li><a href="/settings/company/integration-api/">API configuration</a></li>
-              <li><a href="/users/import/">Import employees</a></li>
+              <li><a href="/settings/departments/">
+                  <i class="fa fa-building"></i> Departments
+                </a></li>
+              <li><a href="/settings/bankholidays/">
+                  <i class="fa fa-calendar"></i> Bank Holidays
+                </a></li>
+              <li><a href="/settings/company/authentication/">
+                  <i class="fa fa-key"></i> LDAP configuration
+                </a></li>
+              <li><a href="/settings/company/integration-api/">
+                  <i class="fa fa-plug"></i> API configuration
+                </a></li>
+              <li><a href="/users/import/">
+                  <i class="fa fa-upload"></i> Import employees
+                </a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="/audit/email/">Emails audit</a></li>
-              <li><a href="/messages/">User Messages</a></li>
+              <li><a href="/audit/email/">
+                  <i class="fa fa-envelope"></i> Emails audit
+                </a></li>
+              <li><a href="/messages/">
+                  <i class="fa fa-comments"></i> User Messages
+                </a></li>
             </ul>
           </li>
           {{/if}}
 
           {{#if logged_user.admin }}
           <li class="dropdown visible-xs-block">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <a href="#" class="dropdown-toggle professional-dropdown" data-toggle="dropdown" role="button"
+              aria-expanded="false">
               <span class="fa fa-gears"></span> Settings <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/settings/general/">General Settings</a></li>
+            <ul class="dropdown-menu professional-dropdown-menu" role="menu">
+              <li><a href="/settings/general/">
+                  <i class="fa fa-cog"></i> General Settings
+                </a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="/settings/departments/">Departments</a></li>
-              <li><a href="/settings/bankholidays/">Bank Holidays</a></li>
-              <li><a href="/settings/company/authentication/">LDAP configuration</a></li>
-              <li><a href="/settings/company/integration-api/">API configuration</a></li>
-              <li><a href="/users/import/">Import employees</a></li>
+              <li><a href="/settings/departments/">
+                  <i class="fa fa-building"></i> Departments
+                </a></li>
+              <li><a href="/settings/bankholidays/">
+                  <i class="fa fa-calendar"></i> Bank Holidays
+                </a></li>
+              <li><a href="/settings/company/authentication/">
+                  <i class="fa fa-key"></i> LDAP configuration
+                </a></li>
+              <li><a href="/settings/company/integration-api/">
+                  <i class="fa fa-plug"></i> API configuration
+                </a></li>
+              <li><a href="/users/import/">
+                  <i class="fa fa-upload"></i> Import employees
+                </a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="/audit/email/">Emails audit</a></li>
-              <li><a href="/messages/">User Messages</a></li>
+              <li><a href="/audit/email/">
+                  <i class="fa fa-envelope"></i> Emails audit
+                </a></li>
+              <li><a href="/messages/">
+                  <i class="fa fa-comments"></i> User Messages
+                </a></li>
             </ul>
           </li>
           {{/if}}
           <li class="dropdown visible-xs-block">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-              Me <span class="caret"></span>
+            <a href="#" class="dropdown-toggle professional-dropdown" data-toggle="dropdown" role="button"
+              aria-expanded="false">
+              <i class="fa fa-user"></i> Me <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/requests/">Requests</a></li>
-              <li><a href="/calendar/feeds/">Feeds</a></li>
+            <ul class="dropdown-menu professional-dropdown-menu" role="menu">
+              <li><a href="/requests/">
+                  <i class="fa fa-list"></i> Requests
+                </a></li>
+              <li><a href="/calendar/feeds/">
+                  <i class="fa fa-rss"></i> Feeds
+                </a></li>
               {{#if (or logged_user.admin logged_user.manager)}}
-              <li><a href="/reports/">Reports</a></li>
+              <li><a href="/reports/">
+                  <i class="fa fa-chart-bar"></i> Reports
+                </a></li>
               {{/if}}
               <li role="separator" class="divider"></li>
-              <li><a href="/logout/">Logout</a></li>
+              <li><a href="/logout/">
+                  <i class="fa fa-sign-out"></i> Logout
+                </a></li>
             </ul>
           </li>
           <li class="dropdown hidden-xs">
-            <a id="me_menu" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-              aria-expanded="false">Me
-              <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/requests/">Requests</a></li>
-              <li><a href="/calendar/feeds/">Feeds</a></li>
+            <a id="me_menu" href="#" class="dropdown-toggle professional-dropdown" data-toggle="dropdown" role="button"
+              aria-expanded="false">
+              <i class="fa fa-user"></i> Me <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu professional-dropdown-menu" role="menu">
+              <li><a href="/requests/">
+                  <i class="fa fa-list"></i> Requests
+                </a></li>
+              <li><a href="/calendar/feeds/">
+                  <i class="fa fa-rss"></i> Feeds
+                </a></li>
               {{#if (or logged_user.admin logged_user.manager)}}
-              <li><a href="/reports/">Reports</a></li>
+              <li><a href="/reports/">
+                  <i class="fa fa-chart-bar"></i> Reports
+                </a></li>
               {{/if}}
               <li role="separator" class="divider"></li>
-              <li><a href="/logout/">Logout</a></li>
+              <li><a href="/logout/">
+                  <i class="fa fa-sign-out"></i> Logout
+                </a></li>
             </ul>
           </li>
           {{else}}
-          <li><a href="/login/">Login</a></li>
+          <li><a href="/login/" class="nav-link">
+              <i class="fa fa-sign-in"></i> Login
+            </a></li>
           {{/if}}
         </ul>
       </div><!-- /.navbar-collapse -->
@@ -158,9 +236,11 @@
 
   {{#if logged_user }}
   {{#if logged_user.company.company_wide_message }}
-  <div class="alert alert-danger" role="alert"
+  <div class="alert alert-danger professional-alert" role="alert"
     style="color: {{logged_user.company.company_wide_message_text_color}}; background-color: {{logged_user.company.company_wide_message_bg_color}}">
-    {{ logged_user.company.company_wide_message }}</div>
+    <i class="fa fa-exclamation-triangle"></i>
+    {{ logged_user.company.company_wide_message }}
+  </div>
   {{/if}}
   {{/if}}
 
@@ -241,3 +321,297 @@
     setInterval(updateMessageCount, 300000);
   });
 </script>
+
+<style>
+  /* Professional Header Styling */
+  .professional-navbar {
+    background: linear-gradient(135deg, var(--secondary-background-color) 0%, var(--hover-bg-color) 100%) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    min-height: 70px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .professional-brand {
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    color: var(--text-color) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 15px 20px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .professional-brand:hover {
+    color: var(--accent-color) !important;
+    text-decoration: none !important;
+    transform: translateY(-2px) !important;
+  }
+
+  .professional-brand i {
+    font-size: 2rem !important;
+    color: var(--accent-color) !important;
+  }
+
+  .professional-toggle {
+    border: 2px solid var(--divider-color) !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    margin: 15px !important;
+    background: var(--background-color) !important;
+  }
+
+  .professional-toggle .icon-bar {
+    background: var(--text-color) !important;
+    height: 3px !important;
+    border-radius: 2px !important;
+  }
+
+  .nav-link {
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
+    color: var(--text-color) !important;
+    padding: 20px 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.3s ease !important;
+    border-radius: 6px !important;
+    margin: 5px !important;
+  }
+
+  .nav-link:hover {
+    background: var(--hover-bg-color) !important;
+    color: var(--accent-color) !important;
+    text-decoration: none !important;
+    transform: translateY(-2px) !important;
+  }
+
+  .nav-link i {
+    font-size: 1.1rem !important;
+    color: var(--accent-color) !important;
+  }
+
+  .professional-btn {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    margin: 5px !important;
+  }
+
+  .professional-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .btn-primary.professional-btn {
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--hover-bg-color) 100%) !important;
+    color: white !important;
+  }
+
+  .btn-primary.professional-btn:hover {
+    color: white !important;
+  }
+
+  .report-btn {
+    background: linear-gradient(135deg, #F4A460 0%, #D2691E 100%) !important;
+    color: white !important;
+    padding: 12px 15px !important;
+  }
+
+  .admin-btn {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    color: white !important;
+    padding: 12px 15px !important;
+  }
+
+  .professional-dropdown {
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
+    color: var(--text-color) !important;
+    padding: 20px 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.3s ease !important;
+    border-radius: 6px !important;
+    margin: 5px !important;
+  }
+
+  .professional-dropdown:hover {
+    background: var(--hover-bg-color) !important;
+    color: var(--accent-color) !important;
+    text-decoration: none !important;
+    transform: translateY(-2px) !important;
+  }
+
+  .professional-dropdown i {
+    font-size: 1.1rem !important;
+    color: var(--accent-color) !important;
+  }
+
+  .professional-dropdown-menu {
+    background: var(--background-color) !important;
+    border: 2px solid var(--divider-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    padding: 10px 0 !important;
+    min-width: 200px !important;
+  }
+
+  .professional-dropdown-menu li a {
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    color: var(--text-color) !important;
+    padding: 12px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .professional-dropdown-menu li a:hover {
+    background: var(--hover-bg-color) !important;
+    color: var(--accent-color) !important;
+    text-decoration: none !important;
+  }
+
+  .professional-dropdown-menu li a i {
+    font-size: 1rem !important;
+    color: var(--accent-color) !important;
+    width: 16px !important;
+    text-align: center !important;
+  }
+
+  .theme-option {
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    color: var(--text-color) !important;
+    padding: 12px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .theme-option:hover {
+    background: var(--hover-bg-color) !important;
+    color: var(--accent-color) !important;
+    text-decoration: none !important;
+  }
+
+  .theme-option i {
+    font-size: 1rem !important;
+    color: var(--accent-color) !important;
+    width: 16px !important;
+    text-align: center !important;
+  }
+
+  .professional-alert {
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
+    padding: 15px 20px !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .professional-alert i {
+    font-size: 1.3rem !important;
+  }
+
+  /* Badge Styling */
+  .label {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+  }
+
+  .label-info {
+    background: var(--accent-color) !important;
+    color: white !important;
+  }
+
+  .label-danger {
+    background: #dc3545 !important;
+    color: white !important;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .professional-brand {
+      font-size: 1.5rem !important;
+      padding: 12px 15px !important;
+    }
+
+    .professional-brand i {
+      font-size: 1.6rem !important;
+    }
+
+    .nav-link {
+      font-size: 1.1rem !important;
+      padding: 15px 12px !important;
+    }
+
+    .professional-btn {
+      font-size: 1.1rem !important;
+      padding: 10px 15px !important;
+    }
+
+    .professional-dropdown {
+      font-size: 1.1rem !important;
+      padding: 15px 12px !important;
+    }
+
+    .professional-dropdown-menu {
+      min-width: 180px !important;
+    }
+
+    .professional-dropdown-menu li a {
+      font-size: 1rem !important;
+      padding: 10px 15px !important;
+    }
+
+    .professional-alert {
+      font-size: 1.1rem !important;
+      padding: 12px 15px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .professional-brand {
+      font-size: 1.3rem !important;
+    }
+
+    .professional-brand i {
+      font-size: 1.4rem !important;
+    }
+
+    .nav-link {
+      font-size: 1rem !important;
+      padding: 12px 10px !important;
+    }
+
+    .professional-btn {
+      font-size: 1rem !important;
+      padding: 8px 12px !important;
+    }
+
+    .professional-dropdown {
+      font-size: 1rem !important;
+      padding: 12px 10px !important;
+    }
+  }
+</style>
