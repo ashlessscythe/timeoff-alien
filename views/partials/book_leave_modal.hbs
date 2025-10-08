@@ -1,19 +1,24 @@
 <div class="modal fade" id="{{container_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content professional-modal">
       <form method="POST" action="{{leave_modal_form_action}}" id="leaveForm" novalidate>
         <div class="modal-header">
+          <div class="modal-title-section">
+            <i class="fa fa-calendar-plus-o modal-icon"></i>
+            <h4 class="modal-title" id="exampleModalLabel">New Absence Request</h4>
+          </div>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
               aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="exampleModalLabel">New absence</h4>
         </div>
         <div class="modal-body">
 
           {{# if_equal logged_user.supervised_users.length 1 }}{{else}}
           <div class="form-group">
-            <label for="employee" class="control-label">For employee:</label>
-            <select class="form-control" id="employee" name="user" required>
+            <label for="employee" class="form-label">
+              <i class="fa fa-user"></i> For Employee:
+            </label>
+            <select class="form-control modal-select" id="employee" name="user" required>
               {{#each logged_user.supervised_users}}
               <option value="{{@index}}" {{# if_equal this.id ../logged_user.id }}selected="selected" {{/if_equal}}>
                 {{this.full_name}}</option>
@@ -23,10 +28,12 @@
           {{/if_equal}}
 
           <div class="form-group">
-            <label for="leave_type" class="control-label">Leave type:</label>
-            <select class="form-control" id="leave_type" name="leave_type" required>
+            <label for="leave_type" class="form-label">
+              <i class="fa fa-tag"></i> Leave Type:
+            </label>
+            <select class="form-control modal-select" id="leave_type" name="leave_type" required>
               {{# is_force_to_explicitly_select_type_when_requesting_new_leave}}
-              <option disabled selected value>-- select an option --</option>
+              <option disabled selected value>-- Select an option --</option>
               {{/ is_force_to_explicitly_select_type_when_requesting_new_leave}}
               {{# if_equal logged_user.supervised_users.length 1 }}
               {{#each logged_user.company.leave_types }}
@@ -43,10 +50,12 @@
           </div>
 
           <div class="form-group">
-            <label for="from" class="control-label">From:</label>
+            <label for="from" class="form-label">
+              <i class="fa fa-calendar"></i> From Date:
+            </label>
             <div class="row">
               <div class="col-md-5">
-                <select class="form-control" name="from_date_part" required>
+                <select class="form-control modal-select" name="from_date_part" required>
                   <option value="1" selected="selected">All day</option>
                   <option value="2">AM</option>
                   <option value="3">PM</option>
@@ -55,8 +64,8 @@
               <div class="col-md-7">
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
-                  <input type="text" class="form-control book-leave-from-input" id="from" data-provide="datepicker"
-                    data-date-autoclose="1"
+                  <input type="text" class="form-control book-leave-from-input modal-input" id="from"
+                    data-provide="datepicker" data-date-autoclose="1"
                     data-date-format="{{# with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
                     data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_start}}"
                     name="from_date" required aria-label="From date">
@@ -66,10 +75,12 @@
           </div>
 
           <div class="form-group">
-            <label for="to" class="control-label">To:</label>
+            <label for="to" class="form-label">
+              <i class="fa fa-calendar"></i> To Date:
+            </label>
             <div class="row">
               <div class="col-md-5">
-                <select class="form-control" name="to_date_part" required>
+                <select class="form-control modal-select" name="to_date_part" required>
                   <option value="1" selected="selected">All day</option>
                   <option value="2">AM</option>
                   <option value="3">PM</option>
@@ -78,8 +89,8 @@
               <div class="col-md-7">
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
-                  <input type="text" class="form-control book-leave-to-input" id="to" data-provide="datepicker"
-                    data-date-autoclose="1"
+                  <input type="text" class="form-control book-leave-to-input modal-input" id="to"
+                    data-provide="datepicker" data-date-autoclose="1"
                     data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
                     data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_end}}"
                     name="to_date" required aria-label="To date">
@@ -89,14 +100,21 @@
           </div>
 
           <div class="form-group">
-            <label for="leave_reason" class="control-label">Comment (optional):</label>
-            <textarea class="form-control" id="leave_reason" name="reason"></textarea>
+            <label for="leave_reason" class="form-label">
+              <i class="fa fa-comment"></i> Comment (Optional):
+            </label>
+            <textarea class="form-control modal-textarea" id="leave_reason" name="reason" rows="3"
+              placeholder="Add any additional details about your absence request..."></textarea>
           </div>
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-success single-click" id="submitLeaveBtn">Create</button>
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+            <i class="fa fa-times"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-success single-click" id="submitLeaveBtn">
+            <i class="fa fa-plus"></i> Create Request
+          </button>
           {{# if redirect_back_to }}
           <input type="hidden" name="redirect_back_to" value="{{redirect_back_to}}">
           {{else}}
@@ -152,3 +170,319 @@
     }
   });
 </script>
+
+<style>
+  .professional-modal {
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+  }
+
+  .professional-modal .modal-header {
+    background: linear-gradient(135deg, var(--secondary-background-color) 0%, var(--hover-bg-color) 100%);
+    border-bottom: 1px solid var(--divider-color);
+    padding: 25px 30px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal-title-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .modal-icon {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+  }
+
+  .professional-modal .modal-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+  }
+
+  .professional-modal .modal-body {
+    padding: 30px;
+  }
+
+  .form-label {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-label i {
+    color: var(--accent-color);
+    font-size: 1.2rem;
+  }
+
+  .modal-select,
+  .modal-input {
+    font-size: 1.3rem;
+    padding: 15px 18px;
+    border-radius: 8px;
+    border: 2px solid var(--divider-color);
+    transition: border-color 0.3s ease;
+    min-height: 50px;
+  }
+
+  .modal-select:focus,
+  .modal-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+  }
+
+  .modal-textarea {
+    font-size: 1.3rem;
+    padding: 15px 18px;
+    border-radius: 8px;
+    border: 2px solid var(--divider-color);
+    transition: border-color 0.3s ease;
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .modal-textarea:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+  }
+
+  .input-group-addon {
+    background: var(--secondary-background-color);
+    border: 2px solid var(--divider-color);
+    border-right: none;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    padding: 15px 18px;
+  }
+
+  .input-group .form-control {
+    border-left: none;
+  }
+
+  .input-group .form-control:focus {
+    border-left: none;
+  }
+
+  .professional-modal .modal-footer {
+    background: var(--secondary-background-color);
+    border-top: 1px solid var(--divider-color);
+    padding: 20px 30px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .professional-modal .btn {
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-secondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 2px solid var(--divider-color);
+  }
+
+  .btn-outline-secondary:hover {
+    background: var(--hover-bg-color);
+    color: var(--text-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+  }
+
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    color: white;
+  }
+
+  .close {
+    font-size: 1.8rem;
+    color: var(--hover-text-color);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .close:hover {
+    opacity: 1;
+    color: var(--text-color);
+  }
+
+  /* Datepicker Calendar Styling */
+  .datepicker {
+    background: var(--background-color) !important;
+    border: 2px solid var(--divider-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    font-size: 1.2rem !important;
+  }
+
+  .datepicker table {
+    font-size: 1.2rem !important;
+  }
+
+  .datepicker table tr th {
+    background: var(--secondary-background-color) !important;
+    color: var(--text-color) !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    padding: 12px 8px !important;
+    border-bottom: 1px solid var(--divider-color) !important;
+  }
+
+  .datepicker table tr td {
+    color: var(--text-color) !important;
+    font-size: 1.2rem !important;
+    padding: 12px 8px !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .datepicker table tr td:hover {
+    background: var(--hover-bg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  .datepicker table tr td.active,
+  .datepicker table tr td.active:hover,
+  .datepicker table tr td.active.disabled,
+  .datepicker table tr td.active.disabled:hover {
+    background: var(--accent-color) !important;
+    color: white !important;
+    font-weight: 600 !important;
+  }
+
+  .datepicker table tr td.today {
+    background: var(--current-day-bg) !important;
+    color: var(--text-color) !important;
+    font-weight: 600 !important;
+  }
+
+  .datepicker table tr td.old,
+  .datepicker table tr td.new {
+    color: var(--hover-text-color) !important;
+    opacity: 0.6 !important;
+  }
+
+  .datepicker .datepicker-switch {
+    background: var(--secondary-background-color) !important;
+    color: var(--text-color) !important;
+    font-size: 1.4rem !important;
+    font-weight: 600 !important;
+    padding: 15px !important;
+    border-bottom: 1px solid var(--divider-color) !important;
+  }
+
+  .datepicker .datepicker-switch:hover {
+    background: var(--hover-bg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  .datepicker .prev,
+  .datepicker .next {
+    background: var(--secondary-background-color) !important;
+    color: var(--accent-color) !important;
+    font-size: 1.3rem !important;
+    padding: 15px !important;
+    border-bottom: 1px solid var(--divider-color) !important;
+  }
+
+  .datepicker .prev:hover,
+  .datepicker .next:hover {
+    background: var(--hover-bg-color) !important;
+    color: var(--accent-color) !important;
+  }
+
+  .datepicker tfoot tr th {
+    background: var(--secondary-background-color) !important;
+    color: var(--text-color) !important;
+    font-size: 1.1rem !important;
+    padding: 12px !important;
+    border-top: 1px solid var(--divider-color) !important;
+  }
+
+  .datepicker tfoot tr th:hover {
+    background: var(--hover-bg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  /* Datepicker dropdown arrow */
+  .datepicker-dropdown:before {
+    border-bottom-color: var(--divider-color) !important;
+  }
+
+  .datepicker-dropdown:after {
+    border-bottom-color: var(--background-color) !important;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .professional-modal .modal-title {
+      font-size: 1.8rem;
+    }
+
+    .form-label {
+      font-size: 1.2rem;
+    }
+
+    .modal-select,
+    .modal-input,
+    .modal-textarea {
+      font-size: 1.1rem;
+      padding: 12px 15px;
+    }
+
+    .professional-modal .btn {
+      font-size: 1.1rem;
+      padding: 10px 20px;
+    }
+
+    .datepicker {
+      font-size: 1rem !important;
+    }
+
+    .datepicker table {
+      font-size: 1rem !important;
+    }
+
+    .datepicker table tr th {
+      font-size: 0.9rem !important;
+      padding: 8px 4px !important;
+    }
+
+    .datepicker table tr td {
+      font-size: 1rem !important;
+      padding: 8px 4px !important;
+    }
+
+    .datepicker .datepicker-switch {
+      font-size: 1.2rem !important;
+      padding: 12px !important;
+    }
+
+    .datepicker .prev,
+    .datepicker .next {
+      font-size: 1.1rem !important;
+      padding: 12px !important;
+    }
+  }
+</style>
