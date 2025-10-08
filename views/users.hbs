@@ -1,96 +1,447 @@
 {{> header }}
 
-<h1>Staff</h1>
-
-{{> show_flash_messages }}
-
-<div class="row">
-  <div class="col-md-3 lead">{{company.name}}'s staff</div>
-  <div class="col-md-3 col-md-offset-6">
-    <div class="btn-group pull-right">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        Add new employee
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a href="/users/import/" id="import_users_btn">Import employees</a></li>
-        <li><a href="/users/add/" id="add_new_department">Add single employee</a></li>
-      </ul>
+<!-- Hero Section -->
+<div class="users-hero">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <div class="hero-icon">
+          <i class="fa fa-users"></i>
+        </div>
+        <h1 class="hero-title">Staff Management</h1>
+        <p class="hero-subtitle">Manage your team members and departments</p>
+        <div class="hero-divider"></div>
+      </div>
     </div>
-    <div class="btn-group pull-right" style="margin-right: 10px;">
-      <button type="button" class="btn btn-default" id="toggle-deactivated-users"
-        data-content="Toggle visibility of deactivated users" data-placement="top" data-toggle="tooltip"
-        data-trigger="hover">
-        <i class="fa fa-eye-slash"></i> Hide deactivated
-      </button>
-    </div>
-    <form action="/users/" method="GET">
-      <input type="hidden" name="department" value="{{department_id}}">
-      <input type="hidden" name="as-csv" value="1">
-      <button class="btn btn-link pull-right single-click" type="submit"
-        data-content="Download current page as .CSV file" data-placement="top" data-toggle="popover"
-        data-trigger="focus hover"><i class="fa fa-download"></i> .csv</button>
-    </form>
   </div>
 </div>
 
-<div class="row">&nbsp;</div>
+{{> show_flash_messages }}
 
-<div class="col-md-3 list-group all-departments">
-  <a href="/users/" class="list-group-item{{#unless department_id }} selected-item{{/unless}}">All departments</a>
-  {{#each company.departments}}
-  <a class="list-group-item {{#if_equal ../department_id this.id}} selected-item{{/if_equal}}"
-    href="/users/?department={{this.id}}">{{this.name}}</a>
-  {{/each}}
+<div class="container">
+  <div class="row">
+    <!-- Department Sidebar -->
+    <div class="col-md-3">
+      <div class="department-sidebar">
+        <div class="department-header">
+          <i class="fa fa-building"></i>
+          <h3>Departments</h3>
+        </div>
+        <div class="department-list">
+          <a href="/users/" class="department-item{{#unless department_id }} active{{/unless}}">
+            <i class="fa fa-th-large"></i>
+            <span>All departments</span>
+          </a>
+          {{#each company.departments}}
+          <a class="department-item {{#if_equal ../department_id this.id}} active{{/if_equal}}"
+            href="/users/?department={{this.id}}">
+            <i class="fa fa-building-o"></i>
+            <span>{{this.name}}</span>
+          </a>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <div class="action-info">
+          <h2 class="action-title">
+            <i class="fa fa-users"></i>
+            {{company.name}}'s Staff
+          </h2>
+        </div>
+        <div class="action-buttons">
+          <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              <i class="fa fa-plus"></i> Add Employee
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="/users/import/" id="import_users_btn"><i class="fa fa-upload"></i> Import employees</a></li>
+              <li><a href="/users/add/" id="add_new_department"><i class="fa fa-user-plus"></i> Add single employee</a>
+              </li>
+            </ul>
+          </div>
+          <button type="button" class="btn btn-outline-secondary" id="toggle-deactivated-users"
+            data-content="Toggle visibility of deactivated users" data-placement="top" data-toggle="tooltip"
+            data-trigger="hover">
+            <i class="fa fa-eye-slash"></i> Hide Deactivated
+          </button>
+          <form action="/users/" method="GET" class="d-inline">
+            <input type="hidden" name="department" value="{{department_id}}">
+            <input type="hidden" name="as-csv" value="1">
+            <button class="btn btn-outline-success single-click" type="submit"
+              data-content="Download current page as .CSV file" data-placement="top" data-toggle="popover"
+              data-trigger="focus hover">
+              <i class="fa fa-download"></i> Export CSV
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Staff Table -->
+      <div class="table-container">
+        <div class="table-hint">
+          <i class="fa fa-info-circle"></i>
+          Click column headers to sort. Scroll horizontally on mobile.
+        </div>
+        <table class="table table-hover staff-table" id="users-table">
+          <thead>
+            <tr>
+              <th class="sortable" data-column="name">
+                <i class="fa fa-user"></i> Name <i class="fa fa-sort sort-icon"></i>
+              </th>
+              <th class="sortable" data-column="department">
+                <i class="fa fa-building"></i> Department <i class="fa fa-sort sort-icon"></i>
+              </th>
+              <th class="sortable" data-column="is_admin">
+                <i class="fa fa-shield"></i> Administrator <i class="fa fa-sort sort-icon"></i>
+              </th>
+              <th class="sortable" data-column="is_manager">
+                <i class="fa fa-users"></i> Manager <i class="fa fa-sort sort-icon"></i>
+              </th>
+              <th class="sortable" data-column="allowance">
+                <i class="fa fa-calendar"></i> Available Days <i class="fa fa-sort sort-icon"></i>
+              </th>
+              <th class="sortable" data-column="days_used">
+                <i class="fa fa-check-circle"></i> Days Used <i class="fa fa-sort sort-icon"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {{# each users_info}}
+            <tr data-vpp-user-row="{{this.user_id}}" class="{{#unless this.is_active}}deactivated-user{{/unless}}">
+              <td class="user-link-cell">
+                <a href="/users/edit/{{this.user_id}}/" class="user-name-link">
+                  {{#unless this.is_active}}<s>{{/unless}}{{this.user_full_name}}{{#unless
+                    this.is_active}}</s>{{/unless}}
+                </a>
+              </td>
+              <td class="user_department">
+                <a href="/settings/departments/edit/{{ this.department_id }}/" class="department-link">
+                  {{this.department_name}}
+                </a>
+              </td>
+              <td class="admin-cell">
+                {{# if this.is_admin }}
+                <span class="badge badge-success">Yes</span>
+                {{else}}
+                <span class="badge badge-secondary">No</span>
+                {{/if}}
+              </td>
+              <td class="manager-cell">
+                {{# if this.is_manager }}
+                <span class="badge badge-info">Yes</span>
+                {{else}}
+                <span class="badge badge-secondary">No</span>
+                {{/if}}
+              </td>
+              <td class="allowance-cell">
+                <span
+                  class="vpp-days-remaining{{#if (lt this.number_of_days_available_in_allowance 0)}} negative{{/if}}">
+                  {{this.number_of_days_available_in_allowance}}
+                </span>
+              </td>
+              <td class="used-cell">
+                <span class="vpp-days-used">{{this.number_of_days_taken_from_allowance}}</span>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
-
-<div class="col-md-9">
-  <table class="table table-hover" id="users-table">
-    <thead>
-      <tr>
-        <th class="sortable" data-column="name">
-          Name <i class="fa fa-sort sort-icon"></i>
-        </th>
-        <th class="sortable" data-column="department">
-          Department <i class="fa fa-sort sort-icon"></i>
-        </th>
-        <th class="sortable" data-column="is_admin">
-          Is Administrator? <i class="fa fa-sort sort-icon"></i>
-        </th>
-        <th class="sortable" data-column="is_manager">
-          Is Manager <i class="fa fa-sort sort-icon"></i>
-        </th>
-        <th class="sortable" data-column="allowance">
-          Available allowance <i class="fa fa-sort sort-icon"></i>
-        </th>
-        <th class="sortable" data-column="days_used">
-          Days used <i class="fa fa-sort sort-icon"></i>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {{# each users_info}}
-      <tr data-vpp-user-row="{{this.user_id}}" class="{{#unless this.is_active}}deactivated-user{{/unless}}">
-        <td class="user-link-cell"><a href="/users/edit/{{this.user_id}}/">{{#unless
-            this.is_active}}<s>{{/unless}}{{this.user_full_name}}{{#unless this.is_active}}</s>{{/unless}}</a></td>
-        <td class="user_department"><a
-            href="/settings/departments/edit/{{ this.department_id }}/">{{this.department_name}}</a></td>
-        <td>{{# if this.is_admin }}Yes{{else}}{{/if}}</td>
-        <td>{{# if this.is_manager }}Yes{{else}}{{/if}}</td>
-        <td class="vpp-days-remaining{{#if (lt this.number_of_days_available_in_allowance 0)}} negative{{/if}}">{{
-          this.number_of_days_available_in_allowance }}</td>
-        <td class="vpp-days-used">{{this.number_of_days_taken_from_allowance}}</td>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
-</div>
-
-<div class="row">&nbsp;</div>
 
 <style>
+  /* Hero Section Styling */
+  .users-hero {
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--hover-bg-color) 100%);
+    color: var(--text-color);
+    padding: 40px 0;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .users-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.1;
+  }
+
+  .hero-icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+  }
+
+  .hero-divider {
+    width: 60px;
+    height: 3px;
+    background: var(--text-color);
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
+  /* Department Sidebar */
+  .department-sidebar {
+    background: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 30px;
+  }
+
+  .department-header {
+    background: linear-gradient(135deg, var(--secondary-background-color) 0%, var(--hover-bg-color) 100%);
+    padding: 25px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .department-header i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+  }
+
+  .department-header h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .department-list {
+    padding: 0;
+  }
+
+  .department-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    color: var(--text-color);
+    text-decoration: none;
+    border-bottom: 1px solid var(--divider-color);
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+  }
+
+  .department-item:hover {
+    background: var(--hover-bg-color);
+    color: var(--text-color);
+    text-decoration: none;
+    transform: translateX(5px);
+  }
+
+  .department-item.active {
+    background: var(--accent-color);
+    color: white;
+    font-weight: 600;
+  }
+
+  .department-item i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  /* Action Bar */
+  .action-bar {
+    background: var(--background-color);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .action-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .action-title i {
+    color: var(--accent-color);
+    font-size: 1.8rem;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .action-buttons .btn {
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--hover-bg-color) 100%);
+    border: none;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    color: white;
+  }
+
+  .btn-outline-secondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 2px solid var(--divider-color);
+  }
+
+  .btn-outline-secondary:hover {
+    background: var(--hover-bg-color);
+    color: var(--text-color);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline-success {
+    background: transparent;
+    color: #28a745;
+    border: 2px solid #28a745;
+  }
+
+  .btn-outline-success:hover {
+    background: #28a745;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Table Container */
+  .table-container {
+    background: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 30px;
+  }
+
+  .table-hint {
+    background: var(--secondary-background-color);
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    color: var(--hover-text-color);
+    border-bottom: 1px solid var(--divider-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .table-hint i {
+    color: var(--accent-color);
+  }
+
+  /* Staff Table */
+  .staff-table {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .staff-table thead th {
+    background: var(--secondary-background-color);
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 1.3rem;
+    padding: 20px 15px;
+    border: none;
+    position: relative;
+  }
+
+  .staff-table tbody td {
+    padding: 18px 15px;
+    border-top: 1px solid var(--divider-color);
+    vertical-align: middle;
+  }
+
+  .staff-table tbody tr:hover {
+    background: var(--hover-bg-color);
+  }
+
+  /* User Links */
+  .user-name-link,
+  .department-link {
+    color: var(--accent-color);
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 1.2rem;
+  }
+
+  .user-name-link:hover,
+  .department-link:hover {
+    color: var(--hover-text-color);
+    text-decoration: underline;
+  }
+
+  /* Badges */
+  .badge {
+    font-size: 1rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .badge-success {
+    background: #28a745;
+    color: white;
+  }
+
+  .badge-info {
+    background: #17a2b8;
+    color: white;
+  }
+
+  .badge-secondary {
+    background: #6c757d;
+    color: white;
+  }
+
+  /* Deactivated Users */
   .deactivated-user {
     opacity: 0.6;
     transition: opacity 0.3s ease;
@@ -101,8 +452,8 @@
   }
 
   #toggle-deactivated-users.active {
-    background-color: #5cb85c;
-    border-color: #4cae4c;
+    background: #28a745;
+    border-color: #28a745;
     color: white;
   }
 
@@ -115,20 +466,22 @@
     cursor: pointer;
     user-select: none;
     position: relative;
-    padding-right: 20px;
+    padding-right: 30px;
+    transition: background 0.3s ease;
   }
 
   .sortable:hover {
-    background-color: #f5f5f5;
+    background: var(--hover-bg-color);
   }
 
   .sort-icon {
     position: absolute;
-    right: 5px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     opacity: 0.5;
     transition: opacity 0.2s ease;
+    font-size: 1rem;
   }
 
   .sortable:hover .sort-icon {
@@ -138,11 +491,67 @@
   .sortable.sorted-asc .sort-icon:before {
     content: "\f0de";
     opacity: 1;
+    color: var(--accent-color);
   }
 
   .sortable.sorted-desc .sort-icon:before {
     content: "\f0dd";
     opacity: 1;
+    color: var(--accent-color);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .action-title {
+      font-size: 1.8rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .action-buttons .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .staff-table {
+      font-size: 1rem;
+    }
+
+    .staff-table thead th {
+      font-size: 1.1rem;
+      padding: 15px 10px;
+    }
+
+    .staff-table tbody td {
+      padding: 15px 10px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+  }
+
+  @keyframes pulse {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.05);
+    }
   }
 </style>
 
