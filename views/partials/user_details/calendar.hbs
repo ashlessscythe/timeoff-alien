@@ -32,9 +32,11 @@
         {{#with current_user }}
         <div class="allowance-breakdown">
           <div class="big-number-container">
-            <span class="big-number" data-tom-days-available-in-allowance{{#if (lt ../user_allowance.vacation_remaining 0)}} class="negative" {{/if}}>{{ ../user_allowance.vacation_remaining }}</span>
+            <span class="big-number{{#if (lt ../user_allowance.vacation_remaining 0)}} negative{{/if}}"
+              data-tom-days-available-in-allowance>{{ ../user_allowance.vacation_remaining }}</span>
             <span class="slash">/</span>
-            <span class="big-number">{{ ../user_allowance.total_personal_available }}</span>
+            <span class="big-number{{#if (lt ../user_allowance.total_personal_available 0)}} negative{{/if}}">{{
+              ../user_allowance.total_personal_available }}</span>
           </div>
           <div class="small-labels">
             <span class="label-vac">vac</span>

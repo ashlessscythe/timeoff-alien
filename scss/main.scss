@@ -547,6 +547,11 @@ body .allowance-breakdown .big-number-container .slash {
   .personal-cell {
     background: #f3e5f5;
     color: #7b1fa2;
+
+    &.negative {
+      background: #ffebee;
+      color: #d32f2f;
+    }
   }
 
   .big-number-table {
