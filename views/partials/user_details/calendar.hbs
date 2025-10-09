@@ -30,8 +30,17 @@
     <div class="col-md-4 top-leave-type-statistics">
       <dl>
         {{#with current_user }}
-        <dt data-tom-days-available-in-allowance{{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
-          class="negative" {{/if}}>{{ ../user_allowance.number_of_days_available_in_allowance }}</dt>
+        <div class="allowance-breakdown">
+          <div class="big-number-container">
+            <span class="big-number" data-tom-days-available-in-allowance{{#if (lt ../user_allowance.vacation_remaining 0)}} class="negative" {{/if}}>{{ ../user_allowance.vacation_remaining }}</span>
+            <span class="slash">/</span>
+            <span class="big-number">{{ ../user_allowance.total_personal_available }}</span>
+          </div>
+          <div class="small-labels">
+            <span class="label-vac">vac</span>
+            <span class="label-per">per</span>
+          </div>
+        </div>
         {{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
         <dd class="text-danger small">
           You're overbooked!
@@ -42,7 +51,6 @@
           </a>
         </dd>
         {{/if}}
-        <dd>Personal remaining: {{ ../user_allowance.total_personal_available }}</dd>
         <dd>out of <span data-tom-total-days-in-allowance>{{ ../user_allowance.total_number_of_days_in_allowance
             }}</span> in total allowance</dd>
         {{#if ../pending_requests_count}}
