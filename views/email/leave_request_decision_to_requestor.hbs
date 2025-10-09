@@ -1,23 +1,57 @@
-Leave request was {{#if_equal action 'approve'}}accepted{{else}}denied{{/if_equal}}
+{{#if_equal action 'approve'}}🎉 Leave Request Approved{{else}}❌ Leave Request Denied{{/if_equal}}
 =====
-<p>Hello <strong>{{#with requester}}{{this.full_name}}{{/with}}</strong>,</p>
+<h2>Hello {{#with requester}}{{this.full_name}}{{/with}},</h2>
 
-{{> email/leave_comments comments=comments }}
+{{#if_equal action 'approve'}}
+<div class="info-box info-box-success">
+  <h3 style="margin-top: 0; color: #059669;">🎉 Congratulations! Your Request Was Approved</h3>
+  <p><strong>{{#with approver }}{{this.full_name}}{{/with}}</strong> has approved your {{#if
+    was_pended_revoke}}cancellation of {{/if}}leave request.</p>
+</div>
+{{else}}
+<div class="info-box info-box-error">
+  <h3 style="margin-top: 0; color: #dc2626;">❌ Request Denied</h3>
+  <p><strong>{{#with approver }}{{this.full_name}}{{/with}}</strong> has denied your {{#if
+    was_pended_revoke}}cancellation of {{/if}}leave request.</p>
+</div>
+{{/if_equal}}
 
-<p>{{#with approver }}{{this.full_name}}{{/with}} decided to <strong>{{action}}</strong> your {{#if
-  was_pended_revoke}}cancellation of {{/if}}leave request <strong>{{>leave_request_detail leave=leave }}</strong>.</p>
+<div class="content-card">
+  <div class="content-card-header">
+    <h3 style="margin: 0; color: #1f2937;">📅 Leave Request Details</h3>
+  </div>
+  <div class="content-card-body">
+    <p><strong>{{>leave_request_detail leave=leave }}</strong></p>
+    {{> email/leave_comments comments=comments }}
+  </div>
+</div>
 
-<!-- Conditionally add the approver's comment here -->
 {{#if (or (eq action 'reject') (eq action 'approve'))}}
-<p>{{#if (eq action 'reject')}}Rejection{{else}}Approval{{/if}} comment:
-  <strong>
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1f2937;">💬 {{#if (eq action 'reject')}}Rejection{{else}}Approval{{/if}} Comment
+  </h3>
+  <div
+    style="background-color: #f3f4f6; padding: 12px; border-radius: 6px; border-left: 4px solid {{#if (eq action 'reject')}}#dc2626{{else}}#059669{{/if}};">
     {{#if leave.approver_comment}}
-    {{leave.approver_comment}}
+    <p style="margin: 0; font-style: italic;">"{{leave.approver_comment}}"</p>
     {{else}}
-    No comment.
+    <p style="margin: 0; color: #6b7280; font-style: italic;">No comment provided.</p>
     {{/if}}
-  </strong>
-</p>
+  </div>
+</div>
 {{/if}}
 
-<p>Thanks</p>
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1f2937;">📊 Next Steps</h3>
+  {{#if_equal action 'approve'}}
+  <p>Your approved leave has been added to your calendar. You can view all your approved time off by logging into {{>
+    email/link href=(get_application_domain) text='TimeOff.Management' }}.</p>
+  {{else}}
+  <p>If you have questions about this decision, please contact <strong>{{#with approver
+      }}{{this.full_name}}{{/with}}</strong> directly.</p>
+  <p>You can submit a new leave request anytime by logging into {{> email/link href=(get_application_domain)
+    text='TimeOff.Management' }}.</p>
+  {{/if_equal}}
+</div>
+
+<p style="margin-top: 20px;">Best regards,<br><strong>The TimeOff.Management Team</strong></p>

@@ -1,35 +1,71 @@
-New TimeOff.Management account for {{#with new_user }}{{this.full_name}}{{/with}}
+🎉 Welcome to TimeOff.Management!
 =====
-<p>Hello <strong>{{new_user.name}}</strong>,</p>
+<h2>Hello {{new_user.name}},</h2>
 
-<p><strong>{{#with admin_user}}{{this.full_name}}{{/with}}</strong> just registered new account for you as an employee
-  of <strong>{{company.name}}</strong>.</p>
+<div class="info-box info-box-success">
+  <h3 style="margin-top: 0; color: #059669;">🎉 Your Account is Ready!</h3>
+  <p><strong>{{#with admin_user}}{{this.full_name}}{{/with}}</strong> has created your TimeOff.Management account for
+    <strong>{{company.name}}</strong>.
+  </p>
+</div>
 
-<p>Please contact <strong>{{admin_user.name}}</strong> about your new password and login at {{> email/link
-  href=(get_application_domain) text="TimeOff.Management" }}</p>
+<div class="content-card">
+  <div class="content-card-header">
+    <h3 style="margin: 0; color: #1f2937;">🔐 Set Up Your Password</h3>
+  </div>
+  <div class="content-card-body">
+    <p>To get started, you'll need to set up your password. You can do this in two ways:</p>
 
-<p>Alternatively follow the link below to set a new password:
+    <div style="margin: 20px 0;">
+      <h4 style="color: #1f2937; margin-bottom: 8px;">Option 1: Contact Your Admin</h4>
+      <p>Contact <strong>{{admin_user.name}}</strong> to get your initial password and login details.</p>
+    </div>
 
-  {{# with new_user ~}}
-  {{> email/link href=(concatenate (get_application_domain) '/reset-password/?t=' ../token) text='Set new password'}}
-  {{/ with }}
+    <div style="margin: 20px 0;">
+      <h4 style="color: #1f2937; margin-bottom: 8px;">Option 2: Set Password Directly</h4>
+      <p>Click the button below to set your password:</p>
+      <div style="text-align: center; margin: 20px 0;">
+        {{# with new_user ~}}
+        <a href="{{concatenate (get_application_domain) '/reset-password/?t=' ../token}}" class="btn"
+          style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;">Set
+          My Password</a>
+        {{/ with }}
+      </div>
+    </div>
+  </div>
+</div>
 
-</p>
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1f2937;">🌐 Access Your Account</h3>
+  <p>Once you have your password, you can access your TimeOff.Management account here:</p>
+  <div style="text-align: center; margin: 15px 0;">
+    <a href="{{get_application_domain}}" class="btn btn-secondary"
+      style="display: inline-block; padding: 12px 24px; background-color: #6b7280; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;">Login
+      to TimeOff.Management</a>
+  </div>
+</div>
 
-<hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
-
-<p>You can access your Time Off site anytime here:
-  {{> email/link href=(get_application_domain) text=(get_application_domain) }}
-</p>
-
-<div style="margin-top:10px; padding:12px; background:#f8f9fa; border-left:4px solid #5ba4e5; border-radius:3px;">
-  <p style="margin:0 0 8px 0;"><strong>Save the site to your home screen</strong></p>
-  <ul style="margin:0; padding-left:18px;">
-    <li style="margin-bottom:6px;"><strong>iOS (Safari):</strong> Open the site → tap the <em>Share</em> icon → choose
-      <em>Add to Home Screen</em> → <em>Add</em>.</li>
-    <li style="margin-bottom:0;"><strong>Android (Chrome):</strong> Open the site → tap the <em>⋮</em> menu → choose
-      <em>Add to Home screen</em> (or <em>Install app</em>) → <em>Add</em>.</li>
+<div class="info-box info-box-success">
+  <h3 style="margin-top: 0; color: #059669;">📱 Mobile Access</h3>
+  <p><strong>Save TimeOff.Management to your home screen for easy access:</strong></p>
+  <ul style="padding-left: 20px; margin: 0;">
+    <li style="margin-bottom: 8px;"><strong>📱 iOS (Safari):</strong> Open the site → tap the <em>Share</em> icon →
+      choose <em>Add to Home Screen</em> → <em>Add</em></li>
+    <li style="margin-bottom: 0;"><strong>🤖 Android (Chrome):</strong> Open the site → tap the <em>⋮</em> menu → choose
+      <em>Add to Home screen</em> (or <em>Install app</em>) → <em>Add</em>
+    </li>
   </ul>
 </div>
 
-<p>Thanks</p>
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1f2937;">🚀 What You Can Do</h3>
+  <p>With your TimeOff.Management account, you can:</p>
+  <ul style="padding-left: 20px; margin: 0;">
+    <li style="margin-bottom: 6px;">📅 Request time off and view your leave balance</li>
+    <li style="margin-bottom: 6px;">📊 View your team's calendar and availability</li>
+    <li style="margin-bottom: 6px;">📱 Access everything from your mobile device</li>
+    <li style="margin-bottom: 0;">🔔 Get notifications about leave requests and approvals</li>
+  </ul>
+</div>
+
+<p style="margin-top: 20px;">Welcome to the team!<br><strong>The TimeOff.Management Team</strong></p>
