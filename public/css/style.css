@@ -110,7 +110,7 @@ body.theme-sky {
 
 /* Base styles and variables */
 body {
-  font: 14px 'Open Sans', Helvetica, Arial, sans-serif;
+  font: 14px "Open Sans", Helvetica, Arial, sans-serif;
   color: var(--text-color);
   background-color: var(--background-color);
   padding-top: 20px;
@@ -359,6 +359,173 @@ div.feeds-holder {
   font-size: 16px;
 }
 
+/* Allowance breakdown styling */
+.allowance-breakdown {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.big-number-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.big-number {
+  font-size: 70px !important;
+  color: #61686b !important;
+  font-weight: 100 !important;
+  line-height: 0.8 !important;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+}
+.big-number.negative {
+  color: #d9534f !important;
+  text-shadow: 0 4px 8px rgba(217, 83, 79, 0.4) !important;
+}
+
+/* Extra specific selectors to override any conflicting styles */
+.allowance-breakdown .big-number-container .big-number {
+  font-size: 70px !important;
+  color: #61686b !important;
+  font-weight: 100 !important;
+  line-height: 0.8 !important;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+}
+
+.allowance-breakdown .big-number-container .big-number.negative {
+  color: #d9534f !important;
+  text-shadow: 0 4px 8px rgba(217, 83, 79, 0.4) !important;
+}
+
+/* Even more specific selectors */
+body .allowance-breakdown .big-number-container .big-number {
+  font-size: 70px !important;
+  color: #61686b !important;
+  font-weight: 100 !important;
+  line-height: 0.8 !important;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+}
+
+body .allowance-breakdown .big-number-container .big-number.negative {
+  color: #d9534f !important;
+  text-shadow: 0 4px 8px rgba(217, 83, 79, 0.4) !important;
+}
+
+.slash {
+  font-size: 60px !important;
+  color: #61686b !important;
+  font-weight: 200 !important;
+  line-height: 0.8 !important;
+  opacity: 0.7 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Extra specific selector for slash */
+.allowance-breakdown .big-number-container .slash {
+  font-size: 60px !important;
+  color: #61686b !important;
+  font-weight: 200 !important;
+  line-height: 0.8 !important;
+  opacity: 0.7 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Even more specific selector for slash */
+body .allowance-breakdown .big-number-container .slash {
+  font-size: 60px !important;
+  color: #61686b !important;
+  font-weight: 200 !important;
+  line-height: 0.8 !important;
+  opacity: 0.7 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.small-labels {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 8px;
+}
+
+.label-vac,
+.label-per {
+  font-size: 18px;
+  color: #888;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: #f8f9fa;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+/* Alternative table layout for allowance breakdown */
+.allowance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.allowance-table th {
+  background: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 16px;
+}
+.allowance-table td {
+  padding: 20px 15px;
+  text-align: center;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 18px;
+  font-weight: 500;
+}
+.allowance-table .vacation-cell {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+.allowance-table .vacation-cell.negative {
+  background: #ffebee;
+  color: #d32f2f;
+}
+.allowance-table .personal-cell {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+.allowance-table .big-number-table {
+  font-size: 60px !important;
+  font-weight: 100 !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
 .secondary-leave-type-statistics {
   font-size: 16px;
 }
@@ -388,7 +555,6 @@ div.feeds-holder {
     position: fixed;
   }
 }
-
 /* Selected items in lists */
 .selected-item {
   background: #f5f7f8;
@@ -411,17 +577,14 @@ div.feeds-holder {
   border-radius: 4px;
   margin: 5px 2px;
 }
-.navbar-collapse .navbar-nav > li > a:hover,
-.navbar-collapse .navbar-nav > li > a:focus {
+.navbar-collapse .navbar-nav > li > a:hover, .navbar-collapse .navbar-nav > li > a:focus {
   background-color: var(--hover-bg-color);
   color: var(--hover-text-color);
 }
-
 .navbar-collapse .navbar-nav .navbar-form .btn-info {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-.navbar-collapse .navbar-nav .navbar-form .btn-info:hover,
-.navbar-collapse .navbar-nav .navbar-form .btn-info:focus {
+.navbar-collapse .navbar-nav .navbar-form .btn-info:hover, .navbar-collapse .navbar-nav .navbar-form .btn-info:focus {
   background-color: var(--hover-bg-color);
   color: var(--hover-text-color);
 }
@@ -434,8 +597,7 @@ div.feeds-holder {
   color: var(--text-color);
   background-color: var(--background-color);
 }
-.form-control:hover,
-.form-control:focus,
+.form-control:hover, .form-control:focus,
 .list-group:hover,
 .list-group:focus,
 .datepicker-days:hover,
@@ -446,15 +608,4 @@ div.feeds-holder {
   background-color: var(--hover-bg-color);
 }
 
-/* Negative allowance styling */
-.vpp-days-remaining.negative,
-[data-tom-days-available-in-allowance].negative {
-  color: #d32f2f !important;
-  font-weight: bold;
-}
-
-/* Style for negative values in user details */
-.user-allowance-negative {
-  color: #d32f2f !important;
-  font-weight: bold;
-}
+/*# sourceMappingURL=style.css.map */
