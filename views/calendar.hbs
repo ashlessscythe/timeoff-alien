@@ -26,14 +26,20 @@
       <div class="allowance-breakdown">
         <div class="big-number-container">
           <span class="big-number{{#if (lt ../user_allowance.vacation_remaining 0)}} negative{{/if}}"
-            data-tom-days-available-in-allowance>{{ ../user_allowance.vacation_remaining }}</span>
-          <span class="slash">/</span>
-          <span class="big-number{{#if (lt ../user_allowance.total_personal_available 0)}} negative{{/if}}">{{
+            data-tom-days-available-in-allowance
+            style="font-size: 70px !important; color: {{#if (lt ../user_allowance.vacation_remaining 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">{{
+            ../user_allowance.vacation_remaining }}</span>
+          <span class="slash"
+            style="font-size: 60px !important; color: #61686b !important; font-weight: 200 !important; line-height: 0.8 !important; opacity: 0.7 !important; margin: 0 !important; padding: 0 !important; display: inline-block !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;">/</span>
+          <span class="big-number{{#if (lt ../user_allowance.total_personal_available 0)}} negative{{/if}}"
+            style="font-size: 70px !important; color: {{#if (lt ../user_allowance.total_personal_available 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">{{
             ../user_allowance.total_personal_available }}</span>
         </div>
-        <div class="small-labels">
-          <span class="label-vac">vac</span>
-          <span class="label-per">per</span>
+        <div class="small-labels" style="display: flex; justify-content: center; gap: 40px; margin-top: 8px;">
+          <span class="label-vac"
+            style="font-size: 18px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; background: #f8f9fa; padding: 4px 12px; border-radius: 4px; border: 1px solid #e9ecef;">vac</span>
+          <span class="label-per"
+            style="font-size: 18px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; background: #f8f9fa; padding: 4px 12px; border-radius: 4px; border: 1px solid #e9ecef;">per</span>
         </div>
       </div>
 

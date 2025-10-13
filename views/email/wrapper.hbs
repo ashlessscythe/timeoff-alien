@@ -1,22 +1,39 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="format-detection" content="telephone=no,address=no,date=no,email=no,url=no">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
   <title>{{subject}}</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:AllowPNG/>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
   <style type="text/css">
+    /* Reset styles */
     #outlook a {
       padding: 0;
     }
 
     body {
-      width: 100% !important;
-      -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
       margin: 0;
       padding: 0;
+      width: 100% !important;
+      min-width: 100%;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
     }
 
     .ExternalClass {
@@ -32,17 +49,22 @@
       line-height: 100%;
     }
 
-    #backgroundTable {
-      margin: 0;
-      padding: 0;
-      width: 100% !important;
-      line-height: 100% !important;
+    table {
+      border-collapse: collapse;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+    }
+
+    table td {
+      border-collapse: collapse;
     }
 
     img {
       outline: none;
       text-decoration: none;
       -ms-interpolation-mode: bicubic;
+      max-width: 100%;
+      height: auto;
     }
 
     a img {
@@ -53,14 +75,88 @@
       display: block;
     }
 
-    p {
-      color: #61686b;
-      font-family: sans-serif;
-      font-size: 15px;
-      font-weight: normal;
-      line-height: 1.5em;
+    /* Typography */
+    body,
+    table,
+    td,
+    p,
+    a,
+    li,
+    blockquote {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+
+    table,
+    td {
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+    }
+
+    img {
+      -ms-interpolation-mode: bicubic;
+    }
+
+    /* Modern styling */
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+    }
+
+    .email-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .email-header h1 {
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 28px;
+      font-weight: 600;
       margin: 0;
-      padding: 0 0 1.5em 0;
+      line-height: 1.2;
+    }
+
+    .email-body {
+      padding: 40px 30px;
+      background-color: #ffffff;
+    }
+
+    .email-footer {
+      background-color: #f8fafc;
+      padding: 30px;
+      text-align: center;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    /* Content styling */
+    .content-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .content-card-header {
+      background-color: #f8fafc;
+      padding: 20px 30px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .content-card-body {
+      padding: 30px;
+    }
+
+    /* Typography improvements */
+    p {
+      color: #374151;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 0 0 16px 0;
     }
 
     h1,
@@ -69,141 +165,214 @@
     h4,
     h5,
     h6 {
-      color: black !important;
+      color: #1f2937;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 600;
+      line-height: 1.3;
+      margin: 0 0 16px 0;
     }
 
-    h1 a,
-    h2 a,
-    h3 a,
-    h4 a,
-    h5 a,
-    h6 a {
-      color: blue !important;
+    h1 {
+      font-size: 24px;
     }
 
-    h1 a:active,
-    h2 a:active,
-    h3 a:active,
-    h4 a:active,
-    h5 a:active,
-    h6 a:active {
-      color: red !important;
+    h2 {
+      font-size: 20px;
     }
 
-    h1 a:visited,
-    h2 a:visited,
-    h3 a:visited,
-    h4 a:visited,
-    h5 a:visited,
-    h6 a:visited {
-      color: purple !important;
+    h3 {
+      font-size: 18px;
     }
 
-    table td {
-      border-collapse: collapse;
-    }
-
-    table {
-      border-collapse: collapse;
-      mso-table-lspace: 0pt;
-      mso-table-rspace: 0pt;
-    }
-
+    /* Links */
     a {
-      color: orange;
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
     }
 
-    @media only screen and (max-device-width: 480px) {
+    a:hover {
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
 
-      a[href^="tel"],
-      a[href^="sms"] {
-        text-decoration: none;
-        color: black;
-        /* or whatever your want */
-        pointer-events: none;
-        cursor: default;
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #3b82f6;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background-color: #1d4ed8;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      background-color: #6b7280;
+    }
+
+    .btn-secondary:hover {
+      background-color: #4b5563;
+    }
+
+    /* Status indicators */
+    .status-approved {
+      color: #059669;
+      background-color: #d1fae5;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .status-pending {
+      color: #d97706;
+      background-color: #fef3c7;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .status-rejected {
+      color: #dc2626;
+      background-color: #fee2e2;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Info boxes */
+    .info-box {
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .info-box-success {
+      background-color: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .info-box-warning {
+      background-color: #fffbeb;
+      border-color: #fed7aa;
+    }
+
+    .info-box-error {
+      background-color: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    /* Responsive design */
+    @media only screen and (max-width: 600px) {
+      .email-container {
+        width: 100% !important;
       }
 
-      .mobile_link a[href^="tel"],
-      .mobile_link a[href^="sms"] {
-        text-decoration: default;
-        color: orange !important;
-        /* or whatever your want */
-        pointer-events: auto;
-        cursor: default;
+      .email-header,
+      .email-body,
+      .email-footer {
+        padding: 20px !important;
+      }
+
+      .content-card-body {
+        padding: 20px !important;
+      }
+
+      h1 {
+        font-size: 24px !important;
+      }
+
+      h2 {
+        font-size: 20px !important;
+      }
+
+      p {
+        font-size: 16px !important;
+      }
+
+      .btn {
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        margin: 10px 0 !important;
       }
     }
 
-    @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
-
-      a[href^="tel"],
-      a[href^="sms"] {
-        text-decoration: none;
-        color: blue;
-        pointer-events: none;
-        cursor: default;
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      .email-container {
+        background-color: #1f2937;
       }
 
-      .mobile_link a[href^="tel"],
-      .mobile_link a[href^="sms"] {
-        text-decoration: default;
-        color: orange !important;
-        pointer-events: auto;
-        cursor: default;
+      .email-body {
+        background-color: #1f2937;
       }
-    }
 
-    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
-      /* Put your iPhone 4g styles in here */
-    }
+      .content-card {
+        background-color: #374151;
+      }
 
-    @media only screen and (-webkit-device-pixel-ratio:.75) {
-      /* Put CSS for low density (ldpi) Android layouts in here */
-    }
+      .content-card-header {
+        background-color: #4b5563;
+      }
 
-    @media only screen and (-webkit-device-pixel-ratio:1) {
-      /* Put CSS for medium density (mdpi) Android layouts in here */
-    }
+      p {
+        color: #d1d5db;
+      }
 
-    @media only screen and (-webkit-device-pixel-ratio:1.5) {
-      /* Put CSS for high density (hdpi) Android layouts in here */
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #f9fafb;
+      }
     }
   </style>
-  <!--[if IEMobile 7]>
-  <style type="text/css">
-    /* Targeting Windows Mobile */
-  </style>
-  <![endif]-->
-  <!--[if gte mso 9]>
-  <style>
-    /* Target Outlook 2007 and 2010 */
-  </style>
-  <![endif]-->
 </head>
 
-<body>
-  <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable">
-    <tr>
-      <td>
-        <div
-          style="-moz-border-radius: 3px; -webkit-border-radius: 3px; border: #e5e3d8 1px solid; border-radius: 3px; margin: 2%; padding: 5% 8%;">
+<body style="margin: 0; padding: 0; background-color: #f3f4f6;">
+  <div class="email-container">
+    <!-- Header -->
+    <div class="email-header">
+      <h1>{{#if header_title}}{{header_title}}{{else}}TimeOff.Management{{/if}}</h1>
+    </div>
+
+    <!-- Main Content -->
+    <div class="email-body">
+      <div class="content-card">
+        <div class="content-card-body">
           {{{body}}}
         </div>
+      </div>
+    </div>
 
-        <div style="padding: 0 4%;">
-          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tr>
-              <td align="right"
-                style="color: #888888; font-family: sans-serif; font-size: 11px; line-height: 1.3; padding: 0 0 20px 0;">
-                Sent by {{> email/link href=(get_application_domain) text='TimeOff.Management' }}
-              </td>
-            </tr>
-          </table>
-        </div>
-
-      </td>
-    </tr>
-  </table>
+    <!-- Footer -->
+    <div class="email-footer">
+      <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px 0;">
+        Sent by <a
+          href="{{#if branding_url}}{{branding_url}}{{else}}{{> email/link href=(get_application_domain) text='TimeOff.Management' }}{{/if}}"
+          style="color: #3b82f6;">{{#if header_title}}{{header_title}}{{else}}TimeOff.Management{{/if}}</a>
+      </p>
+      <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+        This is an automated message. Please do not reply to this email.
+      </p>
+    </div>
+  </div>
 </body>
 
 </html>

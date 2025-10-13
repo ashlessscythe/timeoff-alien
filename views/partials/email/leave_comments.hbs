@@ -1,7 +1,11 @@
-
 {{# if comments.length }}
+<div class="info-box">
+  <h4 style="margin-top: 0; color: #1f2937; margin-bottom: 12px;">💬 Comments</h4>
   {{#each comments}}
-    <p><strong>Comment:</strong> {{this.comment}}</p>
+  <div
+    style="background-color: #f3f4f6; padding: 12px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #3b82f6;">
+    <p style="margin: 0; font-style: italic;">"{{this.comment}}"</p>
+  </div>
   {{/each}}
+</div>
 {{/ if }}
-

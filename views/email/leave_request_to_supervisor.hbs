@@ -1,13 +1,45 @@
-New leave request
+🔔 New Leave Request Requires Your Approval
 =====
-<p>Hello <strong>{{#with approver }}{{this.full_name}}{{/with}}</strong>,</p>
+<h2>Hello {{#with approver }}{{this.full_name}}{{/with}},</h2>
 
-<p><strong>{{#with requester}}{{this.full_name}}{{/with}}</strong> sent new leave request <strong>{{>leave_request_detail leave=leave }}</strong>.</p>
+<div class="info-box info-box-warning">
+  <h3 style="margin-top: 0; color: #d97706;">⏰ Action Required</h3>
+  <p><strong>{{#with requester}}{{this.full_name}}{{/with}}</strong> has submitted a new leave request that requires
+    your approval.</p>
+</div>
 
-{{> email/leave_comments comments=comments }}
+<div class="content-card">
+  <div class="content-card-header">
+    <h3 style="margin: 0; color: #1f2937;">📅 Leave Request Details</h3>
+  </div>
+  <div class="content-card-body">
+    <p><strong>{{>leave_request_detail leave=leave }}</strong></p>
+    {{> email/leave_comments comments=comments }}
+  </div>
+</div>
 
 {{> email/requester_allowance requester=requester requesterAllowance=requesterAllowance}}
 
-<p>Please visit {{> email/link href=(concatenate (get_application_domain) '/requests/' ) text='Pending requests'}} page to approve or reject outstanding requests.</p>
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1f2937;">⚡ Quick Actions</h3>
+  <p>Review and respond to this request:</p>
+  <div style="text-align: center; margin: 20px 0;">
+    <a href="{{concatenate (get_application_domain) '/requests/' }}" class="btn"
+      style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;">Review
+      Pending Requests</a>
+  </div>
+  <p style="text-align: center; color: #6b7280; font-size: 14px;">You can approve, reject, or request more information
+  </p>
+</div>
 
-<p>Thanks</p>
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1f2937;">📊 Employee Leave Summary</h3>
+  <p>This information may help you make your decision:</p>
+  <ul style="padding-left: 20px; margin: 0;">
+    <li>Current year leave taken and remaining</li>
+    <li>Previous leave patterns</li>
+    <li>Team coverage considerations</li>
+  </ul>
+</div>
+
+<p style="margin-top: 20px;">Best regards,<br><strong>The TimeOff.Management Team</strong></p>

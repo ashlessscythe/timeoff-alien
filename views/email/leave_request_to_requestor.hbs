@@ -1,11 +1,27 @@
-Leave request is awaiting decision
+📋 Leave Request Submitted - Awaiting Approval
 =====
-<p>Hello <strong>{{#with requester}}{{this.full_name}}{{/with}},</strong></p>
+<h2>Hello {{#with requester}}{{this.full_name}}{{/with}},</h2>
 
-<p>Your leave request <strong>{{>leave_request_detail leave=leave }} was sent</strong> to {{#with approver }}{{this.full_name}}{{/with}}.</p>
+<div class="info-box info-box-success">
+  <h3 style="margin-top: 0; color: #059669;">✅ Request Submitted Successfully</h3>
+  <p>Your leave request has been sent to <strong>{{#with approver }}{{this.full_name}}{{/with}}</strong> for review.</p>
+</div>
 
-{{> email/leave_comments comments=comments }}
+<div class="content-card">
+  <div class="content-card-header">
+    <h3 style="margin: 0; color: #1f2937;">📅 Leave Request Details</h3>
+  </div>
+  <div class="content-card-body">
+    <p><strong>{{>leave_request_detail leave=leave }}</strong></p>
+    {{> email/leave_comments comments=comments }}
+  </div>
+</div>
 
-<p>There will be another email upon decision.</p>
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1f2937;">⏳ What Happens Next?</h3>
+  <p>Your supervisor will review your request and you'll receive another email once a decision is made.</p>
+  <p>You can check the status of your request anytime by logging into {{> email/link href=(get_application_domain)
+    text='TimeOff.Management' }}.</p>
+</div>
 
-<p>Thanks</p>
+<p style="margin-top: 20px;">Best regards,<br><strong>The TimeOff.Management Team</strong></p>
