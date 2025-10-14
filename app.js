@@ -76,9 +76,9 @@ app.get('/lang/:locale', (req, res) => {
 app.engine('.hbs', handlebars.engine)
 app.set('view engine', '.hbs')
 
-// Add single reference to the model into application object
+// Add single reference to the Prisma models into application object
 // and reuse it whenever an access to DB is needed
-app.set('db_model', require('./lib/model/db'))
+app.set('db_model', require('./lib/prisma/models'))
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -105,23 +105,9 @@ app.use(
 // Setup authentication mechanism
 const passport = require('./lib/passport')()
 
-const session = require('express-session')
-// initalize sequelize with session store
-const SequelizeStore = require('connect-session-sequelize')(session.Store)
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: new SequelizeStore({
-      db: app.get('db_model').sequelize,
-      // Add this option to fix the Sequelize v6 compatibility issue
-      // This tells connect-session-sequelize to use the Sequelize v6 API
-      // instead of trying to use the removed .import method
-      modelKey: 'Session'
-    })
-  })
-)
+// Use Redis session store instead of Sequelize
+const createSessionMiddleware = require('./lib/middleware/withSession')
+app.use(createSessionMiddleware({ sequelizeDb: null }))
 app.use(passport.initialize())
 app.use(passport.session())
 
