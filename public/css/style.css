@@ -225,20 +225,49 @@ a {
 /* Calendar styles */
 .calendar_month {
   width: 100%;
+  border-collapse: separate;
+  border-spacing: 1px;
+  background: var(--background-color);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 .calendar_month td {
   background-color: var(--calendar-cell-bg);
   text-align: center;
   padding-top: 5px;
   padding-bottom: 5px;
+  color: var(--text-color);
+  font-size: 15px;
 }
 .calendar_month thead {
   text-align: center;
   font-weight: bolder;
+  background: var(--secondary-background-color);
+}
+.calendar_month thead td {
+  padding: 10px 5px;
+  color: var(--text-color);
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  background: transparent;
+  font-weight: 600;
+}
+.calendar_month thead td:first-child {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 5px;
+  color: var(--accent-color);
 }
 
 div.month_container {
   height: 250px;
+  margin-bottom: 20px;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+div.month_container:hover {
+  transform: translateY(-2px);
 }
 
 .team-view-table {
@@ -247,11 +276,14 @@ div.month_container {
 .team-view-table td {
   padding-top: 5px;
   padding-bottom: 5px;
+  font-size: 15px;
 }
 
 td.team-view-header {
   height: 43px;
   text-align: center;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 td.calendar_cell {
@@ -262,6 +294,10 @@ td.calendar_cell {
   text-align: center;
   padding-top: 5px;
   padding-bottom: 5px;
+  transition: all 0.3s ease;
+  border: none;
+  color: var(--text-color);
+  font-size: 15px;
 }
 td.calendar_cell span {
   position: relative;
@@ -270,34 +306,126 @@ td.calendar_cell span {
   display: block;
   text-align: center;
   z-index: 10;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  color: inherit;
+  font-size: 15px;
+}
+td.calendar_cell {
+  /* Rounded corners for half cells */
+}
+td.calendar_cell.half_1st {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-right: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+td.calendar_cell.half_2nd {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-left: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+td.calendar_cell {
+  /* Hover effects */
+}
+td.calendar_cell:hover {
+  transform: scale(1.03);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 5;
 }
 
 td.current_day_cell {
   background: var(--current-day-bg);
   color: var(--text-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 2px var(--accent-color);
+  font-weight: 700;
+}
+td.current_day_cell span {
+  color: var(--text-color) !important;
+  font-weight: 700;
+}
+td.current_day_cell:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 0 0 2px var(--accent-color);
+  transform: scale(1.04);
 }
 
 td.weekend_cell {
   background: var(--secondary-background-color);
+  opacity: 0.9;
+  color: var(--text-color);
+}
+td.weekend_cell span {
+  color: var(--text-color);
+  opacity: 0.7;
+}
+td.weekend_cell:hover {
+  opacity: 1;
+}
+td.weekend_cell:hover span {
+  opacity: 1;
 }
 
 td.bank_holiday_cell {
   background: var(--accent-color);
-  color: var(--text-color);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+td.bank_holiday_cell span {
+  color: white !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
+}
+td.bank_holiday_cell:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  filter: brightness(1.1);
 }
 
 td.leave_cell {
   background: var(--leave-cell-bg);
   color: var(--leave-cell-color);
-  font-weight: bolder;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+td.leave_cell span {
+  color: var(--leave-cell-color) !important;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+td.leave_cell:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transform: scale(1.04);
+  cursor: pointer;
+  filter: brightness(1.05);
 }
 
 td.leave_cell_pended {
   background: #ffcba4;
-  color: var(--text-color);
-  font-weight: bolder;
+  color: #5a3a1a;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(255, 152, 0, 0.3);
+  animation: pulse-pending 2.5s ease-in-out infinite;
+}
+td.leave_cell_pended span {
+  color: #5a3a1a !important;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+td.leave_cell_pended:hover {
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+  transform: scale(1.04);
+  cursor: pointer;
+  filter: brightness(1.05);
 }
 
+/* Pulse animation for pending leave */
+@keyframes pulse-pending {
+  0%, 100% {
+    box-shadow: 0 1px 4px rgba(255, 152, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 6px rgba(255, 152, 0, 0.5);
+  }
+}
 /* Modals */
 .modal-dialog {
   max-width: 450px;
