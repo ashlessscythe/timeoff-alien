@@ -3,34 +3,34 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./app.sqlite"
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model SequelizeMeta {
-  name String @id @db.VarChar(255)
+  name String @id
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Sessions {
-  sid       String    @id @db.VarChar(36)
-  expires   DateTime? @db.Timestamptz(6)
+  sid       String    @id
+  expires   DateTime?
   data      String?
-  createdAt DateTime  @db.Timestamptz(6)
-  updatedAt DateTime  @db.Timestamptz(6)
+  createdAt DateTime
+  updatedAt DateTime
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model audit {
   id          Int        @id @default(autoincrement())
-  entity_type String     @db.VarChar(255)
+  entity_type String
   entity_id   Int
-  attribute   String     @db.VarChar(255)
-  old_value   String?    @db.VarChar(255)
-  new_value   String?    @db.VarChar(255)
-  at          DateTime   @db.Timestamptz(6)
+  attribute   String
+  old_value   String?
+  new_value   String?
+  at          DateTime
   company_id  Int?
   by_user_id  Int?
   users       users?     @relation(fields: [by_user_id], references: [id])
@@ -40,10 +40,10 @@ model audit {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model bank_holidays {
   id         Int       @id @default(autoincrement())
-  name       String    @db.VarChar(255)
-  date       DateTime  @db.Timestamptz(6)
-  created_at DateTime  @db.Timestamptz(6)
-  updated_at DateTime  @db.Timestamptz(6)
+  name       String
+  date       DateTime
+  created_at DateTime
+  updated_at DateTime
   company_id Int
   companies  companies @relation(fields: [company_id], references: [id], onDelete: NoAction)
 
@@ -54,10 +54,10 @@ model bank_holidays {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model comments {
   id          Int       @id @default(autoincrement())
-  entity_type String    @db.VarChar(255)
+  entity_type String
   entity_id   Int
   comment     String
-  at          DateTime  @db.Timestamptz(6)
+  at          DateTime
   company_id  Int
   by_user_id  Int
   users       users     @relation(fields: [by_user_id], references: [id], onDelete: NoAction)
@@ -68,24 +68,24 @@ model comments {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model companies {
   id                       Int             @id @default(autoincrement())
-  name                     String          @db.VarChar(255)
-  country                  String          @db.VarChar(255)
+  name                     String
+  country                  String
   start_of_new_year       Int
   share_all_absences      Boolean         @default(false)
   is_team_view_hidden     Boolean         @default(false)
   ldap_auth_enabled       Boolean         @default(false)
   ldap_auth_config        String?
-  date_format             String          @default("YYYY-MM-DD") @db.VarChar(255)
+  date_format             String          @default("YYYY-MM-DD")
   company_wide_message    String?
-  company_wide_message_text_color String?      @default("#000000") @db.VarChar(7)
-  company_wide_message_bg_color String?      @default("#000000") @db.VarChar(7)
+  company_wide_message_text_color String?      @default("#000000")
+  company_wide_message_bg_color String?      @default("#000000")
   mode                    Int             @default(1)
-  timezone                String?         @default("America/Denver") @db.VarChar(255)
+  timezone                String?         @default("America/Denver")
   integration_api_enabled Boolean         @default(false)
-  integration_api_token   String?         @db.Uuid
+  integration_api_token   String?
   carry_over              Int?            @default(0)
-  created_at              DateTime        @db.Timestamptz(6)
-  updated_at              DateTime        @db.Timestamptz(6)
+  created_at              DateTime
+  updated_at              DateTime
   last_name_first         Boolean         @default(false)
   payroll_close_time      Int             @default(10)  // 10 am in defined timezone (UTC-7)
   first_day_of_week       Int             @default(1)   // 0 for Sunday, 1 for Monday
@@ -104,7 +104,7 @@ model companies {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model department_supervisors {
-  created_at    DateTime    @db.Timestamptz(6)
+  created_at    DateTime
   department_id Int
   user_id       Int
   departments   departments @relation(fields: [department_id], references: [id], onDelete: Cascade)
@@ -118,13 +118,13 @@ model department_supervisors {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model departments {
   id                      Int                      @id @default(autoincrement())
-  name                    String                   @db.VarChar(255)
+  name                    String
   allowance               Float                    @default(20)
   personal                Float                    @default(5)
   include_public_holidays Boolean                  @default(true)
   is_accrued_allowance    Boolean                  @default(false)
-  created_at              DateTime                 @db.Timestamptz(6)
-  updated_at              DateTime                 @db.Timestamptz(6)
+  created_at              DateTime
+  updated_at              DateTime
   company_id              Int
   manager_id              Int?
   department_supervisors  department_supervisors[]
@@ -138,10 +138,10 @@ model departments {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model email_audits {
   id         Int       @id @default(autoincrement())
-  email      String    @db.VarChar(255)
+  email      String
   subject    String
   body       String
-  created_at DateTime  @db.Timestamptz(6)
+  created_at DateTime
   company_id Int
   user_id    Int
   companies  companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
@@ -155,15 +155,15 @@ model email_audits {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model leave_types {
   id            Int       @id @default(autoincrement())
-  name          String    @db.VarChar(255)
-  color         String    @default("#ffffff") @db.VarChar(255)
+  name          String
+  color         String    @default("#ffffff")
   use_allowance Boolean   @default(true)
   use_personal  Boolean   @default(false)
   limit         Int       @default(0)
   sort_order    Int       @default(0)
   auto_approve  Boolean   @default(false)
-  created_at    DateTime  @db.Timestamptz(6)
-  updated_at    DateTime  @db.Timestamptz(6)
+  created_at    DateTime
+  updated_at    DateTime
   company_id    Int
   manager_only  Boolean   @default(false)
   is_special    Boolean   @default(false)
@@ -177,13 +177,13 @@ model leaves {
   status                          Int
   employee_comment                String?
   approver_comment                String?
-  decided_at                      DateTime?   @db.Timestamptz(6)
-  date_start                      DateTime    @db.Timestamptz(6)
+  decided_at                      DateTime?
+  date_start                      DateTime
   day_part_start                  Int         @default(1)
-  date_end                        DateTime    @db.Timestamptz(6)
+  date_end                        DateTime
   day_part_end                    Int         @default(1)
-  created_at                      DateTime    @db.Timestamptz(6)
-  updated_at                      DateTime    @db.Timestamptz(6)
+  created_at                      DateTime
+  updated_at                      DateTime
   user_id                         Int
   approver_id                     Int?
   leave_type_id                   Int
@@ -206,8 +206,8 @@ model schedules {
   friday     Int        @default(1)
   saturday   Int        @default(2)
   sunday     Int        @default(2)
-  created_at DateTime   @db.Timestamptz(6)
-  updated_at DateTime   @db.Timestamptz(6)
+  created_at DateTime
+  updated_at DateTime
   company_id Int?
   user_id    Int?
   companies  companies? @relation(fields: [company_id], references: [id])
@@ -225,7 +225,7 @@ model user_allowance_adjustment {
   adjustment             Float    @default(0)
   personal_adjustment    Float    @default(0)
   carried_over_allowance Int      @default(0)
-  created_at             DateTime @db.Timestamptz(6)
+  created_at             DateTime
   user_id                Int
   users                  users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -235,11 +235,11 @@ model user_allowance_adjustment {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model user_feeds {
   id         Int                  @id @default(autoincrement())
-  name       String               @db.VarChar(255)
-  feed_token String               @db.VarChar(255)
-  type       enum_user_feeds_type
-  created_at DateTime             @db.Timestamptz(6)
-  updated_at DateTime             @db.Timestamptz(6)
+  name       String
+  feed_token String
+  type       String
+  created_at DateTime
+  updated_at DateTime
   user_id    Int
   users      users                @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
@@ -248,21 +248,21 @@ model user_feeds {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model users {
   id                               Int                         @id @default(autoincrement())
-  email                            String                      @db.VarChar(255)
-  slack_username                   String?                     @default("") @db.VarChar(255)
-  password                         String                      @db.VarChar(255)
-  name                             String                      @db.VarChar(255)
-  lastname                         String                      @db.VarChar(255)
+  email                            String
+  slack_username                   String?                     @default("")
+  password                         String
+  name                             String
+  lastname                         String
   activated                        Boolean                     @default(false)
   admin                            Boolean                     @default(false)
   manager                          Boolean                     @default(false)
   auto_approve                     Boolean                     @default(false)
-  reset_password_token             String?                     @db.VarChar(255)
-  reset_password_expires           DateTime?                   @db.Timestamptz(6)
-  start_date                       DateTime                    @db.Timestamptz(6)
-  end_date                         DateTime?                   @db.Timestamptz(6)
-  created_at                       DateTime                    @db.Timestamptz(6)
-  updated_at                       DateTime                    @db.Timestamptz(6)
+  reset_password_token             String?
+  reset_password_expires           DateTime?
+  start_date                       DateTime
+  end_date                         DateTime?
+  created_at                       DateTime
+  updated_at                       DateTime
   company_id                       Int
   department_id                    Int
   audit                            audit[]
@@ -283,22 +283,18 @@ model users {
   @@index([lastname], map: "users_lastname")
 }
 
-enum enum_user_feeds_type {
-  calendar
-  wallchart
-  teamview
-  company
-}
+// Note: SQLite doesn't support enums, so enum_user_feeds_type is now a String field
+// Valid values: calendar, wallchart, teamview, company
 
 model user_messages {
   id         Int       @id @default(autoincrement())
-  name       String    @db.VarChar(255)
-  email      String    @db.VarChar(255)
-  subject    String    @db.VarChar(255)
+  name       String
+  email      String
+  subject    String
   message    String
-  status     String    @default("new") @db.VarChar(50)
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  status     String    @default("new")
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
   deleted    Boolean   @default(false)
   company_id Int
   user_id    Int
