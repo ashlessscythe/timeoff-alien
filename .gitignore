@@ -18,4 +18,6 @@ export/
 *.DS_Store
 t/integration/test.csv
 prisma/uaa.csv
+prisma/app.sqlite-shm
+prisma/app.sqlite-wal
 .env.dev
