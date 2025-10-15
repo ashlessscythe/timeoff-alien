@@ -15,8 +15,6 @@ import/
 export/
 .env
 *.sqlite
-*.sqlite-shm
-*.sqlite-wal
 *.DS_Store
 t/integration/test.csv
 prisma/uaa.csv
