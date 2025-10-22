@@ -3,20 +3,28 @@
 //
 // See https://aka.ms/devcontainer.json for more information.
 {
-	"name": "Ona",
-	// Use "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
-	// "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
-	"image": "mcr.microsoft.com/devcontainers/javascript-node",
-	// instead of the build to use a pre-built image.
-	// "build": {
+  "name": "Ona",
+  // Use "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  // "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+  // instead of the build to use a pre-built image.
+  // "build": {
   //       "context": ".",
   //       "dockerfile": "Dockerfile"
   // },
-	// Features add additional features to your environment. See https://containers.dev/features
-	// Beware: features are not supported on all platforms and may have unintended side-effects.
-	"features": {
-      "ghcr.io/devcontainers/features/docker-in-docker": {
-        "moby": false
+  // Features add additional features to your environment. See https://containers.dev/features
+  // Beware: features are not supported on all platforms and may have unintended side-effects.
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
+      "settings": {
+        "editor.formatOnSave": true
       }
     }
+  }
 }
