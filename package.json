@@ -8,7 +8,6 @@
   },
   "optionalDependencies": {
     "mysql2": "^3.9.1",
-    "pg": "^8.11.4",
     "redis": "^3.1.2",
     "sqlite3": "^5.1.7"
   },
@@ -51,6 +50,7 @@
     "passport-google-oauth20": "^1.0.0",
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
+    "pg": "^8.11.4",
     "prisma": "^5.21.0",
     "request-promise": "^4.2.6",
     "resend": "^4.1.2",
