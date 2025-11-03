@@ -41,7 +41,9 @@
             </span>
           </h4>
         </div>
-        <div class="panel-collapse collapse" id="filterPanel">
+        <div class="panel-collapse collapse" id="filterPanel" {{#if
+          selected_departments}}data-selected-depts="{{#each selected_departments}}{{this.id}}{{#unless @last}},{{/unless}}{{/each}}"
+          {{/if}}>
           <div class="panel-body department-filters">
             <div class="row">
               <div class="col-md-12">
@@ -55,9 +57,7 @@
               {{#each related_departments}}
               <div class="col-md-4">
                 <label class="dept-checkbox-label">
-                  <input type="checkbox" class="dept-checkbox" value="{{this.id}}" {{#each ../selected_departments}}
-                    {{#if (eq this.id ../this.id)}}checked{{/if}} {{/each}} {{#unless
-                    ../selected_departments}}disabled{{/unless}}>
+                  <input type="checkbox" class="dept-checkbox" data-dept-id="{{this.id}}" value="{{this.id}}">
                   {{this.name}}
                 </label>
               </div>
@@ -66,6 +66,9 @@
             <div class="row">
               <div class="col-md-12">
                 <button class="btn btn-primary apply-filters">Apply Filters</button>
+                {{#if selected_departments}}
+                <button class="btn btn-default clear-filters">Clear Filters</button>
+                {{/if}}
               </div>
             </div>
           </div>
@@ -354,6 +357,15 @@
     margin-left: 10px;
   }
 
+  .apply-filters,
+  .clear-filters {
+    margin-right: 10px;
+  }
+
+  .clear-filters {
+    margin-left: 0;
+  }
+
   .panel-title .fa {
     transition: transform 0.3s ease;
   }
@@ -528,23 +540,42 @@
     const allDeptCheckbox = document.querySelector('input[value="all"]');
     const deptCheckboxes = document.querySelectorAll('.dept-checkbox:not([value="all"])');
     const applyButton = document.querySelector('.apply-filters');
+    const clearButton = document.querySelector('.clear-filters');
     const filterPanel = document.querySelector('#filterPanel');
     const panelIcon = document.querySelector('.panel-heading .fa');
 
+    // Set checked state for selected departments
+    const selectedDeptIdsAttr = filterPanel?.getAttribute('data-selected-depts');
+    if (selectedDeptIdsAttr) {
+      const selectedDeptIds = selectedDeptIdsAttr.split(',').map(id => String(id.trim()));
+      deptCheckboxes.forEach(checkbox => {
+        const deptId = String(checkbox.getAttribute('data-dept-id'));
+        if (selectedDeptIds.includes(deptId)) {
+          checkbox.checked = true;
+        }
+      });
+    }
+
+    // Panel will remain collapsed after applying filters
+    // Users can manually expand it if they want to see or modify filters
+
     // Handle panel collapse
     filterPanel?.addEventListener('show.bs.collapse', function () {
-      panelIcon.classList.remove('collapsed');
+      if (panelIcon) {
+        panelIcon.classList.remove('collapsed');
+      }
     });
 
     filterPanel?.addEventListener('hide.bs.collapse', function () {
-      panelIcon.classList.add('collapsed');
+      if (panelIcon) {
+        panelIcon.classList.add('collapsed');
+      }
     });
 
     // Handle "All Departments" checkbox
     allDeptCheckbox?.addEventListener('change', function () {
       deptCheckboxes.forEach(checkbox => {
         checkbox.checked = false;
-        checkbox.disabled = this.checked;
       });
     });
 
@@ -554,12 +585,30 @@
         const anyChecked = Array.from(deptCheckboxes).some(cb => cb.checked);
         if (anyChecked) {
           allDeptCheckbox.checked = false;
+        } else {
+          allDeptCheckbox.checked = true;
         }
       });
     });
 
+    // Handle clear filters button
+    clearButton?.addEventListener('click', function () {
+      // Clear all checkboxes and check "All Departments"
+      allDeptCheckbox.checked = true;
+      deptCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      // Apply immediately (industry standard for clear filters)
+      window.location.href = '?{{> team_view_url_parameters selected_departments = null save_current_department = 1 }}';
+    });
+
     // Handle apply button
     applyButton?.addEventListener('click', function () {
+      // Collapse the panel before redirecting
+      if (filterPanel) {
+        $(filterPanel).collapse('hide');
+      }
+
       const selectedDepts = [];
       if (allDeptCheckbox.checked) {
         window.location.href = '?{{> team_view_url_parameters selected_departments = null save_current_department = 1 }}';
