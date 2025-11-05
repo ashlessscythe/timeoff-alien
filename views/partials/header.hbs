@@ -21,7 +21,7 @@
           {{#if (or (not keep_team_view_hidden) logged_user.manager)}}
           <li><a href="/calendar/teamview/">Team View</a></li>
           {{/if}}
-          {{#if logged_user.admin}}
+          {{#if (or logged_user.admin logged_user.manager)}}
           <li><a href="/users/">Employees</a></li>
           {{/if}}
           {{#unless is_messages_page}}

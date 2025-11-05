@@ -7,6 +7,7 @@
 <div class="row">
   <div class="col-md-3 lead">{{company.name}}'s staff</div>
   <div class="col-md-3 col-md-offset-6">
+    {{#if logged_user.admin}}
     <div class="btn-group pull-right">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
@@ -19,6 +20,7 @@
         <li><a href="/users/add/" id="add_new_department">Add single employee</a></li>
       </ul>
     </div>
+    {{/if}}
     <div class="btn-group pull-right" style="margin-right: 10px;">
       <button type="button" class="btn btn-default" id="toggle-deactivated-users"
         data-content="Toggle visibility of deactivated users" data-placement="top" data-toggle="tooltip"
