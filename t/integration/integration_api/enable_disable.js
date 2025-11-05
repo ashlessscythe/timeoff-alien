@@ -4,7 +4,7 @@ const test = require('selenium-webdriver/testing')
 const By = require('selenium-webdriver').By
 const expect = require('chai').expect
 const Promise = require('bluebird')
-const rp = require('request-promise')
+const axios = require('axios')
 const registerNewUserFunc = require('../../lib/register_new_user')
 const openPageFunc = require('../../lib/open_page')
 const submitFormFunc = require('../../lib/submit_form')
@@ -66,9 +66,8 @@ describe('Enable/disable Integration APIs', function() {
       .then(el => el.getAttribute('value'))
       .then(v => Promise.resolve((oldToken = v)))
       .then(() =>
-        rp(`${applicationHost}integration/v1/report/absence`, {
-          method: 'GET',
-          body: '{}',
+        axios.get(`${applicationHost}integration/v1/report/absence`, {
+          data: '{}',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${oldToken}`
@@ -81,9 +80,9 @@ describe('Enable/disable Integration APIs', function() {
       .catch(error => {
         expect(error).not.to.be.equal(
           'TOM_TEST',
-          'Ensure contrl flow did not go beyond the "rp"'
+          'Ensure contrl flow did not go beyond the "axios"'
         )
-        expect(error.response.statusCode).to.be.equal(
+        expect(error.response.status).to.be.equal(
           401,
           'Ensure response code is correct'
         )
@@ -112,16 +111,15 @@ describe('Enable/disable Integration APIs', function() {
         })
       )
       .then(() =>
-        rp(`${applicationHost}integration/v1/report/absence`, {
-          method: 'GET',
-          body: '{}',
+        axios.get(`${applicationHost}integration/v1/report/absence`, {
+          data: '{}',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${oldToken}`
           }
         })
       )
-      .then(res => JSON.parse(res))
+      .then(res => res.data)
       .then(obj => {
         expect(obj[0].user.email).to.be.equal(
           email,
@@ -152,9 +150,8 @@ describe('Enable/disable Integration APIs', function() {
   })
 
   it('Ensure that old API key is not valid anymore', function(done) {
-    rp(`${applicationHost}integration/v1/report/absence`, {
-      method: 'GET',
-      body: '{}',
+    axios.get(`${applicationHost}integration/v1/report/absence`, {
+      data: '{}',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${oldToken}`
@@ -166,9 +163,9 @@ describe('Enable/disable Integration APIs', function() {
       .catch(error => {
         expect(error).not.to.be.equal(
           'TOM_TEST',
-          'Ensure contrl flow did not go beyond the "rp"'
+          'Ensure contrl flow did not go beyond the "axios"'
         )
-        expect(error.response.statusCode).to.be.equal(
+        expect(error.response.status).to.be.equal(
           401,
           'Ensure response code is correct'
         )
@@ -177,15 +174,14 @@ describe('Enable/disable Integration APIs', function() {
   })
 
   it('Ensure that newly renenerated API key works fine', function(done) {
-    rp(`${applicationHost}integration/v1/report/absence`, {
-      method: 'GET',
-      body: '{}',
+    axios.get(`${applicationHost}integration/v1/report/absence`, {
+      data: '{}',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${newToken}`
       }
     })
-      .then(res => JSON.parse(res))
+      .then(res => res.data)
       .then(obj => {
         expect(obj[0].user.email).to.be.equal(
           email,
@@ -219,9 +215,8 @@ describe('Enable/disable Integration APIs', function() {
   })
 
   it('Ensure that API end points do not work anymore', function(done) {
-    rp(`${applicationHost}integration/v1/report/absence`, {
-      method: 'GET',
-      body: '{}',
+    axios.get(`${applicationHost}integration/v1/report/absence`, {
+      data: '{}',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${newToken}`
@@ -233,9 +228,9 @@ describe('Enable/disable Integration APIs', function() {
       .catch(error => {
         expect(error).not.to.be.equal(
           'TOM_TEST',
-          'Ensure contrl flow did not go beyond the "rp"'
+          'Ensure contrl flow did not go beyond the "axios"'
         )
-        expect(error.response.statusCode).to.be.equal(
+        expect(error.response.status).to.be.equal(
           401,
           'Ensure response code is correct'
         )
