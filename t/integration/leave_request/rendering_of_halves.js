@@ -291,7 +291,7 @@ describe('Ensure that leaves with not full days are rendered properly', function
       )
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Logout from non-admin account', function(done) {

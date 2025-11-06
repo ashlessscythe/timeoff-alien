@@ -174,6 +174,6 @@ describe('Try to remove used leave type', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

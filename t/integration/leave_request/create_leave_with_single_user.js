@@ -65,7 +65,7 @@ describe('Leave request with single user', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Create new leave request', function(done) {
@@ -110,6 +110,6 @@ describe('Leave request with single user', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

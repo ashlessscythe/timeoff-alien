@@ -407,6 +407,6 @@ describe('Check basic scenario for Team view page', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

@@ -166,7 +166,7 @@ describe('Dealing with inactive users', function() {
       .then(function(option) {
         expect(option).to.be.not.empty
         done()
-      })
+      }).catch(done)
   })
 
   it('Logout from admin account', function(done) {
@@ -292,7 +292,7 @@ describe('Dealing with inactive users', function() {
       .then(function(option) {
         expect(option).to.be.empty
         done()
-      })
+      }).catch(done)
   })
 
   it('Logout from admin account', function(done) {
@@ -318,6 +318,6 @@ describe('Dealing with inactive users', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

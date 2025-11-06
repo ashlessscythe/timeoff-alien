@@ -105,7 +105,7 @@ describe('Basic leave request', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Following code is to ensure that non admin user can request leave only for herself', function(done) {
@@ -115,7 +115,7 @@ describe('Basic leave request', function() {
       .then(function(is_present) {
         expect(is_present).to.be.equal(false)
         done()
-      })
+      }).catch(done)
   })
 
   it('Submit new leave request', function(done) {
@@ -213,7 +213,7 @@ describe('Basic leave request', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Logout from admin acount', function(done) {
@@ -282,13 +282,13 @@ describe('Basic leave request', function() {
       .then(function(text) {
         expect(text).to.be.not.empty
         done()
-      })
+      }).catch(done)
   })
 
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })
 
@@ -334,7 +334,7 @@ describe('Use problematic date with non default date format', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Make sure it is possible to place an leave request for date that was reported to be problematic', function(done) {
@@ -365,7 +365,7 @@ describe('Use problematic date with non default date format', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })
 
@@ -433,6 +433,6 @@ describe('Book the very last day of year to be a holiday', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

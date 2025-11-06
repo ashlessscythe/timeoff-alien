@@ -159,6 +159,6 @@ describe('Try to book more holidays then in allowance', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

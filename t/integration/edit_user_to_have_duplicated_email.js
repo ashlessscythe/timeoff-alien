@@ -70,7 +70,7 @@ describe('Edit user to have duplicated email', function() {
         })
         .then(function() {
           done()
-        })
+        }).catch(done)
     }
   )
 
@@ -109,6 +109,6 @@ describe('Edit user to have duplicated email', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

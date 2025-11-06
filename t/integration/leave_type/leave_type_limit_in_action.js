@@ -193,6 +193,6 @@ describe('Leave type limits in action', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })
