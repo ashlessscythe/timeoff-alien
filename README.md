@@ -168,8 +168,26 @@ For a complete list of options, refer to the `.env.example` file in the project 
 ## 🧪 Run tests
 
 ```bash
-USE_CHROME=1 npm test
+# Unit tests (fast, 14 tests)
+npm run test:unit
+
+# Integration tests - Quick smoke test (3 tests, ~30 seconds)
+npm run test:integration:quick
+
+# Integration tests - By category (see TEST_BATCHES_SUMMARY.md)
+npm run test:integration:auth        # Authentication (5 tests)
+npm run test:integration:leaves      # Leave requests (13 tests)
+npm run test:integration:users       # User management (8 tests)
+
+# All tests (requires app running: npm run dev)
+npm test
 ```
+
+**📚 Testing Documentation:**
+- [TEST_BATCHES_SUMMARY.md](./t/TEST_BATCHES_SUMMARY.md) - Quick reference for test batches
+- [TEST_QUICK_START.md](./t/TEST_QUICK_START.md) - Quick start guide
+- [INTEGRATION_TESTS.md](./t/INTEGRATION_TESTS.md) - Detailed integration test guide
+- [TESTING.md](./t/TESTING.md) - Comprehensive testing documentation
 
 ## 🔄 Updating existing instance
 

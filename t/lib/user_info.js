@@ -7,8 +7,6 @@
 
 'use strict'
 
-const bluebird = require('bluebird')
-
 // Function that is executed on the client,
 // it relies on presence of jQuery and window.VPP_email
 const func_to_inject = function() {
@@ -30,8 +28,7 @@ const func_to_inject = function() {
   })
 }
 
-const user_info_func = bluebird.promisify(function(args, callback) {
-  const result_callback = callback
+const user_info_func = async function(args) {
   const driver = args.driver
   const email = args.email
 
@@ -43,36 +40,17 @@ const user_info_func = bluebird.promisify(function(args, callback) {
     throw "'email' was not passed into the user_info!"
   }
 
-  return bluebird
-    .resolve()
+  // Inject email we are using to identify user into the tested page
+  await driver.executeScript('window.VPP_email = "' + email + '";')
 
-    .then(function(data) {
-      // Inject email we are using to identify user into the tested page
-      driver.executeScript('window.VPP_email = "' + email + '";')
+  // execute AJAX request on the client that fetchs user info by email
+  const users = await driver.executeAsyncScript(func_to_inject)
+  const user = users.length > 0 ? users[0] : {}
 
-      let user
-
-      // execute AJAX request on the client that fetchs user info by email
-      driver.executeAsyncScript(func_to_inject).then(function(users) {
-        user = users.length > 0 ? users[0] : {}
-      })
-
-      return driver.call(function() {
-        return bluebird.resolve(user)
-      })
-    })
-
-    .then(function(user) {
-      // "export" current driver
-      result_callback(null, {
-        driver,
-        user
-      })
-    })
-})
-
-module.exports = function(args) {
-  return args.driver.call(function() {
-    return user_info_func(args)
-  })
+  return {
+    driver,
+    user
+  }
 }
+
+module.exports = user_info_func

@@ -34,7 +34,7 @@ describe('Emails are case insensitive', function() {
       admin_email = data.email
       driver = data.driver
       done()
-    })
+    }).catch(done)
   })
 
   it('Logount from current session', function(done) {
@@ -43,7 +43,7 @@ describe('Emails are case insensitive', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Login with lower case email', function(done) {
@@ -53,7 +53,7 @@ describe('Emails are case insensitive', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Logout', function(done) {
@@ -62,7 +62,7 @@ describe('Emails are case insensitive', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Try to login with upper case email', function(done) {
@@ -72,12 +72,12 @@ describe('Emails are case insensitive', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

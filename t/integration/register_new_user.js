@@ -73,6 +73,7 @@ describe('Register new user', function() {
         ).to.be.equal('12')
         done()
       })
+      .catch(done)
   })
 
   it('Navigate to current uer details', function(done) {
@@ -123,6 +124,7 @@ describe('Register new user', function() {
         ).to.be.equal('20')
         done()
       })
+      .catch(done)
   })
 
   after(function(done) {
