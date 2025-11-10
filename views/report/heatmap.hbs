@@ -1,0 +1,405 @@
+{{> header }}
+
+<h1>Absences Heat Map</h1>
+
+<div class="row">
+  <div class="col-md-6 lead">Shows absences heatmap for a 3-month period</div>
+</div>
+
+{{> show_flash_messages }}
+
+<ol class="breadcrumb">
+  <li><a href="/reports/">All reports</a></li>
+  <li class="active">Absences Heat Map</li>
+</ol>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="heatmap-container">
+      {{> modern_calendar
+      months=calendarMonths
+      leavesByDate=leavesByDate
+      showNavigation=true
+      currentMonth=currentMonth
+      baseUrl="/reports/heatmap/"
+      prevMonth=prevMonth
+      nextMonth=nextMonth
+      currentYear=currentYear
+      weekdayLabels=weekdayLabels
+      }}
+    </div>
+  </div>
+</div>
+
+<style>
+  .heatmap-container {
+    margin: 20px 0;
+  }
+
+  .modern-calendar-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .calendar-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding: 10px;
+  }
+
+  .calendar-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .calendar-nav-btn:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .calendar-year {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .calendar-months-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 20px;
+  }
+
+  .calendar-month {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .calendar-month-header {
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .calendar-month-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .calendar-grid {
+    width: 100%;
+  }
+
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 5px;
+  }
+
+  .calendar-weekday {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    padding: 5px 0;
+  }
+
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    padding: 4px;
+    min-height: 40px;
+  }
+
+  .calendar-day:hover {
+    border-color: #999;
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .calendar-day.weekend {
+    background-color: #f5f5f5;
+    color: #999;
+  }
+
+  .calendar-day.other-month {
+    background-color: #fafafa;
+    color: #ccc;
+  }
+
+  .calendar-day.has-absences {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .calendar-day-number {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .calendar-day-count {
+    font-size: 10px;
+    margin-top: 2px;
+    opacity: 0.9;
+  }
+
+  .calendar-tooltip {
+    position: fixed;
+    background-color: #333;
+    color: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-width: 300px;
+    border: 2px solid #fff;
+  }
+
+  .tooltip-content {
+    position: relative;
+  }
+
+  .tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #555;
+  }
+
+  .tooltip-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .tooltip-close:hover {
+    color: #ccc;
+  }
+
+  .tooltip-body {
+    font-size: 14px;
+  }
+
+  .tooltip-users-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .tooltip-users-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #444;
+  }
+
+  .tooltip-users-list li:last-child {
+    border-bottom: none;
+  }
+
+  /* Heatmap color gradient */
+  .calendar-day[data-count="1"] {
+    background-color: #c6e48b !important;
+  }
+
+  .calendar-day[data-count="2"] {
+    background-color: #7bc96f !important;
+  }
+
+  .calendar-day[data-count="3"] {
+    background-color: #239a3b !important;
+  }
+
+  .calendar-day[data-count="4"] {
+    background-color: #196127 !important;
+  }
+
+  .calendar-day[data-count="5"],
+  .calendar-day[data-count="6"] {
+    background-color: #ffa500 !important;
+  }
+
+  .calendar-day[data-count="7"],
+  .calendar-day[data-count="8"],
+  .calendar-day[data-count="9"] {
+    background-color: #ff6b00 !important;
+  }
+
+  .calendar-day[data-count]:not([data-count="0"])[data-count]:not([data-count="1"]):not([data-count="2"]):not([data-count="3"]):not([data-count="4"]):not([data-count="5"]):not([data-count="6"]):not([data-count="7"]):not([data-count="8"]):not([data-count="9"]) {
+    background-color: #cc0000 !important;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .calendar-months-wrapper {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .calendar-day {
+      min-height: 35px;
+      font-size: 12px;
+    }
+
+    .calendar-day-number {
+      font-size: 12px;
+    }
+
+    .calendar-day-count {
+      font-size: 9px;
+    }
+
+    .calendar-tooltip {
+      max-width: 90%;
+      left: 5% !important;
+      right: 5% !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .calendar-month {
+      padding: 10px;
+    }
+
+    .calendar-day {
+      min-height: 30px;
+      padding: 2px;
+    }
+
+    .calendar-weekday {
+      font-size: 10px;
+    }
+  }
+</style>
+
+<script>
+  // Data passed from server
+  const leavesByDate = {{{ leavesByDate }}};
+  const leavesDetails = {{{ leavesDetails }}};
+
+  function showDayTooltip(dateStr, count, event) {
+    const tooltip = document.getElementById('calendar-day-tooltip');
+    const dateEl = document.getElementById('tooltip-date');
+    const countEl = document.getElementById('tooltip-count');
+    const usersEl = document.getElementById('tooltip-users');
+
+    if (!leavesByDate[dateStr] || leavesByDate[dateStr].count === 0) {
+      return;
+    }
+
+    const date = new Date(dateStr);
+    const dateFormatted = date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    dateEl.textContent = dateFormatted;
+    countEl.textContent = `${count} ${count === 1 ? 'employee is' : 'employees are'} off on this day`;
+
+    usersEl.innerHTML = '';
+    if (leavesByDate[dateStr].users) {
+      leavesByDate[dateStr].users.forEach(user => {
+        const li = document.createElement('li');
+        li.textContent = `${user.name} (${user.leaveType})`;
+        usersEl.appendChild(li);
+      });
+    }
+
+    // Position tooltip near the clicked day
+    const rect = event.target.getBoundingClientRect();
+    tooltip.style.display = 'block';
+    tooltip.style.left = (rect.left + window.scrollX) + 'px';
+    tooltip.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+
+    // Adjust if tooltip goes off screen
+    setTimeout(() => {
+      const tooltipRect = tooltip.getBoundingClientRect();
+      if (tooltipRect.right > window.innerWidth) {
+        tooltip.style.left = (rect.right - tooltipRect.width + window.scrollX) + 'px';
+      }
+      if (tooltipRect.bottom > window.innerHeight) {
+        tooltip.style.top = (rect.top - tooltipRect.height + window.scrollY - 10) + 'px';
+      }
+    }, 0);
+  }
+
+  function closeCalendarTooltip() {
+    document.getElementById('calendar-day-tooltip').style.display = 'none';
+  }
+
+  // Add click handlers to all calendar days
+  document.addEventListener('DOMContentLoaded', function () {
+    const calendarDays = document.querySelectorAll('.calendar-day[data-count]');
+    calendarDays.forEach(day => {
+      day.addEventListener('click', function (e) {
+        const dateStr = this.getAttribute('data-date');
+        const count = parseInt(this.getAttribute('data-count')) || 0;
+        if (count > 0) {
+          showDayTooltip(dateStr, count, e);
+        }
+      });
+    });
+
+    // Close tooltip when clicking outside
+    document.addEventListener('click', function (e) {
+      const tooltip = document.getElementById('calendar-day-tooltip');
+      if (tooltip && !tooltip.contains(e.target) && !e.target.closest('.calendar-day[data-count]')) {
+        tooltip.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+{{> footer }}

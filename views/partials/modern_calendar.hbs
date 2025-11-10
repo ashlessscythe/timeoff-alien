@@ -1,0 +1,71 @@
+{{!--
+Reusable Modern Calendar Component
+
+Parameters:
+- months: Array of month objects with { year, month, days }
+- leavesByDate: Object mapping date strings (YYYY-MM-DD) to { count, users }
+- onDayClick: Optional callback function name for day clicks
+- showNavigation: Boolean to show/hide navigation arrows (default: true)
+- currentMonth: String in format YYYY-MM for current month
+- baseUrl: Base URL for navigation (e.g., '/reports/heatmap/')
+--}}
+
+<div class="modern-calendar-container">
+  {{#if showNavigation}}
+  <div class="calendar-navigation">
+    <a href="{{baseUrl}}?month={{prevMonth}}" class="calendar-nav-btn" aria-label="Previous month">
+      <i class="fa fa-chevron-left"></i>
+    </a>
+    <span class="calendar-year">{{currentYear}}</span>
+    <a href="{{baseUrl}}?month={{nextMonth}}" class="calendar-nav-btn" aria-label="Next month">
+      <i class="fa fa-chevron-right"></i>
+    </a>
+  </div>
+  {{/if}}
+
+  <div class="calendar-months-wrapper">
+    {{#each months}}
+    <div class="calendar-month">
+      <div class="calendar-month-header">
+        <h3 class="calendar-month-title">{{monthName}} {{year}}</h3>
+      </div>
+      <div class="calendar-grid">
+        <div class="calendar-weekdays">
+          {{#each ../weekdayLabels}}
+          <div class="calendar-weekday">{{this}}</div>
+          {{/each}}
+        </div>
+        <div class="calendar-days">
+          {{#each days}}
+          <div
+            class="calendar-day {{#if isWeekend}}weekend{{/if}} {{#if isOtherMonth}}other-month{{/if}} {{#if count}}has-absences{{/if}}"
+            data-date="{{dateStr}}" data-count="{{count}}"
+            style="{{#if count}}background-color: {{heatmapColor}};{{/if}}" {{#if
+            onDayClick}}onclick="{{onDayClick}}('{{dateStr}}', {{count}})" {{/if}}
+            title="{{#if count}}{{count}} {{#if_equal count 1}}employee{{else}}employees{{/if_equal}} {{#if_equal count 1}}is{{else}}are{{/if_equal}} off{{else}}No absences{{/if}}">
+            <span class="calendar-day-number">{{day}}</span>
+            {{#if count}}
+            <span class="calendar-day-count">{{count}}</span>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+{{!-- Tooltip/Modal for day details --}}
+<div id="calendar-day-tooltip" class="calendar-tooltip" style="display: none;">
+  <div class="tooltip-content">
+    <div class="tooltip-header">
+      <span id="tooltip-date"></span>
+      <button class="tooltip-close" onclick="closeCalendarTooltip()">&times;</button>
+    </div>
+    <div class="tooltip-body">
+      <p id="tooltip-count"></p>
+      <ul id="tooltip-users" class="tooltip-users-list"></ul>
+    </div>
+  </div>
+</div>
