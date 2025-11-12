@@ -93,6 +93,10 @@
             <textarea class="form-control" id="leave_reason" name="reason"></textarea>
           </div>
 
+          <div id="next_year_pto_warning" class="alert alert-danger" style="display: none; margin-top: 15px;">
+            <strong>Warning:</strong> <span id="next_year_pto_warning_text"></span>
+          </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
@@ -114,13 +118,88 @@
     var submitBtn = document.getElementById('submitLeaveBtn');
     var fromDate = document.getElementById('from');
     var toDate = document.getElementById('to');
+    var warningDiv = document.getElementById('next_year_pto_warning');
+    var warningText = document.getElementById('next_year_pto_warning_text');
+
+    // Get company restriction data from the page
+    var companyData = {
+      next_year_cutoff_date: {{#if logged_user.company.next_year_cutoff_date}}'{{logged_user.company.next_year_cutoff_date}}'{{else}}null{{/if}},
+      limited_departments: {{#if logged_user.company.limited_departments}}{{json logged_user.company.limited_departments}}{{else}}[]{{/if}},
+      user_department_id: {{#if logged_user.department_id}}{{logged_user.department_id}}{{else}}null{{/if}}
+    };
+
+    function checkNextYearRestriction() {
+      if (!fromDate || !fromDate.value || !companyData.next_year_cutoff_date) {
+        if (warningDiv) warningDiv.style.display = 'none';
+        return;
+      }
+
+      try {
+        // Parse the date from the input (format depends on company date format)
+        var fromDateValue = fromDate.value;
+        if (!fromDateValue) {
+          if (warningDiv) warningDiv.style.display = 'none';
+          return;
+        }
+
+        // Get current year and next year
+        var currentYear = new Date().getFullYear();
+        var nextYear = currentYear + 1;
+
+        // Parse the input date - try to extract year
+        // This is a simplified check - in production you'd want to use moment.js or similar
+        var dateParts = fromDateValue.split(/[-\/]/);
+        var inputYear = parseInt(dateParts[0] || dateParts[2] || currentYear, 10);
+
+        // If year is 2 digits, assume it's in the current century
+        if (inputYear < 100) {
+          inputYear += 2000;
+        }
+
+        // Check if requesting next year
+        if (inputYear === nextYear) {
+          var cutoffDate = new Date(companyData.next_year_cutoff_date);
+          var now = new Date();
+          var limitedDepts = companyData.limited_departments || [];
+          var userDeptId = companyData.user_department_id;
+
+          // Check if before cutoff and user's department is limited
+          if (now < cutoffDate && limitedDepts.indexOf(userDeptId) !== -1) {
+            var cutoffFormatted = cutoffDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+            if (warningDiv && warningText) {
+              warningText.textContent = 'Requests for ' + nextYear + ' are not allowed yet. Please wait until ' + cutoffFormatted + ' to request time off for the following calendar year.';
+              warningDiv.style.display = 'block';
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Error checking next year restriction:', e);
+      }
+
+      // Hide warning if conditions not met
+      if (warningDiv) warningDiv.style.display = 'none';
+    }
 
     if (form && submitBtn && fromDate && toDate) {
       // Add event listener to 'from' date input
       fromDate.addEventListener('change', function () {
         // Update 'to' date to match 'from' date
         toDate.value = fromDate.value;
+        checkNextYearRestriction();
       });
+
+      // Also check when 'to' date changes
+      toDate.addEventListener('change', function () {
+        checkNextYearRestriction();
+      });
+
+      // Check on initial load if date is already set
+      setTimeout(checkNextYearRestriction, 100);
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -136,6 +215,15 @@
         if (new Date(fromDate.value) > new Date(toDate.value)) {
           alert('The "To" date must be after the "From" date.');
           return;
+        }
+
+        // Check next year restriction one more time before submit
+        checkNextYearRestriction();
+        if (warningDiv && warningDiv.style.display === 'block') {
+          // Still show warning but allow submission (server will reject anyway)
+          if (!confirm('You are attempting to request time off for next year before the cutoff date. This request will likely be rejected. Do you want to continue?')) {
+            return;
+          }
         }
 
         // Prevent double submission
