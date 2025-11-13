@@ -2,7 +2,10 @@
   aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="POST" action="{{leave_modal_form_action}}" id="leaveForm" novalidate>
+      <form method="POST" action="{{leave_modal_form_action}}" id="leaveForm" novalidate
+        data-next-year-cutoff-date="{{#if logged_user.company.next_year_cutoff_date}}{{logged_user.company.next_year_cutoff_date}}{{/if}}"
+        data-limited-departments="{{#if logged_user.company.limited_departments}}{{json logged_user.company.limited_departments}}{{/if}}"
+        data-user-department-id="{{#if logged_user.department_id}}{{logged_user.department_id}}{{/if}}">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
               aria-hidden="true">&times;</span></button>
@@ -121,11 +124,21 @@
     var warningDiv = document.getElementById('next_year_pto_warning');
     var warningText = document.getElementById('next_year_pto_warning_text');
 
-    // Get company restriction data from the page
+    // Get company restriction data from form data attributes (safer than inline Handlebars)
+    var cutoffDateStr = form.getAttribute('data-next-year-cutoff-date') || '';
+    var limitedDeptsStr = form.getAttribute('data-limited-departments') || '[]';
+    var userDeptIdStr = form.getAttribute('data-user-department-id') || '';
+
     var companyData = {
-      next_year_cutoff_date: {{#if logged_user.company.next_year_cutoff_date}}'{{logged_user.company.next_year_cutoff_date}}'{{else}}null{{/if}},
-      limited_departments: {{#if logged_user.company.limited_departments}}{{json logged_user.company.limited_departments}}{{else}}[]{{/if}},
-      user_department_id: {{#if logged_user.department_id}}{{logged_user.department_id}}{{else}}null{{/if}}
+      next_year_cutoff_date: cutoffDateStr || null,
+      limited_departments: (function () {
+        try {
+          return limitedDeptsStr ? JSON.parse(limitedDeptsStr) : [];
+        } catch (e) {
+          return [];
+        }
+      })(),
+      user_department_id: userDeptIdStr ? parseInt(userDeptIdStr, 10) : null
     };
 
     function checkNextYearRestriction() {
@@ -158,13 +171,26 @@
 
         // Check if requesting next year
         if (inputYear === nextYear) {
-          var cutoffDate = new Date(companyData.next_year_cutoff_date);
+          // Parse the cutoff date as a local date to avoid timezone issues
+          // The date comes from database as YYYY-MM-DD, parse it as local date
+          var cutoffDateStr = companyData.next_year_cutoff_date;
+          var cutoffDateParts = cutoffDateStr.split('-');
+          var cutoffDate = new Date(
+            parseInt(cutoffDateParts[0], 10),
+            parseInt(cutoffDateParts[1], 10) - 1, // Month is 0-indexed
+            parseInt(cutoffDateParts[2], 10)
+          );
+
           var now = new Date();
           var limitedDepts = companyData.limited_departments || [];
           var userDeptId = companyData.user_department_id;
 
           // Check if before cutoff and user's department is limited
-          if (now < cutoffDate && limitedDepts.indexOf(userDeptId) !== -1) {
+          // Compare dates at midnight local time
+          var nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          var cutoffDateOnly = new Date(cutoffDate.getFullYear(), cutoffDate.getMonth(), cutoffDate.getDate());
+
+          if (nowDateOnly < cutoffDateOnly && limitedDepts.indexOf(userDeptId) !== -1) {
             var cutoffFormatted = cutoffDate.toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
