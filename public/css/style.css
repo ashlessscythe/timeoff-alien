@@ -16,96 +16,143 @@
   --leave-cell-bg: #9fbb58;
   --leave-cell-color: #61686b;
   --secondary-background-color: #f8f9fa;
+  --button-bg: #3498db;
+  --button-text: #ffffff;
+  --button-hover-bg: #2980b9;
+  --link-hover-color: #2980b9;
 }
 
-/* Theme: Day (Light) */
+/* Theme: Day (Light) - Clean white with blue accents */
 body.theme-day {
-  --background-color: #fefefe;
-  --text-color: #1c1c1c;
-  --hover-bg-color: #e0e0e0;
-  --hover-text-color: #333333;
-  --accent-color: #3498db;
-  --divider-color: #dcdcdc;
-  --calendar-cell-bg: #ffffff;
-  --leave-cell-bg: #9fbb58;
-  --current-day-bg: #ffdd57;
-  --secondary-background-color: #f8f9fa;
-  --leave-cell-color: #61686b;
+  --background-color: #ffffff;
+  --text-color: #1a1a1a;
+  --hover-bg-color: #f0f0f0;
+  --hover-text-color: #000000;
+  --accent-color: #2563eb;
+  --divider-color: #e5e7eb;
+  --calendar-cell-bg: #f9fafb;
+  --leave-cell-bg: #10b981;
+  --current-day-bg: #fbbf24;
+  --secondary-background-color: #f3f4f6;
+  --leave-cell-color: #ffffff;
+  --button-bg: #2563eb;
+  --button-text: #ffffff;
+  --button-hover-bg: #1d4ed8;
+  --link-hover-color: #1d4ed8;
 }
 
-/* Theme: Night (Dark) */
+/* Theme: Night (Dark) - Deep dark with green accents */
 body.theme-night {
-  --background-color: #1a1a1a;
-  --text-color: #e0e0e0;
-  --hover-bg-color: #333333;
+  --background-color: #0f172a;
+  --text-color: #e2e8f0;
+  --hover-bg-color: #1e293b;
   --hover-text-color: #ffffff;
-  --accent-color: #4caf50;
-  --divider-color: #444444;
-  --calendar-cell-bg: #2b2b2b;
-  --current-day-bg: #7b1fa2;
-  --secondary-background-color: #2c2c2c;
-  --leave-cell-bg: #4caf50;
-  --leave-cell-color: #ffffff;
+  --accent-color: #22c55e;
+  --divider-color: #334155;
+  --calendar-cell-bg: #1e293b;
+  --current-day-bg: #7c3aed;
+  --secondary-background-color: #1e293b;
+  --leave-cell-bg: #22c55e;
+  --leave-cell-color: #0f172a;
+  --button-bg: #22c55e;
+  --button-text: #0f172a;
+  --button-hover-bg: #16a34a;
+  --link-hover-color: #4ade80;
 }
 
-/* Theme: Ocean */
+/* Theme: Ocean - Deep blue ocean theme */
 body.theme-ocean {
-  --background-color: #031b3c;
-  --text-color: #e0f7fa;
-  --hover-bg-color: #045b8e;
+  --background-color: #001f3f;
+  --text-color: #b8e6ff;
+  --hover-bg-color: #003d7a;
   --hover-text-color: #ffffff;
-  --accent-color: #0573a6;
-  --divider-color: #4a90e2;
-  --calendar-cell-bg: #0a3d6b;
-  --current-day-bg: #0692be;
-  --secondary-background-color: #052c5c;
-  --leave-cell-bg: #0573a6;
+  --accent-color: #00a8ff;
+  --divider-color: #0056b3;
+  --calendar-cell-bg: #003366;
+  --current-day-bg: #00d4ff;
+  --secondary-background-color: #002855;
+  --leave-cell-bg: #0077be;
   --leave-cell-color: #ffffff;
+  --button-bg: #00a8ff;
+  --button-text: #001f3f;
+  --button-hover-bg: #0088cc;
+  --link-hover-color: #00d4ff;
 }
 
-/* Theme: Nature */
+/* Theme: Nature - Fresh green forest theme */
 body.theme-nature {
-  --background-color: #e8f5e9;
-  --text-color: #2e7d32;
-  --hover-bg-color: #81c784;
-  --hover-text-color: #ffffff;
-  --accent-color: #388e3c;
-  --divider-color: #a5d6a7;
-  --calendar-cell-bg: #c8e6c9;
-  --current-day-bg: #43a047;
-  --secondary-background-color: #c8e6c9;
-  --leave-cell-bg: #66bb6a;
-  --leave-cell-color: #ffffff;
+  --background-color: #f0fdf4;
+  --text-color: #14532d;
+  --hover-bg-color: #86efac;
+  --hover-text-color: #052e16;
+  --accent-color: #16a34a;
+  --divider-color: #bbf7d0;
+  --calendar-cell-bg: #dcfce7;
+  --current-day-bg: #22c55e;
+  --secondary-background-color: #dcfce7;
+  --leave-cell-bg: #4ade80;
+  --leave-cell-color: #052e16;
+  --button-bg: #16a34a;
+  --button-text: #ffffff;
+  --button-hover-bg: #15803d;
+  --link-hover-color: #15803d;
 }
 
-/* Theme: Volcano */
+/* Theme: Volcano - Fiery red-orange theme */
 body.theme-volcano {
-  --background-color: #3e2723;
-  --text-color: #ff8a65;
-  --hover-bg-color: #ff5722;
+  --background-color: #2d1b1b;
+  --text-color: #ffb3a0;
+  --hover-bg-color: #8b2e16;
   --hover-text-color: #ffffff;
-  --accent-color: #e64a19;
-  --divider-color: #6d4c41;
-  --calendar-cell-bg: #4e342e;
-  --current-day-bg: #d84315;
-  --secondary-background-color: #4e342e;
-  --leave-cell-bg: #ff5722;
-  --leave-cell-color: #ffffff;
+  --accent-color: #f97316;
+  --divider-color: #7c2d12;
+  --calendar-cell-bg: #431407;
+  --current-day-bg: #ea580c;
+  --secondary-background-color: #431407;
+  --leave-cell-bg: #f97316;
+  --leave-cell-color: #2d1b1b;
+  --button-bg: #f97316;
+  --button-text: #2d1b1b;
+  --button-hover-bg: #ea580c;
+  --link-hover-color: #fb923c;
 }
 
-/* Theme: Sky */
-body.theme-sky {
-  --background-color: #e3f2fd;
-  --text-color: #1976d2;
-  --hover-bg-color: #bbdefb;
-  --hover-text-color: #ffffff;
-  --accent-color: #2196f3;
-  --divider-color: #90caf9;
-  --calendar-cell-bg: #bbdefb;
-  --current-day-bg: #42a5f5;
-  --secondary-background-color: #bbdefb;
-  --leave-cell-bg: #64b5f6;
-  --leave-cell-color: #ffffff;
+/* Theme: Neon - Bright vibrant neon colors */
+body.theme-neon {
+  --background-color: #0a0a0a;
+  --text-color: #00ff88;
+  --hover-bg-color: #1a1a2e;
+  --hover-text-color: #00ff88;
+  --accent-color: #ff00ff;
+  --divider-color: #00ffff;
+  --calendar-cell-bg: #16213e;
+  --current-day-bg: #ff00ff;
+  --secondary-background-color: #0f3460;
+  --leave-cell-bg: #00ff88;
+  --leave-cell-color: #0a0a0a;
+  --button-bg: #ff00ff;
+  --button-text: #0a0a0a;
+  --button-hover-bg: #ff00cc;
+  --link-hover-color: #00ffff;
+}
+
+/* Theme: Cyberpunk - Dark futuristic with neon pink/cyan */
+body.theme-cyberpunk {
+  --background-color: #0d1117;
+  --text-color: #c9d1d9;
+  --hover-bg-color: #161b22;
+  --hover-text-color: #f0f6fc;
+  --accent-color: #ff79c6;
+  --divider-color: #30363d;
+  --calendar-cell-bg: #161b22;
+  --current-day-bg: #bd93f9;
+  --secondary-background-color: #21262d;
+  --leave-cell-bg: #50fa7b;
+  --leave-cell-color: #0d1117;
+  --button-bg: #ff79c6;
+  --button-text: #0d1117;
+  --button-hover-bg: #ff6bb5;
+  --link-hover-color: #8be9fd;
 }
 
 /* Base styles and variables */
@@ -119,6 +166,11 @@ body {
 
 a {
   color: var(--accent-color);
+  transition: color 0.2s ease;
+}
+a:hover, a:focus {
+  color: var(--link-hover-color);
+  text-decoration: none;
 }
 
 /* Typography */
@@ -593,6 +645,65 @@ body .allowance-breakdown .big-number-container .slash {
   color: var(--hover-text-color);
 }
 
+/* Buttons - Theme-aware styling */
+.btn {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-color: var(--button-bg);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.btn:hover, .btn:focus, .btn:active {
+  background-color: var(--button-hover-bg);
+  border-color: var(--button-hover-bg);
+  color: var(--button-text);
+}
+.btn.btn-primary {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--button-text);
+}
+.btn.btn-primary:hover, .btn.btn-primary:focus {
+  background-color: var(--button-hover-bg);
+  border-color: var(--button-hover-bg);
+}
+.btn.btn-success {
+  background-color: var(--leave-cell-bg);
+  border-color: var(--leave-cell-bg);
+  color: var(--leave-cell-color);
+}
+.btn.btn-success:hover, .btn.btn-success:focus {
+  opacity: 0.9;
+  filter: brightness(0.9);
+}
+.btn.btn-info {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--button-text);
+}
+.btn.btn-info:hover, .btn.btn-info:focus {
+  background-color: var(--button-hover-bg);
+  border-color: var(--button-hover-bg);
+}
+.btn.btn-default {
+  background-color: var(--secondary-background-color);
+  border-color: var(--divider-color);
+  color: var(--text-color);
+}
+.btn.btn-default:hover, .btn.btn-default:focus {
+  background-color: var(--hover-bg-color);
+  border-color: var(--divider-color);
+  color: var(--hover-text-color);
+}
+.btn.btn-link {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--accent-color);
+}
+.btn.btn-link:hover, .btn.btn-link:focus {
+  color: var(--link-hover-color);
+  text-decoration: underline;
+}
+
 /* Form controls */
 .form-control,
 .list-group,
@@ -600,6 +711,7 @@ body .allowance-breakdown .big-number-container .slash {
 .container-fluid:hover {
   color: var(--text-color);
   background-color: var(--background-color);
+  border-color: var(--divider-color);
 }
 .form-control:hover, .form-control:focus,
 .list-group:hover,
@@ -610,6 +722,80 @@ body .allowance-breakdown .big-number-container .slash {
 .container-fluid:hover:focus {
   color: var(--hover-text-color);
   background-color: var(--hover-bg-color);
+  border-color: var(--accent-color);
+}
+
+/* Panels and cards */
+.panel {
+  background-color: var(--background-color);
+  border-color: var(--divider-color);
+}
+.panel .panel-heading {
+  background-color: var(--secondary-background-color);
+  border-color: var(--divider-color);
+  color: var(--text-color);
+}
+.panel .panel-body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Tables */
+.table {
+  color: var(--text-color);
+}
+.table > thead > tr > th {
+  border-color: var(--divider-color);
+  background-color: var(--secondary-background-color);
+}
+.table > tbody > tr > td {
+  border-color: var(--divider-color);
+}
+.table > tbody > tr:hover {
+  background-color: var(--hover-bg-color);
+}
+
+/* Modals */
+.modal-content {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border-color: var(--divider-color);
+}
+
+.modal-header {
+  background-color: var(--secondary-background-color);
+  border-bottom-color: var(--divider-color);
+  color: var(--text-color);
+}
+
+.modal-body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.modal-footer {
+  background-color: var(--secondary-background-color);
+  border-top-color: var(--divider-color);
+}
+
+/* Dropdowns */
+.dropdown-menu {
+  background-color: var(--background-color);
+  border-color: var(--divider-color);
+}
+.dropdown-menu > li > a {
+  color: var(--text-color);
+}
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+  background-color: var(--hover-bg-color);
+  color: var(--hover-text-color);
+}
+
+/* Alerts */
+.alert {
+  background-color: var(--secondary-background-color);
+  border-color: var(--divider-color);
+  color: var(--text-color);
 }
 
 /*# sourceMappingURL=style.css.map */

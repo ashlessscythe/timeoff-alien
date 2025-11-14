@@ -50,7 +50,8 @@
               <li><a href="#" data-theme="ocean">Ocean</a></li>
               <li><a href="#" data-theme="nature">Nature</a></li>
               <li><a href="#" data-theme="volcano">Volcano</a></li>
-              <li><a href="#" data-theme="sky">Sky</a></li>
+              <li><a href="#" data-theme="neon">Neon</a></li>
+              <li><a href="#" data-theme="cyberpunk">Cyberpunk</a></li>
             </ul>
           </li>
           </li>
@@ -173,7 +174,7 @@
     // Function to set the theme based on the dropdown selection
     function setTheme(theme) {
       // Remove all theme-related classes first
-      document.body.classList.remove('theme-day', 'theme-night', 'theme-ocean', 'theme-nature', 'theme-volcano', 'theme-sky');
+      document.body.classList.remove('theme-day', 'theme-night', 'theme-ocean', 'theme-nature', 'theme-volcano', 'theme-neon', 'theme-cyberpunk');
 
       // Add the selected theme
       document.body.classList.add('theme-' + theme);
