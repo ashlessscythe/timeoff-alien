@@ -156,6 +156,7 @@ Here's a summary of key environment variables you can set:
 - `OPTION_ALLOW_NEW_REGISTRATIONS`: Set to true to allow new company registrations
 - `SMTP_*`: Various SMTP settings for email configuration
 - `SESSION_SECRET`: Secret key for session management
+- `BACKUP_ENCRYPTION_KEY`: Encryption key for encrypted backups (must be at least 32 characters)
 
 **Database URL Notes**:
 
@@ -188,6 +189,71 @@ npm test
 - [TEST_QUICK_START.md](./t/TEST_QUICK_START.md) - Quick start guide
 - [INTEGRATION_TESTS.md](./t/INTEGRATION_TESTS.md) - Detailed integration test guide
 - [TESTING.md](./t/TESTING.md) - Comprehensive testing documentation
+
+## 💾 Backup and Restore
+
+The application provides two backup methods:
+
+### CSV Backup (Legacy)
+- **Location**: Settings → General Settings → "Backup employees' leave data"
+- **Format**: CSV file compatible with MS Excel
+- **Content**: Employee leave data only
+- **Use case**: Quick export for reporting or analysis
+
+### Encrypted Full Database Backup (Recommended)
+- **Location**: Settings → General Settings → "Encrypted full database backup"
+- **Format**: Encrypted JSON file (AES-256-GCM)
+- **Content**: Complete company data including:
+  - Company settings
+  - Users and departments
+  - Leave types and leave requests
+  - Schedules and bank holidays
+  - Comments, audits, and all related records
+- **Security**: Encrypted with a key from `BACKUP_ENCRYPTION_KEY` environment variable
+- **Use case**: Full disaster recovery, migration, or data archival
+
+#### Setting Up Encryption Key
+
+1. Generate a secure random string (at least 32 characters):
+   ```bash
+   # Using OpenSSL
+   openssl rand -hex 32
+
+   # Or using Node.js
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+2. Add to your `.env` file:
+   ```
+   BACKUP_ENCRYPTION_KEY=your_generated_key_here
+   ```
+
+3. **Important**: Keep this key secure and backed up separately. You'll need it to restore backups.
+
+#### Creating a Backup
+
+1. Navigate to Settings → General Settings
+2. Click "Download encrypted backup"
+3. Save the JSON file securely
+4. The backup includes metadata about what was backed up
+
+#### Restoring a Backup
+
+1. Navigate to Settings → General Settings
+2. Scroll to "Restore encrypted backup"
+3. **Recommended**: First run a dry run to preview what will be restored
+   - Check "Dry run (preview only)"
+   - Upload your backup file
+   - Review the preview results
+4. For actual restore:
+   - Uncheck "Dry run"
+   - Optionally check "Clear existing data before restore" (⚠️ destructive)
+   - Upload your backup file
+   - Confirm the action
+
+**⚠️ Warning**: Restoring a backup will overwrite existing data. Always create a backup before restoring.
+
+**Note**: The encryption key used for restore must match the key used when creating the backup.
 
 ## 🔄 Updating existing instance
 
