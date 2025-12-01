@@ -54,7 +54,7 @@ describe('Bulk import of users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Create test .CSV file for the test', function(done) {
@@ -150,7 +150,7 @@ describe('Bulk import of users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Now try to login as newly added employee using "undefined" as password..', function(done) {

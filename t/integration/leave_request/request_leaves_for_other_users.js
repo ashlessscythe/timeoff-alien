@@ -91,7 +91,7 @@ describe('Request leave for other users', function() {
         ordenary_user_id = value
         expect(ordenary_user_id).to.match(/^\d+$/)
         done()
-      })
+      }).catch(done)
   })
 
   it(
@@ -209,7 +209,7 @@ describe('Request leave for other users', function() {
           .then(function(is_present) {
             expect(is_present).to.be.equal(false)
             done()
-          })
+          }).catch(done)
       })
   })
 
@@ -261,7 +261,7 @@ describe('Request leave for other users', function() {
             .then(function(is_present) {
               expect(is_present).to.be.equal(true)
               done()
-            })
+            }).catch(done)
         })
     }
   )
@@ -272,7 +272,7 @@ describe('Request leave for other users', function() {
       .then(function(elements) {
         expect(elements.length).to.be.equal(2)
         done()
-      })
+      }).catch(done)
   })
 
   it('Make sure ordenary user is in that drop down list', function(done) {
@@ -291,7 +291,7 @@ describe('Request leave for other users', function() {
           )
         )
         done()
-      })
+      }).catch(done)
   })
 
   it('Logout from ordenary acount', function(done) {
@@ -346,13 +346,13 @@ describe('Request leave for other users', function() {
           .then(function(elements) {
             expect(elements.length).to.be.equal(3)
             done()
-          })
+          }).catch(done)
       })
   })
 
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

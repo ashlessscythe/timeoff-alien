@@ -231,6 +231,24 @@
 
             <div class="form-horizontal">
               <div class="form-group">
+                <label for="" class="col-md-10 control-label">Next Year PTO Restrictions</label>
+              </div>
+              <div class="form-group">
+                <div class="col-md-offset-2">
+                  <p><em>Configure cutoff date and departments that are restricted from requesting PTO for the following calendar year before the cutoff date.</em></p>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-md-offset-2 col-md-11">
+                  <button class="btn btn-info pull-right single-click" type="button" data-toggle="modal" data-target="#next_year_pto_modal">
+                    <i class="fa fa-calendar"></i> Configure Next Year PTO Restrictions
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-horizontal">
+              <div class="form-group">
                 <label for="" class="col-md-10 control-label">Calculate and carry over unused allowance</label>
               </div>
               <div class="form-group">
@@ -425,5 +443,75 @@ form_action='/settings/leavetypes/'
 {{> remove_company_modal
 container_id='remove_company_modal'
 }}
+
+<!-- Next Year PTO Restrictions Modal -->
+<div class="modal fade" id="next_year_pto_modal" tabindex="-1" role="dialog" aria-labelledby="nextYearPtoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/settings/nextYearPtoRestrictions/" id="next_year_pto_form">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="nextYearPtoModalLabel">Next Year PTO Restrictions</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="next_year_cutoff_date" class="control-label">Cutoff Date:</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+              <input type="text" class="form-control" id="next_year_cutoff_date"
+                data-provide="datepicker"
+                data-date-autoclose="1"
+                data-date-format="{{# with company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
+                data-date-week-start="{{company.first_day_of_week}}"
+                name="next_year_cutoff_date"
+                value="{{#if company.next_year_cutoff_date}}{{as_date company.next_year_cutoff_date}}{{/if}}"
+                placeholder="Select cutoff date (e.g., 2nd week of December)">
+            </div>
+            <p class="help-block">
+              <em>After this date, employees from selected departments can request PTO for the following calendar year.</em>
+            </p>
+            <p class="help-block" style="margin-top: 5px;">
+              <small class="text-muted">
+                <strong>Date format:</strong> {{#with company}}{{this.date_format}}{{/with}}
+                {{#if company.next_year_cutoff_date}}
+                  <br>Current value: <strong>{{as_date company.next_year_cutoff_date}}</strong>
+                {{else}}
+                  <br>Example: <strong>{{as_date "2025-12-09"}}</strong>
+                {{/if}}
+              </small>
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label">Limited Departments:</label>
+            <p class="help-block">
+              <em>Select departments that are restricted from requesting next year PTO before the cutoff date.</em>
+            </p>
+            <div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+              {{#each departments}}
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="limited_departments[]" value="{{this.id}}"
+                    {{#if (includes ../limited_department_ids this.id)}}checked="checked"{{/if}}>
+                  {{this.name}}
+                </label>
+              </div>
+              {{/each}}
+              {{#unless departments.length}}
+              <p class="text-muted">No departments available.</p>
+              {{/unless}}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success single-click">Save Configuration</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 {{> footer }}

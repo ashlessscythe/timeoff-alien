@@ -196,7 +196,7 @@ describe('Revoke leave request by Admin', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Open department settings page', function(done) {
@@ -218,7 +218,7 @@ describe('Revoke leave request by Admin', function() {
         employee_user_id = value
         expect(employee_user_id).to.match(/^\d+$/)
         done()
-      })
+      }).catch(done)
   })
 
   it('Open user editing page for Employee', function(done) {
@@ -242,7 +242,7 @@ describe('Revoke leave request by Admin', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Open requests page', function(done) {
@@ -283,12 +283,12 @@ describe('Revoke leave request by Admin', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

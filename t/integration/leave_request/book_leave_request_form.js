@@ -53,7 +53,7 @@ describe('Check the client side logic to facilitate filling new absence form', f
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Ensure by default FROM and TO fields are populated with current date', function(done) {
@@ -150,6 +150,6 @@ describe('Check the client side logic to facilitate filling new absence form', f
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

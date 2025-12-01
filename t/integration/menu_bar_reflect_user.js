@@ -126,7 +126,7 @@ describe('Menu bar reflect permissions of logged in user', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })
 

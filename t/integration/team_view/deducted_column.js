@@ -160,7 +160,7 @@ describe('Case when holidays spans through more then one month and is devided by
       message: /New leave request was added/
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Open Book leave popup window', function(done) {
@@ -188,7 +188,7 @@ describe('Case when holidays spans through more then one month and is devided by
       message: /New leave request was added/
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Open Book leave popup window', function(done) {
@@ -323,7 +323,7 @@ describe('Case when holidays spans through more then one month and is devided by
       message: /New leave request was added/
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Logout from user B', function(done) {

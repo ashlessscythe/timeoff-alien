@@ -63,7 +63,7 @@ describe('System prevent revoking admin rights from very last admin within compa
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Ensure that Admin tickbox is checked', function(done) {
@@ -111,7 +111,7 @@ describe('System prevent revoking admin rights from very last admin within compa
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Ensure that Admin tickbox is not checked', function(done) {
@@ -181,6 +181,6 @@ describe('System prevent revoking admin rights from very last admin within compa
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

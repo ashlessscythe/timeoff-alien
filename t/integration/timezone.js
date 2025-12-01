@@ -45,7 +45,7 @@ describe('Check Time zones', function() {
       driver = data.driver
       user_email = data.email
       done()
-    })
+    }).catch(done)
   })
 
   it('Ensure user starts at the very beginning of current year', function(done) {
@@ -76,7 +76,7 @@ describe('Check Time zones', function() {
       should_be_successful: true
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Get the date from Book leave modal and put it into today_tonga variable', function(done) {
@@ -210,7 +210,7 @@ describe('Check Time zones', function() {
       should_be_successful: true
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Get the date from Book leave modal and put it into today_usa', function(done) {

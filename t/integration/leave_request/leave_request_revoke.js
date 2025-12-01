@@ -276,7 +276,7 @@ describe('Revoke leave request', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Logout from MANAGER_A account', function(done) {
@@ -384,7 +384,7 @@ describe('Revoke leave request', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   it('Logout from EMPLOYEE account', function(done) {
@@ -444,12 +444,12 @@ describe('Revoke leave request', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

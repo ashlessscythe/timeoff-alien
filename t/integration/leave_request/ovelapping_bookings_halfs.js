@@ -302,6 +302,6 @@ describe('Overlapping leaverequest (with halfs)', function() {
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

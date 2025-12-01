@@ -68,7 +68,7 @@ describe('Try to manage Bank holidays with non-default date format', function() 
       .then(function(txt) {
         expect(txt).to.exist
         done()
-      })
+      }).catch(done)
   })
 
   it('Add New year', function(done) {
@@ -206,7 +206,7 @@ describe('Try to manage Bank holidays with non-default date format', function() 
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })
 
@@ -261,12 +261,12 @@ describe('Try to use DD/MM/YY and some missleading date', function() {
       })
       .then(function() {
         done()
-      })
+      }).catch(done)
   })
 
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

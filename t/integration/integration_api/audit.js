@@ -4,7 +4,7 @@ const test = require('selenium-webdriver/testing')
 const By = require('selenium-webdriver').By
 const expect = require('chai').expect
 const Promise = require('bluebird')
-const rp = require('request-promise')
+const axios = require('axios')
 const registerNewUserFunc = require('../../lib/register_new_user')
 const openPageFunc = require('../../lib/open_page')
 const submitFormFunc = require('../../lib/submit_form')
@@ -123,15 +123,14 @@ describe('Basic audit for user changes', function() {
   })
 
   it('Fetch the Audit feed from integration API', function(done) {
-    rp(`${applicationHost}integration/v1/audit`, {
-      method: 'GET',
-      body: '{}',
+    axios.get(`${applicationHost}integration/v1/audit`, {
+      data: '{}',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       }
     })
-      .then(res => JSON.parse(res))
+      .then(res => res.data)
       .then(obj => {
         const twoEvents = obj
           .filter(i => i.entity_type === 'USER')

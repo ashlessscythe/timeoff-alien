@@ -52,6 +52,6 @@ describe('Try to open registeration page with active user in a session', functio
   after(function(done) {
     driver.quit().then(function() {
       done()
-    })
+    }).catch(done)
   })
 })

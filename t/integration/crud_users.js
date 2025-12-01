@@ -53,7 +53,7 @@ describe('CRUD for users', function() {
     }).then(function(data) {
       driver = data.driver
       done()
-    })
+    }).catch(done)
   })
 
   it('Create ADMIN-to-be user', function(done) {
@@ -63,7 +63,7 @@ describe('CRUD for users', function() {
     }).then(function(data) {
       email_admin = data.new_user_email
       done()
-    })
+    }).catch(done)
   })
 
   it('Create MANAGER-to-be user', function(done) {
@@ -73,7 +73,7 @@ describe('CRUD for users', function() {
     }).then(function(data) {
       email_manager = data.new_user_email
       done()
-    })
+    }).catch(done)
   })
 
   it('Create EMPLOYEE-to-be user', function(done) {
@@ -83,7 +83,7 @@ describe('CRUD for users', function() {
     }).then(function(data) {
       email_employee = data.new_user_email
       done()
-    })
+    }).catch(done)
   })
 
   it('Open department management page', function(done) {
@@ -92,7 +92,7 @@ describe('CRUD for users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Get the Admin, Manager and Employee IDs', function(done) {
@@ -173,14 +173,14 @@ describe('CRUD for users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Check that system has 4 users (one currently logged in and 3 added)', function(done) {
     driver.findElements(By.css('td.user_department')).then(function(elements) {
       expect(elements.length).to.be.equal(4)
       done()
-    })
+    }).catch(done)
   })
 
   it('Open EMPLOYEE user details page', function(done) {
@@ -189,7 +189,7 @@ describe('CRUD for users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('And remove account', function(done) {
@@ -200,14 +200,14 @@ describe('CRUD for users', function() {
       confirm_dialog: true
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Check that system has 3 users (one currently logged in and 2 added)', function(done) {
     driver.findElements(By.css('td.user_department')).then(function(elements) {
       expect(elements.length).to.be.equal(3)
       done()
-    })
+    }).catch(done)
   })
 
   it('Open MANAGER user details page', function(done) {
@@ -216,7 +216,7 @@ describe('CRUD for users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Try to remove account', function(done) {
@@ -227,7 +227,7 @@ describe('CRUD for users', function() {
       confirm_dialog: true
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it("Open 'users' page", function(done) {
@@ -236,14 +236,14 @@ describe('CRUD for users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Check that system still has 3 users (one currently logged in and 2 added)', function(done) {
     driver.findElements(By.css('td.user_department')).then(function(elements) {
       expect(elements.length).to.be.equal(3)
       done()
-    })
+    }).catch(done)
   })
 
   it('Open departments', function(done) {
@@ -252,7 +252,7 @@ describe('CRUD for users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('... and update the very first user is an supervisor', function(done) {
@@ -298,7 +298,7 @@ describe('CRUD for users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Remove account', function(done) {
@@ -309,7 +309,7 @@ describe('CRUD for users', function() {
       confirm_dialog: true
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Check that system does not have ex-MANAGER', function(done) {
@@ -317,7 +317,7 @@ describe('CRUD for users', function() {
       // 1 that registered company and other is ADMIN
       expect(elements.length).to.be.equal(2)
       done()
-    })
+    }).catch(done)
   })
 
   it('Open ADMIN user details page', function(done) {
@@ -326,7 +326,7 @@ describe('CRUD for users', function() {
       driver
     }).then(function() {
       done()
-    })
+    }).catch(done)
   })
 
   it('Make sure that ADMIN has admin privilegues', function(done) {
@@ -341,9 +341,11 @@ describe('CRUD for users', function() {
       ],
       submit_button_selector: 'button#save_changes_btn',
       message: /Details for .+ were updated/
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('... and try to remove account', function(done) {
@@ -352,34 +354,43 @@ describe('CRUD for users', function() {
       driver,
       message: /Cannot remove administrator user/,
       confirm_dialog: true
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it("Open 'users' page", function(done) {
     open_page_func({
       url: application_host + 'users/',
       driver
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Check that system still has 2 users (one currently logged in and ADMIN)', function(done) {
-    driver.findElements(By.css('td.user_department')).then(function(elements) {
-      expect(elements.length).to.be.equal(2)
-      done()
-    })
+    driver
+      .findElements(By.css('td.user_department'))
+      .then(function(elements) {
+        expect(elements.length).to.be.equal(2)
+        done()
+      })
+      .catch(done)
   })
 
   it('Open ADMIN user details page (absences)', function(done) {
     open_page_func({
       url: application_host + 'users/edit/' + admin_user_id + '/absences/',
       driver
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Ensure Adjustment works: check that system prevents from using non-halfs for adjustments', function(done) {
@@ -394,9 +405,11 @@ describe('CRUD for users', function() {
       ],
       submit_button_selector: 'button#save_changes_btn',
       message: /New allowance adjustment of user should be either whole integer number or with half/
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('If the adjustment is with half, it is OK', function(done) {
@@ -411,9 +424,11 @@ describe('CRUD for users', function() {
       submit_button_selector: 'button#save_changes_btn',
       should_be_successful: true,
       message: /Details for .+ were updated/
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('If the adjustment is with half and is negative, it is OK', function(done) {
@@ -428,18 +443,22 @@ describe('CRUD for users', function() {
       submit_button_selector: 'button#save_changes_btn',
       should_be_successful: true,
       message: /Details for .+ were updated/
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Open ADMIN user details page (general)', function(done) {
     open_page_func({
       url: application_host + 'users/edit/' + admin_user_id + '/',
       driver
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Revoke admin rights', function(done) {
@@ -454,9 +473,11 @@ describe('CRUD for users', function() {
       ],
       submit_button_selector: 'button#save_changes_btn',
       message: /Details for .+ were updated/
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Remove account', function(done) {
@@ -465,21 +486,29 @@ describe('CRUD for users', function() {
       driver,
       message: /Employee records were removed from the system/,
       confirm_dialog: true
-    }).then(function() {
-      done()
     })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Check that system has only one - currently logged in user', function(done) {
-    driver.findElements(By.css('td.user_department')).then(function(elements) {
-      expect(elements.length).to.be.equal(1)
-      done()
-    })
+    driver
+      .findElements(By.css('td.user_department'))
+      .then(function(elements) {
+        expect(elements.length).to.be.equal(1)
+        done()
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    })
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

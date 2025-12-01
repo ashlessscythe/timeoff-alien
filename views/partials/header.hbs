@@ -28,7 +28,7 @@
               <i class="fa fa-users"></i> Team View
             </a></li>
           {{/if}}
-          {{#if logged_user.admin}}
+          {{#if (or logged_user.admin logged_user.manager)}}
           <li><a href="/users/" class="nav-link">
               <i class="fa fa-user"></i> Employees
             </a></li>
@@ -55,25 +55,14 @@
               aria-expanded="false" title="Theme">
               <span class="fa fa-paint-brush"></span> Theme <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu professional-dropdown-menu" id="theme-dropdown" role="menu">
-              <li><a href="#" data-theme="day" class="theme-option">
-                  <i class="fa fa-sun-o"></i> Day
-                </a></li>
-              <li><a href="#" data-theme="night" class="theme-option">
-                  <i class="fa fa-moon-o"></i> Night
-                </a></li>
-              <li><a href="#" data-theme="ocean" class="theme-option">
-                  <i class="fa fa-tint"></i> Ocean
-                </a></li>
-              <li><a href="#" data-theme="nature" class="theme-option">
-                  <i class="fa fa-leaf"></i> Nature
-                </a></li>
-              <li><a href="#" data-theme="volcano" class="theme-option">
-                  <i class="fa fa-fire"></i> Volcano
-                </a></li>
-              <li><a href="#" data-theme="sky" class="theme-option">
-                  <i class="fa fa-cloud"></i> Sky
-                </a></li>
+            <ul class="dropdown-menu" id="theme-dropdown" role="menu">
+              <li><a href="#" data-theme="day">Day</a></li>
+              <li><a href="#" data-theme="night">Night</a></li>
+              <li><a href="#" data-theme="ocean">Ocean</a></li>
+              <li><a href="#" data-theme="nature">Nature</a></li>
+              <li><a href="#" data-theme="volcano">Volcano</a></li>
+              <li><a href="#" data-theme="neon">Neon</a></li>
+              <li><a href="#" data-theme="cyberpunk">Cyberpunk</a></li>
             </ul>
           </li>
           </li>
@@ -253,7 +242,7 @@
     // Function to set the theme based on the dropdown selection
     function setTheme(theme) {
       // Remove all theme-related classes first
-      document.body.classList.remove('theme-day', 'theme-night', 'theme-ocean', 'theme-nature', 'theme-volcano', 'theme-sky');
+      document.body.classList.remove('theme-day', 'theme-night', 'theme-ocean', 'theme-nature', 'theme-volcano', 'theme-neon', 'theme-cyberpunk');
 
       // Add the selected theme
       document.body.classList.add('theme-' + theme);

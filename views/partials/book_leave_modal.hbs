@@ -2,7 +2,10 @@
   aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content professional-modal">
-      <form method="POST" action="{{leave_modal_form_action}}" id="leaveForm" novalidate>
+      <form method="POST" action="{{leave_modal_form_action}}" id="leaveForm" novalidate
+        data-next-year-cutoff-date="{{#if logged_user.company.next_year_cutoff_date}}{{logged_user.company.next_year_cutoff_date}}{{/if}}"
+        data-limited-departments="{{#if logged_user.company.limited_departments}}{{json logged_user.company.limited_departments}}{{/if}}"
+        data-user-department-id="{{#if logged_user.department_id}}{{logged_user.department_id}}{{/if}}">
         <div class="modal-header">
           <div class="modal-title-section">
             <i class="fa fa-calendar-plus-o modal-icon"></i>
@@ -100,11 +103,19 @@
           </div>
 
           <div class="form-group">
-            <label for="leave_reason" class="form-label">
+            <label for="leave_reason" class="control-label">
               <i class="fa fa-comment"></i> Comment (Optional):
             </label>
             <textarea class="form-control modal-textarea" id="leave_reason" name="reason" rows="3"
               placeholder="Add any additional details about your absence request..."></textarea>
+          </div>
+
+          <div id="next_year_pto_warning" class="alert alert-danger" style="display: none; margin-top: 15px;">
+            <strong>Warning:</strong> <span id="next_year_pto_warning_text"></span>
+          </div>
+
+          <div id="next_year_pto_warning" class="alert alert-danger" style="display: none; margin-top: 15px;">
+            <strong>Warning:</strong> <span id="next_year_pto_warning_text"></span>
           </div>
 
         </div>
@@ -132,13 +143,111 @@
     var submitBtn = document.getElementById('submitLeaveBtn');
     var fromDate = document.getElementById('from');
     var toDate = document.getElementById('to');
+    var warningDiv = document.getElementById('next_year_pto_warning');
+    var warningText = document.getElementById('next_year_pto_warning_text');
+
+    // Get company restriction data from form data attributes (safer than inline Handlebars)
+    var cutoffDateStr = form.getAttribute('data-next-year-cutoff-date') || '';
+    var limitedDeptsStr = form.getAttribute('data-limited-departments') || '[]';
+    var userDeptIdStr = form.getAttribute('data-user-department-id') || '';
+
+    var companyData = {
+      next_year_cutoff_date: cutoffDateStr || null,
+      limited_departments: (function () {
+        try {
+          return limitedDeptsStr ? JSON.parse(limitedDeptsStr) : [];
+        } catch (e) {
+          return [];
+        }
+      })(),
+      user_department_id: userDeptIdStr ? parseInt(userDeptIdStr, 10) : null
+    };
+
+    function checkNextYearRestriction() {
+      if (!fromDate || !fromDate.value || !companyData.next_year_cutoff_date) {
+        if (warningDiv) warningDiv.style.display = 'none';
+        return;
+      }
+
+      try {
+        // Parse the date from the input (format depends on company date format)
+        var fromDateValue = fromDate.value;
+        if (!fromDateValue) {
+          if (warningDiv) warningDiv.style.display = 'none';
+          return;
+        }
+
+        // Get current year and next year
+        var currentYear = new Date().getFullYear();
+        var nextYear = currentYear + 1;
+
+        // Parse the input date - try to extract year
+        // This is a simplified check - in production you'd want to use moment.js or similar
+        var dateParts = fromDateValue.split(/[-\/]/);
+        var inputYear = parseInt(dateParts[0] || dateParts[2] || currentYear, 10);
+
+        // If year is 2 digits, assume it's in the current century
+        if (inputYear < 100) {
+          inputYear += 2000;
+        }
+
+        // Check if requesting next year
+        if (inputYear === nextYear) {
+          // Parse the cutoff date as a local date to avoid timezone issues
+          // The date comes from database as YYYY-MM-DD, parse it as local date
+          var cutoffDateStr = companyData.next_year_cutoff_date;
+          var cutoffDateParts = cutoffDateStr.split('-');
+          var cutoffDate = new Date(
+            parseInt(cutoffDateParts[0], 10),
+            parseInt(cutoffDateParts[1], 10) - 1, // Month is 0-indexed
+            parseInt(cutoffDateParts[2], 10)
+          );
+
+          var now = new Date();
+          var limitedDepts = companyData.limited_departments || [];
+          var userDeptId = companyData.user_department_id;
+
+          // Check if before cutoff and user's department is limited
+          // Compare dates at midnight local time
+          var nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          var cutoffDateOnly = new Date(cutoffDate.getFullYear(), cutoffDate.getMonth(), cutoffDate.getDate());
+
+          if (nowDateOnly < cutoffDateOnly && limitedDepts.indexOf(userDeptId) !== -1) {
+            var cutoffFormatted = cutoffDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+            if (warningDiv && warningText) {
+              warningText.textContent = 'Requests for ' + nextYear + ' are not allowed yet. Please wait until ' + cutoffFormatted + ' to request time off for the following calendar year.';
+              warningDiv.style.display = 'block';
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Error checking next year restriction:', e);
+      }
+
+      // Hide warning if conditions not met
+      if (warningDiv) warningDiv.style.display = 'none';
+    }
 
     if (form && submitBtn && fromDate && toDate) {
       // Add event listener to 'from' date input
       fromDate.addEventListener('change', function () {
         // Update 'to' date to match 'from' date
         toDate.value = fromDate.value;
+        checkNextYearRestriction();
       });
+
+      // Also check when 'to' date changes
+      toDate.addEventListener('change', function () {
+        checkNextYearRestriction();
+      });
+
+      // Check on initial load if date is already set
+      setTimeout(checkNextYearRestriction, 100);
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -154,6 +263,15 @@
         if (new Date(fromDate.value) > new Date(toDate.value)) {
           alert('The "To" date must be after the "From" date.');
           return;
+        }
+
+        // Check next year restriction one more time before submit
+        checkNextYearRestriction();
+        if (warningDiv && warningDiv.style.display === 'block') {
+          // Still show warning but allow submission (server will reject anyway)
+          if (!confirm('You are attempting to request time off for next year before the cutoff date. This request will likely be rejected. Do you want to continue?')) {
+            return;
+          }
         }
 
         // Prevent double submission
