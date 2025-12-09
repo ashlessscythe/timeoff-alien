@@ -108,11 +108,15 @@ const passport = require('./lib/passport')()
 const session = require('express-session')
 // initalize sequelize with session store
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
+const config = require('./lib/config')
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      maxAge: config.get('sessions:ttl')
+    },
     store: new SequelizeStore({
       db: app.get('db_model').sequelize,
       // Add this option to fix the Sequelize v6 compatibility issue
