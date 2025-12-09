@@ -115,7 +115,7 @@ npx prisma db seed -- --clear   # (CAREFUL, this is destrucive!)
 npx prisma db seed -- --user-count 20 --leaves-multiplier 5
 ```
 
-Available seed options:
+Available options for seeding:
 
 - `--clear`: Clear all data before seeding
 - `--user-count` or `--use-faker`: Number of users to create (default: 10)
