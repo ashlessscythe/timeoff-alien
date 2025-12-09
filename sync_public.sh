@@ -12,9 +12,9 @@ if [ ! -z "$TAG" ]; then
 fi
 
 # Sync public to dev
-git checkout public
+git switch public
 git reset --hard dev
 git push --force
-git checkout dev
+git switch dev
 
 echo "Public branch synced with dev successfully!"
