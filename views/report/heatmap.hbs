@@ -504,15 +504,15 @@
 
         let color = '#c6e48b'; // default low
         if (count <= low) {
-          color = '#c6e48b';
+          color = '#c6e48b';          // light green
         } else if (count <= medium) {
-          color = '#7bc96f';
+          color = '#7bc96f';          // medium green
         } else if (count <= high) {
-          color = '#239a3b';
+          color = '#239a3b';          // dark green
         } else if (count <= veryHigh) {
-          color = '#ffa500';
+          color = '#ffa500';          // orange
         } else {
-          color = '#ff6b00';
+          color = '#cc0000';          // red for anything above "very high"
         }
 
         day.style.backgroundColor = color;
