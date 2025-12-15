@@ -15,6 +15,56 @@
 
 <div class="row">
   <div class="col-md-12">
+    <div class="panel panel-default heatmap-config-panel">
+      <div class="panel-heading" role="button" data-toggle="collapse" href="#heatmapConfigPanel" aria-expanded="false"
+        aria-controls="heatmapConfigPanel">
+        <h4 class="panel-title">
+          <i class="fa fa-chevron-down collapsed"></i> Heatmap Color Configuration
+          <small class="text-muted">Adjust absence count thresholds for each color band</small>
+        </h4>
+      </div>
+      <div class="panel-collapse collapse" id="heatmapConfigPanel">
+        <div class="panel-body">
+          <form class="form-inline heatmap-config-form" onsubmit="return false;">
+            <div class="form-group">
+              <label for="heatmap-threshold-low" class="control-label">Low (green) up to</label>
+              <input type="number" min="1" class="form-control input-sm" id="heatmap-threshold-low" value="2">
+            </div>
+            <span>&nbsp;absences</span>
+
+            <div class="form-group" style="margin-left:15px;">
+              <label for="heatmap-threshold-medium" class="control-label">Medium (darker green) up to</label>
+              <input type="number" min="1" class="form-control input-sm" id="heatmap-threshold-medium" value="4">
+            </div>
+            <span>&nbsp;absences</span>
+
+            <div class="form-group" style="margin-left:15px;">
+              <label for="heatmap-threshold-high" class="control-label">High (orange) up to</label>
+              <input type="number" min="1" class="form-control input-sm" id="heatmap-threshold-high" value="6">
+            </div>
+            <span>&nbsp;absences</span>
+
+            <div class="form-group" style="margin-left:15px;">
+              <label for="heatmap-threshold-very-high" class="control-label">Very high (dark orange) up to</label>
+              <input type="number" min="1" class="form-control input-sm" id="heatmap-threshold-very-high" value="9">
+            </div>
+            <span>&nbsp;absences, above this is red</span>
+
+            <button type="button" class="btn btn-primary btn-sm" id="apply-heatmap-config"
+              style="margin-left:15px;">Apply</button>
+          </form>
+          <p class="text-muted" style="margin-top:10px;">
+            Changes here only affect the current view and are not saved. Refresh the page to reset the colors to their
+            defaults.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
     <div class="heatmap-container">
       {{> modern_calendar
       months=calendarMonths
@@ -247,36 +297,36 @@
     border-bottom: none;
   }
 
-  /* Heatmap color gradient */
+  /* Heatmap default color gradient (overridden by config when applied) */
   .calendar-day[data-count="1"] {
-    background-color: #c6e48b !important;
+    background-color: #c6e48b;
   }
 
   .calendar-day[data-count="2"] {
-    background-color: #7bc96f !important;
+    background-color: #7bc96f;
   }
 
   .calendar-day[data-count="3"] {
-    background-color: #239a3b !important;
+    background-color: #239a3b;
   }
 
   .calendar-day[data-count="4"] {
-    background-color: #196127 !important;
+    background-color: #196127;
   }
 
   .calendar-day[data-count="5"],
   .calendar-day[data-count="6"] {
-    background-color: #ffa500 !important;
+    background-color: #ffa500;
   }
 
   .calendar-day[data-count="7"],
   .calendar-day[data-count="8"],
   .calendar-day[data-count="9"] {
-    background-color: #ff6b00 !important;
+    background-color: #ff6b00;
   }
 
   .calendar-day[data-count]:not([data-count="0"])[data-count]:not([data-count="1"]):not([data-count="2"]):not([data-count="3"]):not([data-count="4"]):not([data-count="5"]):not([data-count="6"]):not([data-count="7"]):not([data-count="8"]):not([data-count="9"]) {
-    background-color: #cc0000 !important;
+    background-color: #cc0000;
   }
 
   /* Responsive design */
@@ -399,6 +449,84 @@
         tooltip.style.display = 'none';
       }
     });
+
+    // Collapsible icon handling for config panel (mirrors team_view.hbs pattern)
+    const configPanel = document.getElementById('heatmapConfigPanel');
+    const configIcon = document.querySelector('.heatmap-config-panel .panel-heading .fa');
+
+    if (configPanel && typeof $ !== 'undefined') {
+      $(configPanel).on('show.bs.collapse', function () {
+        if (configIcon) {
+          configIcon.classList.remove('collapsed');
+        }
+      });
+
+      $(configPanel).on('hide.bs.collapse', function () {
+        if (configIcon) {
+          configIcon.classList.add('collapsed');
+        }
+      });
+    }
+
+    // Heatmap tolerance configuration
+    function applyHeatmapConfig() {
+      const lowInput = document.getElementById('heatmap-threshold-low');
+      const mediumInput = document.getElementById('heatmap-threshold-medium');
+      const highInput = document.getElementById('heatmap-threshold-high');
+      const veryHighInput = document.getElementById('heatmap-threshold-very-high');
+
+      let low = parseInt(lowInput?.value, 10) || 2;
+      let medium = parseInt(mediumInput?.value, 10) || 4;
+      let high = parseInt(highInput?.value, 10) || 6;
+      let veryHigh = parseInt(veryHighInput?.value, 10) || 9;
+
+      // Ensure thresholds are increasing
+      if (medium < low) medium = low;
+      if (high < medium) high = medium;
+      if (veryHigh < high) veryHigh = high;
+
+      if (lowInput) lowInput.value = low;
+      if (mediumInput) mediumInput.value = medium;
+      if (highInput) highInput.value = high;
+      if (veryHighInput) veryHighInput.value = veryHigh;
+
+      const days = document.querySelectorAll('.calendar-day[data-count]');
+      days.forEach(day => {
+        const count = parseInt(day.getAttribute('data-count'), 10) || 0;
+
+        // Reset to base styles first
+        day.style.backgroundColor = '';
+        day.style.color = '';
+
+        if (count <= 0) {
+          return;
+        }
+
+        let color = '#c6e48b'; // default low
+        if (count <= low) {
+          color = '#c6e48b';
+        } else if (count <= medium) {
+          color = '#7bc96f';
+        } else if (count <= high) {
+          color = '#239a3b';
+        } else if (count <= veryHigh) {
+          color = '#ffa500';
+        } else {
+          color = '#ff6b00';
+        }
+
+        day.style.backgroundColor = color;
+        day.style.color = '#fff';
+      });
+    }
+
+    const applyBtn = document.getElementById('apply-heatmap-config');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', applyHeatmapConfig);
+    }
+
+    // Apply initial configuration so thresholds line up with defaults
+    applyHeatmapConfig();
   });
 </script>
 
