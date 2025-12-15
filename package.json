@@ -20,7 +20,7 @@
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
     "@prisma/client": "^5.21.0",
-    "@slack/client": "^4.1.0",
+    "@slack/web-api": "^7.0.0",
     "bcrypt": "^5.1.1",
     "bluebird": "^3.5.4",
     "body-parser": "^1.19.0",
@@ -52,13 +52,12 @@
     "passport-local": "^1.0.0",
     "pg": "^8.11.4",
     "prisma": "^5.21.0",
-    "request-promise": "^0.0.1",
     "resend": "^4.1.2",
     "sequelize": "^6.37.6",
     "sequelize-cli": "^5.5.1",
     "serve-favicon": "^2.5.0",
     "underscore": ">=1.12.1",
-    "uuid": "^3.3.2",
+    "uuid": "^9.0.0",
     "validator": "^13.11.0",
     "yargs": "^17.7.2"
   },
