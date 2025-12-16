@@ -189,6 +189,11 @@ describe('accrued_adjustment attribute', function() {
       start_date: moment('2016-10-01')
     })
 
+    const department = model.Department.build({
+      is_accrued_allowance: true
+    })
+    employee.department = department
+
     const ul = new UserAllowance({
       user: employee,
       now: moment('2017-02-01'),
@@ -214,6 +219,11 @@ describe('accrued_adjustment attribute', function() {
       start_date: moment('2016-04-01')
     })
 
+    const department = model.Department.build({
+      is_accrued_allowance: true
+    })
+    employee.department = department
+
     const ul = new UserAllowance({
       user: employee,
       now: moment('2016-07-01'),
@@ -238,6 +248,11 @@ describe('accrued_adjustment attribute', function() {
     const employee = model.User.build({
       start_date: moment('2016-04-01')
     })
+
+    const department = model.Department.build({
+      is_accrued_allowance: true
+    })
+    employee.department = department
 
     const ul = new UserAllowance({
       user: employee,
@@ -268,6 +283,11 @@ describe('accrued_adjustment attribute', function() {
       start_date: moment('2016-04-01')
     })
 
+    const department = model.Department.build({
+      is_accrued_allowance: true
+    })
+    employee.department = department
+
     const ul = new UserAllowance({
       user: employee,
       now: moment('2016-07-01'),
@@ -293,6 +313,11 @@ describe('accrued_adjustment attribute', function() {
     const employee = model.User.build({
       start_date: moment('2016-04-01')
     })
+
+    const department = model.Department.build({
+      is_accrued_allowance: true
+    })
+    employee.department = department
 
     const ul = new UserAllowance({
       user: employee,
@@ -320,6 +345,11 @@ describe('accrued_adjustment attribute', function() {
       start_date: moment('2016-04-01')
     })
 
+    const department = model.Department.build({
+      is_accrued_allowance: true
+    })
+    employee.department = department
+
     const ul = new UserAllowance({
       user: employee,
       now: moment('2017-01-14'),
@@ -346,6 +376,11 @@ describe('accrued_adjustment attribute', function() {
       start_date: moment('2016-04-01')
     })
 
+    const department = model.Department.build({
+      is_accrued_allowance: true
+    })
+    employee.department = department
+
     const ul = new UserAllowance({
       user: employee,
       now: moment('2017-12-31'),
@@ -371,6 +406,11 @@ describe('accrued_adjustment attribute', function() {
     const employee = model.User.build({
       start_date: moment('2016-04-01')
     })
+
+    const department = model.Department.build({
+      is_accrued_allowance: true
+    })
+    employee.department = department
 
     const ul = new UserAllowance({
       user: employee,
