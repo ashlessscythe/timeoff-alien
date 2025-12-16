@@ -798,20 +798,46 @@ async function createLeaves(users, leaveTypes, multiplier, dateRange) {
         endDate.setTime(dateRange.to.getTime())
       }
 
+      const created_at = faker.date.past()
+      // Status: 1: Pending, 2: Approved, 3: Rejected, 5: Canceled
+      const status = faker.helpers.arrayElement([1, 2, 3, 5])
+
+      // For rejected (3) and canceled (5) leaves, ensure they have a decided_at date
+      // The decision date should be after the leave was created but could be in the past or recent
+      let decided_at = null
+      if (status === 3 || status === 5) {
+        // Decision date should be after creation but before or equal to now
+        decided_at = faker.date.between({
+          from: created_at,
+          to: new Date()
+        })
+      } else if (status === 2) {
+        // Approved leaves might also have a decision date
+        decided_at = faker.datatype.boolean({ probability: 0.8 })
+          ? faker.date.between({
+              from: created_at,
+              to: new Date()
+            })
+          : null
+      }
+
       await prisma.leaves.create({
         data: {
           user_id: user.id,
           leave_type_id: faker.helpers.arrayElement(leaveTypes).id,
-          status: faker.helpers.arrayElement([1, 2, 3]), // 1: Pending, 2: Approved, 3: Rejected
+          status: status,
           employee_comment: faker.lorem.sentence(),
-          approver_comment: faker.lorem.sentence(),
-          decided_at: faker.date.recent(),
+          approver_comment: status === 3 || status === 5 ? faker.lorem.sentence() : (faker.datatype.boolean() ? faker.lorem.sentence() : null),
+          decided_at: decided_at,
           date_start: startDate,
           date_end: endDate,
           day_part_start: faker.helpers.arrayElement([1, 2, 3]), // 1: All day, 2: Morning, 3: Afternoon
           day_part_end: faker.helpers.arrayElement([1, 2, 3]),
-          created_at: faker.date.past(),
-          updated_at: faker.date.recent()
+          created_at: created_at,
+          updated_at: faker.date.between({
+            from: created_at,
+            to: new Date()
+          })
         }
       })
       console.log(`Created leave ${i + 1} of ${leaveCount}`)
