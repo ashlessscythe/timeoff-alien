@@ -1,0 +1,86 @@
+{{> header }}
+
+<h1>Bulk PTO Adjustment</h1>
+
+<p class="lead">Import PTO balance adjustments for employees via CSV</p>
+
+{{> show_flash_messages }}
+
+<div class="row">
+  <div class="col-md-6">
+    <ol class="breadcrumb">
+      <li><a href="/settings/general/">Settings</a></li>
+      <li class="active">Bulk PTO Adjustment</li>
+    </ol>
+  </div>
+</div>
+
+<div class="row main-row_header">
+  <p class="col-md-12">Adjust PTO balances in three simple steps</p>
+</div>
+
+<div class="row">
+  <div class="col-md-9 col-md-offset-1">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <p class="text-bigger">
+          <strong>1.</strong> Download CSV template with example data:
+          <a href="/settings/pto-adjustment/template/" id="pto_template_btn" class="btn btn-success"
+            data-content="The template file contains example rows based on current employees. Fill in the adjustment values and year, then upload using the form below."
+            data-placement="top" data-toggle="popover" data-trigger="focus hover">
+            <i class="fa fa-download"></i> Download CSV template
+          </a>
+        </p>
+
+        <p class="text-bigger">
+          <strong>2.</strong> Fill in the CSV file with employee names, adjustments, and year.
+          <br>
+          <small class="text-muted">
+            Required columns: <code>name</code>, <code>lastname</code>, <code>adjustment</code>, <code>year</code><br>
+            Optional column: <code>personal_adjustment</code>
+          </small>
+        </p>
+
+        <div class="text-bigger">
+          <strong>3.</strong> Upload CSV file for preview:
+          <form action="/settings/pto-adjustment/preview/" method="post" enctype="multipart/form-data" class="panel-body" id="pto_upload_form">
+            <div class="form-group">
+              <input id="pto_input_file" type="file" name="pto_import" accept=".csv" required>
+              <p class="help-block">
+                <em>CSV file will be validated and you'll see a preview with name matching results before applying changes.</em>
+              </p>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-success single-click" id="submit_pto_btn" type="submit">
+                <i class="fa fa-upload"></i> Upload and Preview
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">&nbsp;</div>
+
+<div class="row">
+  <div class="col-md-9 col-md-offset-1">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <i class="fa fa-info-circle"></i> How it works
+      </div>
+      <div class="panel-body">
+        <ul>
+          <li>The system will attempt to match employee names from your CSV to existing employees</li>
+          <li>If a name doesn't match exactly, you'll see suggestions and can confirm the match</li>
+          <li>Adjustments will update existing records for the same user and year, or create new ones</li>
+          <li>You'll see a preview of all changes before they are applied</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> footer }}
+
