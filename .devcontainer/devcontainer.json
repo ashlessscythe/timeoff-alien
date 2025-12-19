@@ -26,7 +26,5 @@
         "editor.formatOnSave": true
       }
     }
-  },
-  "postCreateCommand": "npm install",
-  "postStartCommand": "wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/chrome.deb && sudo apt install -y /tmp/chrome.deb && rm /tmp/chrome.deb || echo 'Chrome installation skipped'"
+  }
 }
