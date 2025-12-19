@@ -1,0 +1,144 @@
+{{> header }}
+
+<h1>Leave Types Settings</h1>
+
+<p class="lead">Configure leave types for your company</p>
+
+{{> show_flash_messages }}
+
+<div class="row">&nbsp;</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Leave Types
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <label class="control-label">Leave Type Name</label>
+            <p><em>Tick one to always be on top of the list</em></p>
+          </div>
+          <div class="col-md-offset-3 col-md-2">
+            <label class="control-label">Limit</label>
+            <p><em>Days/year</em></p>
+          </div>
+        </div>
+
+        <div class="row">&nbsp;</div>
+
+        <form id="delete_leavetype_form" method="post" action="/settings/leavetypes/delete/"></form>
+        <form id="leave_type_edit_form" method="post" action="/settings/leavetypes/">
+
+          {{#unless leave_types.length }}
+          <div class="row">
+            <div class="col-md-4">No Leave type records</div>
+          </div>
+          {{/unless}}
+
+          {{#each leave_types}}
+          <div class="row">
+            <div class="col-md-6">
+
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <input type="radio" name="first_record" value="{{ this.id }}" {{# if this.sort_order
+                    }}checked="checked" {{/ if}}>
+                </span>
+                <input type="text" class="form-control" name="name__{{ this.id }}" value="{{name}}"
+                  data-tom-leave-type-order="name_{{@index}}">
+
+                <span class="input-group-addon color-picker">
+                  <input type="color" class="picker" name="color__{{ this.id }}"
+                    value="{{# with this }}{{ this.color }}{{/with}}">
+                </span>
+
+              </div>
+
+            </div>
+
+            <div class="col-md-3">
+              <div>
+                <input name="use_allowance__{{ this.id }}" id="use_allowance__{{ this.id }}" type="checkbox" {{#if
+                  use_allowance}}checked="checked" {{/if}} data-tom-leave-type-order="allowance_{{@index}}">
+                <label for="use_allowance__{{ this.id }}" class="control-label">Use allowance</label>
+              </div>
+              <div>
+                <input name="use_personal__{{ this.id }}" id="use_personal__{{ this.id }}" type="checkbox" {{#if
+                  use_personal}}checked="checked" {{/if}} data-tom-leave-type-order="personal_{{@index}}">
+                <label for="use_personal__{{ this.id }}" class="control-label">Use Personal</label>
+              </div>
+              <div>
+                <input name="auto_approve__{{ this.id }}" id="auto_approve__{{ this.id }}" type="checkbox" {{#if
+                  auto_approve}}checked="checked" {{/if}} data-tom-leave-type-order="approve_{{@index}}">
+                <label for="auto_approve__{{ this.id }}" class="control-label">Auto approve</label>
+              </div>
+              <div>
+                <input name="manager_only__{{ this.id }}" id="manager_only__{{ this.id }}" type="checkbox" {{#if
+                  manager_only}}checked="checked" {{/if}} data-tom-leave-type-order="manager_{{@index}}">
+                <label for="manager_only__{{ this.id }}" class="control-label">Manager Only</label>
+              </div>
+              <div>
+                <input name="is_special__{{ this.id }}" id="is_special__{{ this.id }}" type="checkbox" {{#if
+                  is_special}}checked="checked" {{/if}} data-tom-leave-type-order="special_{{@index}}">
+                <label for="is_special__{{ this.id }}" class="control-label">Special Leave</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <input type="number" class="form-control" value="{{limit}}" name="limit__{{ this.id }}"
+                data-tom-leave-type-order="limit_{{@index}}">
+            </div>
+            <div class="col-md-1">
+              <button class="btn btn-default pull-right leavetype-remove-btn" value="{{ this.id }}"
+                data-tom-leave-type-order="remove_{{@index}}"><span class="fa fa-remove"></span></button>
+            </div>
+          </div>
+
+          <div class="row">&nbsp;</div>
+
+          {{/each}}
+
+          <div class="row">&nbsp;</div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-right">
+                <button class="btn btn-default" data-toggle="modal" data-target="#add_new_leave_type_modal"
+                  type="button" id="add_new_leave_type_btn">Add new</button>
+                <button type="submit" class="btn btn-success single-click">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> add_new_leave_type_modal
+container_id='add_new_leave_type_modal'
+form_action='/settings/leavetypes/'
+}}
+
+<script>
+$(document).ready(function() {
+  $('button.leavetype-remove-btn').on('click', function(e) {
+    e.stopPropagation()
+
+    const delete_form = $('#delete_leavetype_form')
+    delete_form.attr(
+      'action',
+      delete_form.attr('action') + $(this).attr('value') + '/'
+    )
+
+    delete_form.submit()
+
+    return false
+  })
+})
+</script>
+
+{{> footer }}
+
+
