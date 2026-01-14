@@ -125,6 +125,9 @@ model departments {
   personal                Float                    @default(5)
   include_public_holidays Boolean                  @default(true)
   is_accrued_allowance    Boolean                  @default(false)
+  shifts                  String?                  // JSON array of shift names: ["day"], ["day", "swing"], ["day", "swing", "night"]
+  shift_hours             String?                  // JSON object: {"day": {"start": "08:00", "end": "17:00"}, "swing": {"start": "17:00", "end": "01:00"}}
+  allowed_increments      String?                  // JSON array: ["full_day", "half_day", "hourly", "quarter_hr"]
   created_at              DateTime                 @db.Timestamptz(6)
   updated_at              DateTime                 @db.Timestamptz(6)
   company_id              Int
@@ -156,21 +159,22 @@ model email_audits {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model leave_types {
-  id            Int       @id @default(autoincrement())
-  name          String    @db.VarChar(255)
-  color         String    @default("#ffffff") @db.VarChar(255)
-  use_allowance Boolean   @default(true)
-  use_personal  Boolean   @default(false)
-  limit         Int       @default(0)
-  sort_order    Int       @default(0)
-  auto_approve  Boolean   @default(false)
-  created_at    DateTime  @db.Timestamptz(6)
-  updated_at    DateTime  @db.Timestamptz(6)
-  company_id    Int
-  manager_only  Boolean   @default(false)
-  is_special    Boolean   @default(false)
-  companies     companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
-  leaves        leaves[]
+  id               Int       @id @default(autoincrement())
+  name             String    @db.VarChar(255)
+  color            String    @default("#ffffff") @db.VarChar(255)
+  use_allowance    Boolean   @default(true)
+  use_personal     Boolean   @default(false)
+  limit            Int       @default(0)
+  sort_order       Int       @default(0)
+  auto_approve     Boolean   @default(false)
+  created_at       DateTime  @db.Timestamptz(6)
+  updated_at       DateTime  @db.Timestamptz(6)
+  company_id       Int
+  manager_only      Boolean   @default(false)
+  is_special        Boolean   @default(false)
+  allowed_increments String?  // JSON array: ["full_day", "half_day", "hourly", "quarter_hr"]
+  companies        companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  leaves           leaves[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -181,9 +185,11 @@ model leaves {
   approver_comment                String?
   decided_at                      DateTime?   @db.Timestamptz(6)
   date_start                      DateTime    @db.Timestamptz(6)
-  day_part_start                  Int         @default(1)
+  day_part_start                  Int         @default(1)  // Legacy: 1=all day, 2=morning, 3=afternoon
+  time_start                      String?     @db.VarChar(8)  // New: Start time for time-based leaves (e.g., "09:00:00")
   date_end                        DateTime    @db.Timestamptz(6)
-  day_part_end                    Int         @default(1)
+  day_part_end                    Int         @default(1)  // Legacy: 1=all day, 2=morning, 3=afternoon
+  time_end                        String?     @db.VarChar(8)  // New: End time for time-based leaves (e.g., "11:00:00")
   created_at                      DateTime    @db.Timestamptz(6)
   updated_at                      DateTime    @db.Timestamptz(6)
   user_id                         Int
@@ -263,6 +269,8 @@ model users {
   reset_password_expires           DateTime?                   @db.Timestamptz(6)
   start_date                       DateTime                    @db.Timestamptz(6)
   end_date                         DateTime?                   @db.Timestamptz(6)
+  shifts                           String?                     // JSON array of shift names (overrides department): ["day"], ["day", "swing"]
+  shift_hours                      String?                     // JSON object (overrides department): {"day": {"start": "08:00", "end": "17:00"}}
   created_at                       DateTime                    @db.Timestamptz(6)
   updated_at                       DateTime                    @db.Timestamptz(6)
   company_id                       Int

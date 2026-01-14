@@ -46,49 +46,52 @@
           </div>
 
           <div class="form-group">
-            <label for="from" class="control-label">From:</label>
+            <label for="from" class="control-label">Date:</label>
             <div class="row">
-              <div class="col-md-5">
-                <select class="form-control" name="from_date_part" required>
-                  <option value="1" selected="selected">All day</option>
-                  <option value="2">AM</option>
-                  <option value="3">PM</option>
+              <div class="col-md-4">
+                <select class="form-control" id="increment_type" name="increment_type" required>
+                  <option value="day" selected="selected">Full Day</option>
+                  <option value="halfday">Half Day</option>
+                  <option value="hr">Hours</option>
+                  <option value="min">Minutes</option>
                 </select>
               </div>
-              <div class="col-md-7">
+              <div class="col-md-3">
+                <select class="form-control" id="increment_value" name="increment_value" required>
+                  <option value="1" selected="selected">All day</option>
+                </select>
+              </div>
+              <div class="col-md-5">
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
                   <input type="text" class="form-control book-leave-from-input" id="from" data-provide="datepicker"
                     data-date-autoclose="1"
                     data-date-format="{{# with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
                     data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_start}}"
-                    name="from_date" required aria-label="From date">
+                    name="from_date" required aria-label="Date">
                 </div>
               </div>
             </div>
+            <!-- Hidden fields for legacy day_part support -->
+            <input type="hidden" id="from_date_part" name="from_date_part" value="1">
+            <input type="hidden" id="to_date_part" name="to_date_part" value="1">
+            <input type="hidden" id="time_start" name="time_start" value="">
+            <input type="hidden" id="time_end" name="time_end" value="">
+            <!-- To date is same as from date for single-day leaves, or can be set for multi-day full day leaves -->
+            <input type="hidden" id="to" name="to_date" value="">
           </div>
 
-          <div class="form-group">
-            <label for="to" class="control-label">To:</label>
-            <div class="row">
-              <div class="col-md-5">
-                <select class="form-control" name="to_date_part" required>
-                  <option value="1" selected="selected">All day</option>
-                  <option value="2">AM</option>
-                  <option value="3">PM</option>
-                </select>
-              </div>
-              <div class="col-md-7">
-                <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
-                  <input type="text" class="form-control book-leave-to-input" id="to" data-provide="datepicker"
-                    data-date-autoclose="1"
-                    data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
-                    data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_end}}"
-                    name="to_date" required aria-label="To date">
-                </div>
-              </div>
+          <div class="form-group" id="multi_day_group" style="display: none;">
+            <label for="to_date_multi" class="control-label">To Date (for multi-day full day leaves):</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+              <input type="text" class="form-control book-leave-to-input" id="to_date_multi" data-provide="datepicker"
+                data-date-autoclose="1"
+                data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
+                data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_end}}"
+                aria-label="To date">
             </div>
+            <p class="help-block"><em>Leave blank for single day. Only used for multi-day full day requests.</em></p>
           </div>
 
           <div class="form-group">
@@ -120,9 +123,241 @@
     var form = document.getElementById('leaveForm');
     var submitBtn = document.getElementById('submitLeaveBtn');
     var fromDate = document.getElementById('from');
-    var toDate = document.getElementById('to');
     var warningDiv = document.getElementById('next_year_pto_warning');
     var warningText = document.getElementById('next_year_pto_warning_text');
+
+    // New time-based leave fields
+    var incrementType = document.getElementById('increment_type');
+    var incrementValue = document.getElementById('increment_value');
+    var fromDatePart = document.getElementById('from_date_part');
+    var toDatePart = document.getElementById('to_date_part');
+    var timeStart = document.getElementById('time_start');
+    var timeEnd = document.getElementById('time_end');
+    var toDateHidden = document.getElementById('to'); // Hidden input with name="to_date"
+    var toDateMulti = document.getElementById('to_date_multi');
+    var multiDayGroup = document.getElementById('multi_day_group');
+
+    // Debug: Log if elements are not found
+    if (!toDateHidden) {
+      console.error('to_date hidden input not found!');
+    }
+    if (!fromDate) {
+      console.error('from_date input not found!');
+    }
+
+    // Default working hours (8 hours per day, can be configured)
+    var defaultWorkingHours = 8;
+    var defaultStartTime = '09:00:00';
+
+    // Get allowed increments from department/leave type (will be set via data attributes)
+    var allowedIncrements = ['full_day', 'half_day', 'hourly', 'quarter_hr']; // Default, will be overridden
+
+    // Helper functions for time calculations
+    function parseTime(timeStr) {
+      var parts = timeStr.split(':');
+      return {
+        hours: parseInt(parts[0], 10),
+        minutes: parseInt(parts[1], 10),
+        seconds: parseInt(parts[2] || 0, 10)
+      };
+    }
+
+    function formatTime(time) {
+      return pad(time.hours) + ':' + pad(time.minutes) + ':' + pad(time.seconds);
+    }
+
+    function pad(num) {
+      return (num < 10 ? '0' : '') + num;
+    }
+
+    function addHours(time, hours) {
+      var totalMinutes = time.hours * 60 + time.minutes + hours * 60;
+      return {
+        hours: Math.floor(totalMinutes / 60) % 24,
+        minutes: totalMinutes % 60,
+        seconds: time.seconds
+      };
+    }
+
+    function addMinutes(time, minutes) {
+      var totalMinutes = time.hours * 60 + time.minutes + minutes;
+      return {
+        hours: Math.floor(totalMinutes / 60) % 24,
+        minutes: totalMinutes % 60,
+        seconds: time.seconds
+      };
+    }
+
+    // Update increment type dropdown based on allowed increments
+    function updateIncrementTypeOptions() {
+      var types = [];
+      if (allowedIncrements.indexOf('full_day') !== -1) types.push({ value: 'day', label: 'Full Day' });
+      if (allowedIncrements.indexOf('half_day') !== -1) types.push({ value: 'halfday', label: 'Half Day' });
+      if (allowedIncrements.indexOf('hourly') !== -1) types.push({ value: 'hr', label: 'Hours' });
+      if (allowedIncrements.indexOf('quarter_hr') !== -1) types.push({ value: 'min', label: 'Minutes' });
+
+      // If no special increments allowed, only show day/halfday
+      if (types.length === 0 || (types.length === 1 && types[0].value === 'day')) {
+        types = [{ value: 'day', label: 'Full Day' }, { value: 'halfday', label: 'Half Day' }];
+      }
+
+      // Update increment type dropdown
+      var currentValue = incrementType.value;
+      incrementType.innerHTML = '';
+      types.forEach(function (type) {
+        var option = document.createElement('option');
+        option.value = type.value;
+        option.textContent = type.label;
+        if (type.value === currentValue) option.selected = true;
+        incrementType.appendChild(option);
+      });
+
+      // Trigger change to update value dropdown
+      updateIncrementValueOptions();
+    }
+
+    // Update increment value dropdown based on selected type
+    function updateIncrementValueOptions() {
+      var type = incrementType.value;
+      var currentValue = incrementValue.value;
+      incrementValue.innerHTML = '';
+
+      if (type === 'day') {
+        incrementValue.appendChild(createOption('1', 'All day', currentValue === '1'));
+        // Show multi-day option for full day
+        if (multiDayGroup) multiDayGroup.style.display = 'block';
+      } else {
+        // Hide multi-day option for non-full-day increments
+        if (multiDayGroup) multiDayGroup.style.display = 'none';
+        if (toDateMulti) toDateMulti.value = '';
+
+        if (type === 'halfday') {
+          incrementValue.appendChild(createOption('2', 'AM', currentValue === '2'));
+          incrementValue.appendChild(createOption('3', 'PM', currentValue === '3'));
+        } else if (type === 'hr') {
+          for (var i = 1; i <= 8; i++) {
+            incrementValue.appendChild(createOption(i.toString(), i + ' hour' + (i > 1 ? 's' : ''), currentValue === i.toString()));
+          }
+        } else if (type === 'min') {
+          incrementValue.appendChild(createOption('15', '15 minutes', currentValue === '15'));
+          incrementValue.appendChild(createOption('30', '30 minutes', currentValue === '30'));
+        }
+      }
+
+      calculateTimes();
+    }
+
+    function createOption(value, text, selected) {
+      var option = document.createElement('option');
+      option.value = value;
+      option.textContent = text;
+      if (selected) option.selected = true;
+      return option;
+    }
+
+    // Calculate time_start and time_end based on selections
+    function calculateTimes() {
+      var type = incrementType ? incrementType.value : 'day';
+      var value = incrementValue ? incrementValue.value : '1';
+
+      // Ensure fromDate has a value
+      if (!fromDate || !fromDate.value) {
+        console.warn('From date is not set');
+        return;
+      }
+
+      // Set to_date - same as from_date for single-day, or use multi-day input if provided
+      var toDateValue = fromDate.value;
+      if (type === 'day' && toDateMulti && toDateMulti.value && toDateMulti.value.trim() !== '') {
+        toDateValue = toDateMulti.value;
+      }
+
+      // Always ensure to_date is set (default to from_date if not set)
+      if (!toDateValue || toDateValue.trim() === '') {
+        toDateValue = fromDate.value;
+      }
+
+      if (toDateHidden) {
+        toDateHidden.value = toDateValue;
+      }
+
+      // Set day_part and time fields
+      if (type === 'day') {
+        fromDatePart.value = '1';
+        toDatePart.value = '1';
+        timeStart.value = '';
+        timeEnd.value = '';
+      } else if (type === 'halfday') {
+        fromDatePart.value = value; // 2 for AM, 3 for PM
+        toDatePart.value = '1'; // End is same day
+        if (value === '2') {
+          // AM: 09:00 to 13:00 (assuming 8 hour day, 4 hours for half)
+          timeStart.value = defaultStartTime;
+          timeEnd.value = '13:00:00';
+        } else {
+          // PM: 13:00 to 17:00
+          timeStart.value = '13:00:00';
+          timeEnd.value = '17:00:00';
+        }
+      } else if (type === 'hr') {
+        fromDatePart.value = '1';
+        toDatePart.value = '1';
+        var hours = parseInt(value, 10);
+        var startTime = parseTime(defaultStartTime);
+        var endTime = addHours(startTime, hours);
+        timeStart.value = formatTime(startTime);
+        timeEnd.value = formatTime(endTime);
+      } else if (type === 'min') {
+        fromDatePart.value = '1';
+        toDatePart.value = '1';
+        var minutes = parseInt(value, 10);
+        var startTime = parseTime(defaultStartTime);
+        var endTime = addMinutes(startTime, minutes);
+        timeStart.value = formatTime(startTime);
+        timeEnd.value = formatTime(endTime);
+      }
+    }
+
+    // Event listeners for increment type changes
+    if (incrementType) {
+      incrementType.addEventListener('change', function () {
+        updateIncrementValueOptions();
+      });
+    }
+
+    if (incrementValue) {
+      incrementValue.addEventListener('change', function () {
+        calculateTimes();
+      });
+    }
+
+    if (fromDate) {
+      fromDate.addEventListener('change', function () {
+        calculateTimes();
+      });
+    }
+
+    if (toDateMulti) {
+      toDateMulti.addEventListener('change', function () {
+        calculateTimes();
+      });
+    }
+
+    // Initialize on load
+    updateIncrementTypeOptions();
+
+    // Ensure to_date is set on initial load if from_date has a value
+    if (fromDate && fromDate.value) {
+      calculateTimes();
+    }
+
+    // Also set up a listener to ensure to_date is always synced when from_date changes
+    if (fromDate) {
+      // Use input event as well as change event to catch all updates
+      fromDate.addEventListener('input', function () {
+        calculateTimes();
+      });
+    }
 
     // Get company restriction data from form data attributes (safer than inline Handlebars)
     var cutoffDateStr = form.getAttribute('data-next-year-cutoff-date') || '';
@@ -211,24 +446,29 @@
       if (warningDiv) warningDiv.style.display = 'none';
     }
 
-    if (form && submitBtn && fromDate && toDate) {
+    if (form && submitBtn && fromDate) {
       // Add event listener to 'from' date input
       fromDate.addEventListener('change', function () {
-        // Update 'to' date to match 'from' date
-        toDate.value = fromDate.value;
+        calculateTimes();
         checkNextYearRestriction();
       });
 
-      // Also check when 'to' date changes
-      toDate.addEventListener('change', function () {
-        checkNextYearRestriction();
-      });
+      // Also check when 'to' date changes (for multi-day)
+      if (toDateMulti) {
+        toDateMulti.addEventListener('change', function () {
+          calculateTimes();
+          checkNextYearRestriction();
+        });
+      }
 
       // Check on initial load if date is already set
       setTimeout(checkNextYearRestriction, 100);
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+
+        // Recalculate times to ensure to_date is set correctly
+        calculateTimes();
 
         // Form validation
         if (!form.checkValidity()) {
@@ -237,9 +477,41 @@
           return;
         }
 
-        // Date range validation
-        if (new Date(fromDate.value) > new Date(toDate.value)) {
-          alert('The "To" date must be after the "From" date.');
+        // Date range validation - ensure to_date is not before from_date
+        // Get to_date from hidden field, or fallback to from_date
+        var toDateValue = (toDateHidden && toDateHidden.value) ? toDateHidden.value : fromDate.value;
+
+        // If still empty, use from_date
+        if (!toDateValue || toDateValue.trim() === '') {
+          toDateValue = fromDate.value;
+          // Update hidden field
+          if (toDateHidden) toDateHidden.value = toDateValue;
+        }
+
+        // Validate that we have both dates
+        if (!fromDate.value || !toDateValue) {
+          alert('Please select a date.');
+          return;
+        }
+
+        // Parse dates as date-only (ignore time) for comparison
+        // Handle different date formats (the datepicker might use different format)
+        var fromDateOnly = new Date(fromDate.value);
+        var toDateOnly = new Date(toDateValue);
+
+        // Check if dates are valid
+        if (isNaN(fromDateOnly.getTime()) || isNaN(toDateOnly.getTime())) {
+          console.error('Invalid date format:', { from: fromDate.value, to: toDateValue });
+          alert('Invalid date format. Please check your dates.');
+          return;
+        }
+
+        // Reset time components for date-only comparison
+        fromDateOnly.setHours(0, 0, 0, 0);
+        toDateOnly.setHours(0, 0, 0, 0);
+
+        if (toDateOnly < fromDateOnly) {
+          alert('The "To" date must be on or after the "From" date.');
           return;
         }
 
