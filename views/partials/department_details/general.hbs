@@ -30,21 +30,20 @@
       <ul class="list-group no-bottom-space">
         {{# each department.supervisors }}
 
-        <li class="list-group-item">
-          <span><a href='/users/edit/{{ this.id }}/'>{{ this.full_name }}</a> <button type="submit"
-              name="remove_supervisor_id" value="{{this.id}}" class="pull-right btn btn-link btn-xs"><i
-                class="fa fa-trash"></i> Remove</button><span>
+        <li class="list-group-item" style="min-height: 40px; padding: 10px 15px;">
+          <span><a href='/users/edit/{{ this.id }}/'>{{ this.full_name }}</a></span>
+          <button type="submit" name="remove_supervisor_id" value="{{this.id}}" class="pull-right btn btn-link btn-xs" style="margin-top: -5px;">
+            <i class="fa fa-trash"></i> Remove
+          </button>
         </li>
         {{/ each }}
 
-        <li class="list-group-item">
-          <span>&nbsp;
-            <a class="pull-right btn btn-link btn-xs" data-vpp-add-new-secondary-supervisor="1" data-toggle="modal"
-              data-target="#add_secondary_supervisers_modal" data-department_id="{{department.id}}"
-              data-department_name="{{department.name}}">
-              <i class="fa fa-plus"></i> Add new secondary supervisor
-            </a>
-            <span>
+        <li class="list-group-item" style="min-height: 40px; padding: 10px 15px;">
+          <a class="pull-right btn btn-link btn-xs" data-vpp-add-new-secondary-supervisor="1" data-toggle="modal"
+            data-target="#add_secondary_supervisers_modal" data-department_id="{{department.id}}"
+            data-department_name="{{department.name}}">
+            <i class="fa fa-plus"></i> Add new secondary supervisor
+          </a>
         </li>
       </ul>
       <span class="help-block">List of users who also could decide on leave requests from {{department.name}}
