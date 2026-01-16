@@ -82,8 +82,8 @@
         <td>{{# if this.is_admin }}Yes{{else}}{{/if}}</td>
         <td>{{# if this.is_manager }}Yes{{else}}{{/if}}</td>
         <td class="vpp-days-remaining{{#if (lt this.number_of_days_available_in_allowance 0)}} negative{{/if}}">{{
-          this.number_of_days_available_in_allowance }}</td>
-        <td class="vpp-days-used">{{this.number_of_days_taken_from_allowance}}</td>
+          format_days_and_hours this.number_of_days_available_in_allowance }}</td>
+        <td class="vpp-days-used">{{format_days_and_hours this.number_of_days_taken_from_allowance}}</td>
       </tr>
       {{/each}}
     </tbody>

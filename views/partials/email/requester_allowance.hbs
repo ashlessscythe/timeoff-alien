@@ -4,15 +4,15 @@
   </p>
   <ul style="padding-left: 20px; margin: 0;">
     <li style="margin-bottom: 6px;">
-      <strong>{{~#with requesterAllowance}}{{this.number_of_days_taken_from_allowance}}{{/with~}} days</strong> from
+      <strong>{{~#with requesterAllowance}}{{format_days_and_hours this.number_of_days_taken_from_allowance}}{{/with~}}</strong> from
       holiday allowance
     </li>
     <li style="margin-bottom: 6px;">
-      <strong>{{#with requesterAllowance}}{{this.number_of_days_available_in_allowance}}{{/with}} days</strong> still
+      <strong>{{#with requesterAllowance}}{{format_days_and_hours this.number_of_days_available_in_allowance}}{{/with}}</strong> still
       available
       {{#if (lt requesterAllowance.number_of_days_available_in_allowance 0)}}
-      <span style="color: #dc2626; font-weight: 600;">(overbooked by {{abs
-        requesterAllowance.number_of_days_available_in_allowance}} days)</span>
+      <span style="color: #dc2626; font-weight: 600;">(overbooked by {{format_days_and_hours (abs
+        requesterAllowance.number_of_days_available_in_allowance)}})</span>
       {{/if}}
     </li>
   </ul>

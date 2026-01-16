@@ -154,7 +154,7 @@
             <td data-tom-leave-dates="1"><a class="leave-details-summary-trigger" data-leave-id="{{this.id}}"
                 href="#">{{> leave_dates leave=this}}</a></td>
             <td class="leave-type">{{#if this.is_pended_revoke_leave}}REVOKE {{/if}}{{this.leave_type.name}}</td>
-            <td data-vpp="days_used">{{ this.get_deducted_days_number }}</td>
+            <td data-vpp="days_used">{{ format_days_and_hours this.get_deducted_days_number 'compact' }}</td>
             <td>{{this.employee_comment}}</td>
             <td>
               <button class="btn btn-warning" data-toggle="modal" data-target="#rejectModal" data-leave-id="{{this.id}}"

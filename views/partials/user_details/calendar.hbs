@@ -34,13 +34,19 @@
           <div class="big-number-container">
             <span class="big-number{{#if (lt ../user_allowance.vacation_remaining 0)}} negative{{/if}}"
               data-tom-days-available-in-allowance
-              style="font-size: 70px !important; color: {{#if (lt ../user_allowance.vacation_remaining 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">{{
-              ../user_allowance.vacation_remaining }}</span>
+              style="font-size: 70px !important; color: {{#if (lt ../user_allowance.vacation_remaining 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">
+              {{#with (get_days_and_hours_parts ../user_allowance.vacation_remaining)}}
+                {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span style="font-size: 35px !important; vertical-align: super;">{{this.hours}}h</span>{{/if}}
+              {{/with}}
+            </span>
             <span class="slash"
               style="font-size: 60px !important; color: #61686b !important; font-weight: 200 !important; line-height: 0.8 !important; opacity: 0.7 !important; margin: 0 !important; padding: 0 !important; display: inline-block !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;">/</span>
             <span class="big-number{{#if (lt ../user_allowance.total_personal_available 0)}} negative{{/if}}"
-              style="font-size: 70px !important; color: {{#if (lt ../user_allowance.total_personal_available 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">{{
-              ../user_allowance.total_personal_available }}</span>
+              style="font-size: 70px !important; color: {{#if (lt ../user_allowance.total_personal_available 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">
+              {{#with (get_days_and_hours_parts ../user_allowance.total_personal_available)}}
+                {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span style="font-size: 35px !important; vertical-align: super;">{{this.hours}}h</span>{{/if}}
+              {{/with}}
+            </span>
           </div>
           <div class="small-labels" style="display: flex; justify-content: center; gap: 40px; margin-top: 8px;">
             <span class="label-vac"
@@ -80,8 +86,8 @@
 
         {{# if leave_type_statistics }}
         {{# each leave_type_statistics }}
-        <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{this.days_taken}}{{# if this.limit}} out of
-            {{this.limit}}{{/if}}</span></dd>
+        <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{format_days_and_hours this.days_taken}}{{# if this.limit}} out of
+            {{format_days_and_hours this.limit}}{{/if}}</span></dd>
         {{/each}}
         {{else}}
 

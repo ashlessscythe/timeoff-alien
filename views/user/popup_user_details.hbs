@@ -6,10 +6,10 @@
 </div>
 {{#if userAllowance }}
 <div>
-  <strong>Available:</strong> [{{userAllowance.remaining_regular_allowance}} reg,
-  {{#if userAllowance.total_personal_available}}{{userAllowance.total_personal_available}}{{else}}0{{/if}} pers] days
+  <strong>Available:</strong> [{{format_days_and_hours userAllowance.remaining_regular_allowance}} reg,
+  {{#if userAllowance.total_personal_available}}{{format_days_and_hours userAllowance.total_personal_available}}{{else}}0 days{{/if}} pers]
   out of
-  {{userAllowance.total_number_of_days_in_allowance}} total.
+  {{format_days_and_hours userAllowance.total_number_of_days_in_allowance}} total.
 </div>
 {{#if (lt userAllowance.number_of_days_available_in_allowance 0)}}
 <div class="text-danger">
@@ -22,7 +22,7 @@
   <strong>Special Leave Days Taken:</strong>
   <ul>
     {{#each specialLeaveTypes}}
-    <li>{{this.name}}: {{this.days_taken}} {{#if this.days_taken_plural}}days{{else}}day{{/if}}{{#unless
+    <li>{{this.name}}: {{format_days_and_hours this.days_taken}}{{#unless
       @last}},{{/unless}}</li>
     {{/each}}
   </ul>

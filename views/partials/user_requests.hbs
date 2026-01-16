@@ -32,7 +32,7 @@
             </td>
             <td>{{as_date_from_timestamp this.createdAt}}</td>
             <td>{{ this.leave_type.name }}{{#if this.is_pended_revoke_leave}}<br>(pended revoke){{/if}}</td>
-            <td>{{ this.get_deducted_days_number }}</td>
+            <td>{{ format_days_and_hours this.get_deducted_days_number 'compact' }}</td>
             <td class="user-request-table-approver">{{#with this.approver}}{{this.full_name}}{{/with}}</td>
             <td>
               {{#if this.is_approved_leave}}
