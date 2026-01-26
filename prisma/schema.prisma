@@ -127,7 +127,7 @@ model departments {
   is_accrued_allowance    Boolean                  @default(false)
   shifts                  String?                  // JSON array of shift names: ["day"], ["day", "swing"], ["day", "swing", "night"]
   shift_hours             String?                  // JSON object: {"day": {"start": "08:00", "end": "17:00"}, "swing": {"start": "17:00", "end": "01:00"}}
-  allowed_increments      String?                  // JSON array: ["full_day", "half_day", "hourly", "quarter_hr"]
+  allowed_increments      String?                  @default("[\"full_day\",\"half_day\"]")
   created_at              DateTime                 @db.Timestamptz(6)
   updated_at              DateTime                 @db.Timestamptz(6)
   company_id              Int
