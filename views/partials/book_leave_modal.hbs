@@ -5,7 +5,9 @@
       <form method="POST" action="{{leave_modal_form_action}}" id="leaveForm" novalidate
         data-next-year-cutoff-date="{{#if logged_user.company.next_year_cutoff_date}}{{logged_user.company.next_year_cutoff_date}}{{/if}}"
         data-limited-departments="{{#if logged_user.company.limited_departments}}{{json logged_user.company.limited_departments}}{{/if}}"
-        data-user-department-id="{{#if logged_user.department_id}}{{logged_user.department_id}}{{/if}}">
+        data-user-department-id="{{#if logged_user.department_id}}{{logged_user.department_id}}{{/if}}"
+        data-logged-user-id="{{#if logged_user.id}}{{logged_user.id}}{{/if}}"
+        data-allowed-increments-by-user="{{#if allowed_increments_by_user}}{{json allowed_increments_by_user}}{{/if}}">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
               aria-hidden="true">&times;</span></button>
@@ -18,7 +20,7 @@
             <label for="employee" class="control-label">For employee:</label>
             <select class="form-control" id="employee" name="user" required>
               {{#each logged_user.supervised_users}}
-              <option value="{{@index}}" {{# if_equal this.id ../logged_user.id }}selected="selected" {{/if_equal}}>
+              <option value="{{@index}}" data-user-id="{{this.id}}" {{# if_equal this.id ../logged_user.id }}selected="selected" {{/if_equal}}>
                 {{this.full_name}}</option>
               {{/each}}
             </select>
@@ -125,6 +127,7 @@
     var fromDate = document.getElementById('from');
     var warningDiv = document.getElementById('next_year_pto_warning');
     var warningText = document.getElementById('next_year_pto_warning_text');
+    var employeeSelect = document.getElementById('employee');
 
     // New time-based leave fields
     var incrementType = document.getElementById('increment_type');
@@ -151,6 +154,7 @@
 
     // Get allowed increments from department/leave type (will be set via data attributes)
     var allowedIncrements = ['full_day', 'half_day', 'hourly', 'quarter_hr']; // Default, will be overridden
+    var allowedIncrementsByUser = {};
 
     // Helper functions for time calculations
     function parseTime(timeStr) {
@@ -186,6 +190,34 @@
         minutes: totalMinutes % 60,
         seconds: time.seconds
       };
+    }
+
+    function parseAllowedIncrementsByUser() {
+      var mappingStr = form.getAttribute('data-allowed-increments-by-user') || '{}';
+      try {
+        var parsed = mappingStr ? JSON.parse(mappingStr) : {};
+        if (parsed && typeof parsed === 'object') {
+          allowedIncrementsByUser = parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse allowed increments mapping:', e);
+      }
+    }
+
+    function getSelectedUserId() {
+      if (employeeSelect && employeeSelect.selectedOptions && employeeSelect.selectedOptions[0]) {
+        return employeeSelect.selectedOptions[0].getAttribute('data-user-id');
+      }
+      return form.getAttribute('data-logged-user-id');
+    }
+
+    function setAllowedIncrementsForUser() {
+      var userId = getSelectedUserId();
+      if (userId && allowedIncrementsByUser && allowedIncrementsByUser[userId]) {
+        allowedIncrements = allowedIncrementsByUser[userId];
+      } else {
+        allowedIncrements = ['full_day', 'half_day'];
+      }
     }
 
     // Update increment type dropdown based on allowed increments
@@ -344,7 +376,16 @@
     }
 
     // Initialize on load
+    parseAllowedIncrementsByUser();
+    setAllowedIncrementsForUser();
     updateIncrementTypeOptions();
+
+    if (employeeSelect) {
+      employeeSelect.addEventListener('change', function () {
+        setAllowedIncrementsForUser();
+        updateIncrementTypeOptions();
+      });
+    }
 
     // Ensure to_date is set on initial load if from_date has a value
     if (fromDate && fromDate.value) {

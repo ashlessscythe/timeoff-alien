@@ -13,6 +13,7 @@ const {
 } = require('@handlebars/allow-prototype-access')
 
 const i18n = require('./i18n')
+const prisma = require('./lib/prisma/client')
 
 const app = express()
 
@@ -159,6 +160,83 @@ app.use(function(req, res, next) {
   )
 
   next()
+})
+
+app.use(async function(req, res, next) {
+  if (!req.user) {
+    res.locals.allowed_increments_by_user = {}
+    return next()
+  }
+
+  try {
+    let userIds = []
+    if (req.user.admin) {
+      const activeUsers = await prisma.users.findMany({
+        where: {
+          company_id: req.user.company_id,
+          OR: [{ end_date: null }, { end_date: { gte: new Date() } }]
+        },
+        select: { id: true }
+      })
+      userIds = activeUsers.map(user => user.id)
+    } else {
+      const supervisedUsers =
+        Array.isArray(req.user.supervised_users) && req.user.supervised_users.length
+          ? req.user.supervised_users
+          : [req.user]
+
+      userIds = Array.from(
+        new Set(
+          supervisedUsers
+            .map(user => user && user.id)
+            .filter(id => typeof id === 'number')
+        )
+      )
+    }
+
+    if (userIds.length === 0) {
+      res.locals.allowed_increments_by_user = {}
+      return next()
+    }
+
+    const usersWithDepartments = await prisma.users.findMany({
+      where: { id: { in: userIds } },
+      select: {
+        id: true,
+        departments: {
+          select: {
+            allowed_increments: true
+          }
+        }
+      }
+    })
+
+    const allowedByUser = {}
+    usersWithDepartments.forEach(user => {
+      let allowed = ['full_day', 'half_day']
+      if (user.departments && user.departments.allowed_increments) {
+        try {
+          const parsed = JSON.parse(user.departments.allowed_increments)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            allowed = parsed
+          }
+        } catch (error) {
+          console.error(
+            'Failed to parse allowed_increments for user ' + user.id + ':',
+            error
+          )
+        }
+      }
+      allowedByUser[user.id] = allowed
+    })
+
+    res.locals.allowed_increments_by_user = allowedByUser
+    return next()
+  } catch (error) {
+    console.error('Failed to load allowed increments by user:', error)
+    res.locals.allowed_increments_by_user = {}
+    return next()
+  }
 })
 
 app.use(function(_req, res, next) {
