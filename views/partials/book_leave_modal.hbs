@@ -20,7 +20,8 @@
             <label for="employee" class="control-label">For employee:</label>
             <select class="form-control" id="employee" name="user" required>
               {{#each logged_user.supervised_users}}
-              <option value="{{@index}}" data-user-id="{{this.id}}" {{# if_equal this.id ../logged_user.id }}selected="selected" {{/if_equal}}>
+              <option value="{{@index}}" data-user-id="{{this.id}}" {{# if_equal this.id ../logged_user.id
+                }}selected="selected" {{/if_equal}}>
                 {{this.full_name}}</option>
               {{/each}}
             </select>
