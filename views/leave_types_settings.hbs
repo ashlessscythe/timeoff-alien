@@ -16,11 +16,15 @@
       </div>
       <div class="panel-body">
         <div class="row">
-          <div class="col-md-6">
-            <label class="control-label">Leave Type Name</label>
-            <p><em>Tick one to always be on top of the list</em></p>
+          <div class="col-md-5">
+            <label class="control-label">Leave Type</label>
+            <p><em>Tick one to pin at the top</em></p>
           </div>
-          <div class="col-md-offset-3 col-md-2">
+          <div class="col-md-4">
+            <label class="control-label">Options</label>
+            <p><em>Behavior and eligibility</em></p>
+          </div>
+          <div class="col-md-2">
             <label class="control-label">Limit</label>
             <p><em>Days/year</em></p>
           </div>
@@ -39,7 +43,7 @@
 
           {{#each leave_types}}
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-5">
 
               <div class="input-group">
                 <span class="input-group-addon">
@@ -58,31 +62,54 @@
 
             </div>
 
-            <div class="col-md-3">
-              <div>
-                <input name="use_allowance__{{ this.id }}" id="use_allowance__{{ this.id }}" type="checkbox" {{#if
-                  use_allowance}}checked="checked" {{/if}} data-tom-leave-type-order="allowance_{{@index}}">
-                <label for="use_allowance__{{ this.id }}" class="control-label">Use allowance</label>
-              </div>
-              <div>
-                <input name="use_personal__{{ this.id }}" id="use_personal__{{ this.id }}" type="checkbox" {{#if
-                  use_personal}}checked="checked" {{/if}} data-tom-leave-type-order="personal_{{@index}}">
-                <label for="use_personal__{{ this.id }}" class="control-label">Use Personal</label>
-              </div>
-              <div>
-                <input name="auto_approve__{{ this.id }}" id="auto_approve__{{ this.id }}" type="checkbox" {{#if
-                  auto_approve}}checked="checked" {{/if}} data-tom-leave-type-order="approve_{{@index}}">
-                <label for="auto_approve__{{ this.id }}" class="control-label">Auto approve</label>
-              </div>
-              <div>
-                <input name="manager_only__{{ this.id }}" id="manager_only__{{ this.id }}" type="checkbox" {{#if
-                  manager_only}}checked="checked" {{/if}} data-tom-leave-type-order="manager_{{@index}}">
-                <label for="manager_only__{{ this.id }}" class="control-label">Manager Only</label>
-              </div>
-              <div>
-                <input name="is_special__{{ this.id }}" id="is_special__{{ this.id }}" type="checkbox" {{#if
-                  is_special}}checked="checked" {{/if}} data-tom-leave-type-order="special_{{@index}}">
-                <label for="is_special__{{ this.id }}" class="control-label">Special Leave</label>
+            <div class="col-md-4">
+              <div class="row">
+                <div class="col-xs-6">
+                  <div class="checkbox">
+                    <label class="control-label">
+                      <input name="use_allowance__{{ this.id }}" id="use_allowance__{{ this.id }}" type="checkbox" {{#if
+                        use_allowance}}checked="checked" {{/if}} data-tom-leave-type-order="allowance_{{@index}}">
+                      Use allowance
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label class="control-label">
+                      <input name="use_personal__{{ this.id }}" id="use_personal__{{ this.id }}" type="checkbox" {{#if
+                        use_personal}}checked="checked" {{/if}} data-tom-leave-type-order="personal_{{@index}}">
+                      Use personal
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label class="control-label">
+                      <input name="auto_approve__{{ this.id }}" id="auto_approve__{{ this.id }}" type="checkbox" {{#if
+                        auto_approve}}checked="checked" {{/if}} data-tom-leave-type-order="approve_{{@index}}">
+                      Auto approve
+                    </label>
+                  </div>
+                </div>
+                <div class="col-xs-6">
+                  <div class="checkbox">
+                    <label class="control-label">
+                      <input name="manager_only__{{ this.id }}" id="manager_only__{{ this.id }}" type="checkbox" {{#if
+                        manager_only}}checked="checked" {{/if}} data-tom-leave-type-order="manager_{{@index}}">
+                      Manager only
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label class="control-label">
+                      <input name="is_special__{{ this.id }}" id="is_special__{{ this.id }}" type="checkbox" {{#if
+                        is_special}}checked="checked" {{/if}} data-tom-leave-type-order="special_{{@index}}">
+                      Special leave
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label class="control-label">
+                      <input name="allow_non_default_increments__{{ this.id }}" id="allow_non_default_increments__{{ this.id }}" type="checkbox" {{#if
+                        allow_non_default_increments}}checked="checked" {{/if}} data-tom-leave-type-order="non_default_increments_{{@index}}">
+                      Non-default increments
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-md-2">

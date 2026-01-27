@@ -173,6 +173,7 @@ model leave_types {
   manager_only      Boolean   @default(false)
   is_special        Boolean   @default(false)
   allowed_increments String?  // JSON array: ["full_day", "half_day", "hourly", "quarter_hr"]
+  allow_non_default_increments Boolean @default(false)
   companies        companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
   leaves           leaves[]
 }

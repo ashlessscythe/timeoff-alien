@@ -18,15 +18,50 @@
         </div>
 
         <div class="form-group">
-          <input type="checkbox" id="leave_type_use_allovance_new" name="use_allowance__new">&nbsp;
-          <label for="leave_type_use_allovance_new" class="control-label">Use allowance</label>
-          <p><em>If checked leaves of this type are going to be counted towards employee's annual holiday allowance.</em></p>
-        </div>
-
-        <div class="form-group">
-          <input type="checkbox" id="leave_type_auto_approve_new" name="auto_approve__new">&nbsp;
-          <label for="leave_type_auto_approve_new" class="control-label">Auto approve</label>
-          <p><em>If checked leaves of this type will not require supervisor approval.</em></p>
+          <label class="control-label">Options</label>
+          <div class="row">
+            <div class="col-xs-6">
+              <div class="checkbox">
+                <label class="control-label" for="leave_type_use_allovance_new">
+                  <input type="checkbox" id="leave_type_use_allovance_new" name="use_allowance__new">
+                  Use allowance
+                </label>
+              </div>
+              <div class="checkbox">
+                <label class="control-label" for="leave_type_use_personal_new">
+                  <input type="checkbox" id="leave_type_use_personal_new" name="use_personal__new">
+                  Use personal
+                </label>
+              </div>
+              <div class="checkbox">
+                <label class="control-label" for="leave_type_auto_approve_new">
+                  <input type="checkbox" id="leave_type_auto_approve_new" name="auto_approve__new">
+                  Auto approve
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <div class="checkbox">
+                <label class="control-label" for="leave_type_manager_new">
+                  <input type="checkbox" id="leave_type_manager_new" name="manager_only__new">
+                  Manager only
+                </label>
+              </div>
+              <div class="checkbox">
+                <label class="control-label" for="leave_type_special_new">
+                  <input type="checkbox" id="leave_type_special_new" name="is_special__new">
+                  Special leave
+                </label>
+              </div>
+              <div class="checkbox">
+                <label class="control-label" for="leave_type_allow_non_default_increments_new">
+                  <input type="checkbox" id="leave_type_allow_non_default_increments_new" name="allow_non_default_increments__new">
+                  Non-default increments
+                </label>
+              </div>
+            </div>
+          </div>
+          <p><em>Choose how requests behave for this leave type.</em></p>
         </div>
 
         <div class="form-group">
@@ -42,12 +77,6 @@
           <label for="leave_type_limit_new" class="control-label">Limit:</label>
           <input type="number" class="form-control" id="leave_type_limit_new" name="limit__new">
           <p><em>If set to non-zero value determines maximum number of days of new leave type each employee could take during the year.</em></p>
-        </div>
-
-        <div class="form-group">
-          <label for="leave_type_manager_new" class="control-label">Manager Only</label>
-          <input type="checkbox" id="leave_type_manager_new" name="manager_only__new">&nbsp;
-          <p><em>If checked, this leave type can only be used by managers/supervisors.</em></p>
         </div>
 
       </div>
