@@ -7,7 +7,8 @@
         data-limited-departments="{{#if logged_user.company.limited_departments}}{{json logged_user.company.limited_departments}}{{/if}}"
         data-user-department-id="{{#if logged_user.department_id}}{{logged_user.department_id}}{{/if}}"
         data-logged-user-id="{{#if logged_user.id}}{{logged_user.id}}{{/if}}"
-        data-allowed-increments-by-user="{{#if allowed_increments_by_user}}{{json allowed_increments_by_user}}{{/if}}">
+        data-allowed-increments-by-user="{{#if allowed_increments_by_user}}{{json allowed_increments_by_user}}{{/if}}"
+        data-allowed-non-default-increments-by-leave-type="{{#if allowed_non_default_increments_by_leave_type}}{{json allowed_non_default_increments_by_leave_type}}{{/if}}">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
               aria-hidden="true">&times;</span></button>
@@ -63,6 +64,11 @@
                 <select class="form-control" id="increment_value" name="increment_value" required>
                   <option value="1" selected="selected">All day</option>
                 </select>
+              </div>
+              <div class="col-md-12">
+                <small id="non_default_increment_hint" style="display: none; color: #d9534f; opacity: 0.6;">
+                  This leave type only allows full or half day increments.
+                </small>
               </div>
               <div class="col-md-5">
                 <div class="input-group">
@@ -129,6 +135,8 @@
     var warningDiv = document.getElementById('next_year_pto_warning');
     var warningText = document.getElementById('next_year_pto_warning_text');
     var employeeSelect = document.getElementById('employee');
+    var leaveTypeSelect = document.getElementById('leave_type');
+    var nonDefaultHint = document.getElementById('non_default_increment_hint');
 
     // New time-based leave fields
     var incrementType = document.getElementById('increment_type');
@@ -156,6 +164,8 @@
     // Get allowed increments from department/leave type (will be set via data attributes)
     var allowedIncrements = ['full_day', 'half_day', 'hourly', 'quarter_hr']; // Default, will be overridden
     var allowedIncrementsByUser = {};
+    var allowedNonDefaultByLeaveType = {};
+    var userAllowsNonDefaultIncrements = false;
 
     // Helper functions for time calculations
     function parseTime(timeStr) {
@@ -205,6 +215,18 @@
       }
     }
 
+    function parseAllowedNonDefaultByLeaveType() {
+      var mappingStr = form.getAttribute('data-allowed-non-default-increments-by-leave-type') || '{}';
+      try {
+        var parsed = mappingStr ? JSON.parse(mappingStr) : {};
+        if (parsed && typeof parsed === 'object') {
+          allowedNonDefaultByLeaveType = parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse allowed non-default increments mapping:', e);
+      }
+    }
+
     function getSelectedUserId() {
       if (employeeSelect && employeeSelect.selectedOptions && employeeSelect.selectedOptions[0]) {
         return employeeSelect.selectedOptions[0].getAttribute('data-user-id');
@@ -218,6 +240,56 @@
         allowedIncrements = allowedIncrementsByUser[userId];
       } else {
         allowedIncrements = ['full_day', 'half_day'];
+      }
+    }
+
+    function getSelectedLeaveTypeId() {
+      if (leaveTypeSelect && leaveTypeSelect.value) {
+        return leaveTypeSelect.value;
+      }
+      return null;
+    }
+
+    function allowNonDefaultForSelectedLeaveType() {
+      var leaveTypeId = getSelectedLeaveTypeId();
+      if (!leaveTypeId) return false;
+      if (
+        allowedNonDefaultByLeaveType &&
+        Object.prototype.hasOwnProperty.call(
+          allowedNonDefaultByLeaveType,
+          leaveTypeId
+        )
+      ) {
+        return !!allowedNonDefaultByLeaveType[leaveTypeId];
+      }
+      return false;
+    }
+
+    function setAllowedIncrementsForSelection() {
+      setAllowedIncrementsForUser();
+      userAllowsNonDefaultIncrements =
+        allowedIncrements.indexOf('hourly') !== -1 ||
+        allowedIncrements.indexOf('quarter_hr') !== -1;
+      if (!allowNonDefaultForSelectedLeaveType()) {
+        allowedIncrements = allowedIncrements.filter(function(inc) {
+          return inc === 'full_day' || inc === 'half_day';
+        });
+        if (allowedIncrements.length === 0) {
+          allowedIncrements = ['full_day', 'half_day'];
+        }
+      }
+    }
+
+    function updateNonDefaultHint() {
+      if (!nonDefaultHint) return;
+      if (!userAllowsNonDefaultIncrements) {
+        nonDefaultHint.style.display = 'none';
+        return;
+      }
+      if (allowNonDefaultForSelectedLeaveType()) {
+        nonDefaultHint.style.display = 'none';
+      } else {
+        nonDefaultHint.style.display = 'inline';
       }
     }
 
@@ -378,13 +450,24 @@
 
     // Initialize on load
     parseAllowedIncrementsByUser();
-    setAllowedIncrementsForUser();
+    parseAllowedNonDefaultByLeaveType();
+    setAllowedIncrementsForSelection();
     updateIncrementTypeOptions();
+    updateNonDefaultHint();
 
     if (employeeSelect) {
       employeeSelect.addEventListener('change', function () {
-        setAllowedIncrementsForUser();
+        setAllowedIncrementsForSelection();
         updateIncrementTypeOptions();
+        updateNonDefaultHint();
+      });
+    }
+
+    if (leaveTypeSelect) {
+      leaveTypeSelect.addEventListener('change', function () {
+        setAllowedIncrementsForSelection();
+        updateIncrementTypeOptions();
+        updateNonDefaultHint();
       });
     }
 
