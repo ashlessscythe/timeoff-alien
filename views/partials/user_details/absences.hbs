@@ -72,7 +72,8 @@
           <dt>Absences used this year grouped by leave types</dt>
           {{# if leave_type_statistics }}
           {{# each leave_type_statistics }}
-          <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{format_days_and_hours this.days_taken}}{{# if this.limit}} out of
+          <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{format_days_and_hours this.days_taken}}{{#
+              if this.limit}} out of
               {{format_days_and_hours this.limit}}{{/if}}</span></dd>
           {{/each}}
           {{else}}
@@ -89,7 +90,7 @@
     <div class="form-group">
       <label for="carried_over_allowance_inp" class="control-label">Allowance carried over from previous year</label>
       <div class="input-group col-md-4">
-        <input class="form-control" readonly id="carried_over_allowance_inp" type="number" step="0.5"
+        <input class="form-control" readonly id="carried_over_allowance_inp" type="number" step="0.125"
           name="carried_over_allowance"
           value="{{#if carried_over_allowance }}{{carried_over_allowance}}{{else}}0{{/if}}"
           aria-describedby="carried_over_allowance_help">
@@ -103,32 +104,129 @@
 
     <div class="form-group">
       <label for="adjustment_inp" class="control-label">Allowance adjustment in {{current_year}}</label>
-      <div class="input-group col-md-4">
-        <input class="form-control" id="adjustment_inp" type="number" step="0.5" name="adjustment"
-          value="{{#if employee_adjustment }}{{employee_adjustment}}{{else}}0{{/if}}"
-          aria-describedby="adjustment_help">
-        <span class="input-group-addon">working days</span>
-      </div>
-      <div id="adjustment_help" class="help-block">
-        <div>Tune allowance for this user in {{current_year}}.</div>
-        <div>Can be negative as well.</div>
-        <div>If no value is set for this year, the last adjustment from previous years will be used</div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="input-group">
+            <input class="form-control" id="adjustment_inp" type="number" step="0.125" name="adjustment"
+              value="{{#if employee_adjustment }}{{employee_adjustment}}{{else}}0{{/if}}"
+              aria-describedby="adjustment_help">
+            <span class="input-group-addon">working days</span>
+          </div>
+          <div id="adjustment_help" class="help-block">
+            <div>Tune allowance for this user in {{current_year}}.</div>
+            <div>Can be negative as well.</div>
+            <div>If no value is set for this year, the last adjustment from previous years will be used</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <table class="table table-condensed table-bordered small">
+            <thead>
+              <tr>
+                <th>Hours</th>
+                <th>Days</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>0.125</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>0.25</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>0.375</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>0.5</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>0.625</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>0.75</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>0.875</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>1.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <div class="form-group">
       <label for="personal_adjustment_inp" class="control-label">Personal days adjustment in {{current_year}}</label>
-      <div class="input-group col-md-4">
-        <input class="form-control" id="personal_adjustment_inp" type="number" step="0.5" name="personal_adjustment"
-          value="{{#if employee_personal_adjustment }}{{employee_personal_adjustment}}{{else}}0{{/if}}"
-          aria-describedby="personal_adjustment_help">
-        <span class="input-group-addon">working days</span>
-      </div>
-      <div id="personal_adjustment_help" class="help-block">
-        <div>Adjust personal days allowance for this user in {{current_year}}.</div>
-        <div>This is a subset of the total allowance adjustment above.</div>
-        <div>Can be negative as well.</div>
-        <div>If no value is set for this year, the last adjustment from previous years will be used</div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="input-group">
+            <input class="form-control" id="personal_adjustment_inp" type="number" step="0.125"
+              name="personal_adjustment"
+              value="{{#if employee_personal_adjustment }}{{employee_personal_adjustment}}{{else}}0{{/if}}"
+              aria-describedby="personal_adjustment_help">
+            <span class="input-group-addon">working days</span>
+          </div>
+          <div id="personal_adjustment_help" class="help-block">
+            <div>Adjust personal days allowance for this user in {{current_year}}.</div>
+            <div>This is a subset of the total allowance adjustment above.</div>
+            <div>Can be negative as well.</div>
+            <div>If no value is set for this year, the last adjustment from previous years will be used</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <table class="table table-condensed table-bordered small">
+            <thead>
+              <tr>
+                <th>Hours</th>
+                <th>Days</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>0.125</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>0.25</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>0.375</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>0.5</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>0.625</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>0.75</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>0.875</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>1.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
