@@ -5,7 +5,7 @@ Leave request decision is made
 
   {{> email/leave_comments comments=comments }}
 
-<p>You just processed {{#if was_pended_revoke}}cancellation of {{/if}}leave request {{>leave_request_detail leave=leave
+<p>You just processed {{#if was_pended_revoke}}cancellation of {{/if}}leave request {{> email/leave_request_detail leave=leave
   }} for {{#with requester}}{{this.full_name}}{{/with}}: to {{action}}.</p>
 
 <!-- Conditionally add the approver's comment here -->
