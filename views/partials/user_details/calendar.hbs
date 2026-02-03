@@ -36,7 +36,9 @@
               data-tom-days-available-in-allowance
               style="font-size: 70px !important; color: {{#if (lt ../user_allowance.vacation_remaining 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">
               {{#with (get_days_and_hours_parts ../user_allowance.vacation_remaining)}}
-                {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span style="font-size: 35px !important; vertical-align: super;">{{this.hours}}h</span>{{/if}}
+              {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless
+              this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span
+                style="font-size: 35px !important; vertical-align: super;">{{this.hours}}h</span>{{/if}}
               {{/with}}
             </span>
             <span class="slash"
@@ -44,7 +46,9 @@
             <span class="big-number{{#if (lt ../user_allowance.total_personal_available 0)}} negative{{/if}}"
               style="font-size: 70px !important; color: {{#if (lt ../user_allowance.total_personal_available 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">
               {{#with (get_days_and_hours_parts ../user_allowance.total_personal_available)}}
-                {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span style="font-size: 35px !important; vertical-align: super;">{{this.hours}}h</span>{{/if}}
+              {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless
+              this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span
+                style="font-size: 35px !important; vertical-align: super;">{{this.hours}}h</span>{{/if}}
               {{/with}}
             </span>
           </div>
@@ -65,8 +69,8 @@
           </a>
         </dd>
         {{/if}}
-        <dd>out of <span data-tom-total-days-in-allowance>{{ ../user_allowance.total_number_of_days_in_allowance
-            }}</span> in total allowance</dd>
+        <dd>out of <span data-tom-total-days-in-allowance>{{ format_days_and_hours
+            ../user_allowance.total_number_of_days_in_allowance }}</span> in total allowance</dd>
         {{#if ../pending_requests_count}}
         <dd class="text-info small">{{ ../pending_requests_count }} request{{#if (gt ../pending_requests_count
           1)}}s{{/if}}
@@ -86,7 +90,8 @@
 
         {{# if leave_type_statistics }}
         {{# each leave_type_statistics }}
-        <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{format_days_and_hours this.days_taken}}{{# if this.limit}} out of
+        <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{format_days_and_hours this.days_taken}}{{# if
+            this.limit}} out of
             {{format_days_and_hours this.limit}}{{/if}}</span></dd>
         {{/each}}
         {{else}}

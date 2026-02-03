@@ -17,13 +17,14 @@ It relies on following entries in context:
   <dd>
     <em>Regular Allowance</em>
     <span class="pull-right" data-content="Non-personal allowance." data-placement="top" data-toggle="popover"
-      data-trigger="focus hover" id='nominalAllowancePart'>{{ user_allowance.number_of_regular_allowance }}</span>
+      data-trigger="focus hover" id='nominalAllowancePart'>{{ format_days_and_hours
+      user_allowance.number_of_regular_allowance }}</span>
   </dd>
   <dd>
     <em>Personal Allowance</em>
     <span class="pull-right" data-content="Personal days by department plus any personal adjustment."
       data-placement="top" data-toggle="popover" data-trigger="focus hover" id='nominalPersonalPart'>{{
-      sum user_allowance.nominal_personal user_allowance.personal_adjustment
+      format_days_and_hours (sum user_allowance.nominal_personal user_allowance.personal_adjustment)
       }}</span>
   </dd>
   {{#if logged_user.admin }}
@@ -32,18 +33,19 @@ It relies on following entries in context:
     <span class="pull-right"
       data-content="Allowance carried over from previous year. Note: this amount is calculated on the very first day of the year."
       data-placement="top" data-toggle="popover" data-trigger="focus hover" id="allowanceCarriedOverPart">{{
-      user_allowance.carry_over }}</span>
+      format_days_and_hours user_allowance.carry_over }}</span>
   </dd>
   <dd>
     <em>Individual adjustment</em>
     <span class="pull-right" data-content="Adjustment to allowance done by admin user." data-placement="top"
-      data-toggle="popover" data-trigger="focus hover">{{ user_allowance.manual_adjustment }}</span>
+      data-toggle="popover" data-trigger="focus hover">{{ format_days_and_hours user_allowance.manual_adjustment
+      }}</span>
   </dd>
   <dd>
     <em>Personal days adjustment</em>
     <span class="pull-right" data-content="Adjustment to personal days allowance done by admin user."
-      data-placement="top" data-toggle="popover" data-trigger="focus hover">{{ user_allowance.personal_adjustment
-      }}</span>
+      data-placement="top" data-toggle="popover" data-trigger="focus hover">{{ format_days_and_hours
+      user_allowance.personal_adjustment }}</span>
   </dd>
   {{/if}}
   {{#if user_allowance.employement_range_adjustment}}
@@ -52,7 +54,7 @@ It relies on following entries in context:
     <span class="pull-right"
       data-content="Automatic adjustment to allowance based on employee's start and end day of employment."
       data-placement="top" data-toggle="popover" data-trigger="focus hover">{{
-      user_allowance.employement_range_adjustment }}</span>
+      format_days_and_hours user_allowance.employement_range_adjustment }}</span>
   </dd>
   {{/if}}
   <dd>
@@ -66,8 +68,8 @@ It relies on following entries in context:
     <em>Locked so far</em>
     <span class="pull-right"
       data-content="Number of unavailable days in allowance due to accrual nature of vacation entitlement."
-      data-placement="top" data-toggle="popover" data-trigger="focus hover">{{ user_allowance.accrued_adjustment
-      }}</span>
+      data-placement="top" data-toggle="popover" data-trigger="focus hover">{{ format_days_and_hours
+      user_allowance.accrued_adjustment }}</span>
   </dd>
   {{/ if}}
 </dl>

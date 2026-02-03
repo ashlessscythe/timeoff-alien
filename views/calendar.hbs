@@ -63,7 +63,8 @@
         </a>
       </dd>
       {{/if}}
-      <dd>out of <span data-tom-total-days-in-allowance>{{ ../user_allowance.total_number_of_days_in_allowance }}</span>
+      <dd>out of <span data-tom-total-days-in-allowance>{{format_days_and_hours
+          ../user_allowance.total_number_of_days_in_allowance }}</span>
         in total allowance</dd>
       {{#if ../pending_requests_count}}
       <dd class="text-info small">{{ ../pending_requests_count }} request{{#if (gt ../pending_requests_count
