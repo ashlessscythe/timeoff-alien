@@ -12,6 +12,7 @@
     "sqlite3": "^5.1.7"
   },
   "overrides": {
+    "diff": ">=8.0.3",
     "axios": ">=0.28.2",
     "tar": ">=2.1.2",
     "follow-redirects": ">=1.15.6",
