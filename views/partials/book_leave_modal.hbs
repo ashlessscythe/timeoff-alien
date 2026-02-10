@@ -97,7 +97,7 @@
               <input type="text" class="form-control book-leave-to-input" id="to_date_multi" data-provide="datepicker"
                 data-date-autoclose="1"
                 data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
-                data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_end}}"
+                data-date-week-start="{{logged_user.company.first_day_of_week}}" value=""
                 aria-label="To date">
             </div>
             <p class="help-block"><em>Leave blank for single day. Only used for multi-day full day requests.</em></p>
