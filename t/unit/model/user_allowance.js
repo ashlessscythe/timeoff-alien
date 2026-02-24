@@ -17,7 +17,7 @@ describe('employement_range_adjustment attribute', function() {
         now: moment('2016-07-20'),
         number_of_days_taken_from_allowance: 0,
         manual_adjustment: 0,
-      personal_adjustment: 0,
+        personal_adjustment: 0,
         personal_adjustment: 0,
         carry_over: 0,
         nominal_allowance: 20,

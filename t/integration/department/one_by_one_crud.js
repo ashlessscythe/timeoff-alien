@@ -57,7 +57,8 @@ describe('Check departments list page', function() {
       .then(function(inputs) {
         expect(inputs.length).to.be.eql(1)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure list of departments has links for editing each individual one', function(done) {
@@ -69,7 +70,8 @@ describe('Check departments list page', function() {
           'We expect to have two edit links per department'
         )
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure department has a link to its Manager edit page', function(done) {
@@ -88,7 +90,8 @@ describe('Check departments list page', function() {
           'Link to manager indeed contains ID'
         )
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Add new "AAA" department', function(done) {
@@ -145,7 +148,8 @@ describe('Check departments list page', function() {
       .then(function(texts) {
         expect(texts).to.have.eql(['AAA', 'Sales'], 'Check the order of names')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Add new "ZZZ" department', function(done) {
@@ -195,13 +199,17 @@ describe('Check departments list page', function() {
           'Check the order of names'
         )
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })
 
@@ -284,7 +292,8 @@ describe('Edit individual department via department details page', function() {
         })
         .then(function() {
           done()
-        }).catch(done)
+        })
+        .catch(done)
     })
   })
 
@@ -371,7 +380,8 @@ describe('Edit individual department via department details page', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure that system prevents deleting department', function(done) {
@@ -386,7 +396,8 @@ describe('Edit individual department via department details page', function() {
           'App complains about non empty department'
         )
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Go to departments list by clicking on corresponding link', function(done) {
@@ -397,7 +408,8 @@ describe('Edit individual department via department details page', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Add new "AAA" department', function(done) {
@@ -449,7 +461,8 @@ describe('Edit individual department via department details page', function() {
           'The department ID is number'
         )
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open user A details page', function(done) {
@@ -556,7 +569,8 @@ describe('Edit individual department via department details page', function() {
       .then(function(txt) {
         expect(txt).to.match(/Department was successfully removed/)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure that we have landed on correct page', function(done) {
@@ -570,9 +584,12 @@ describe('Edit individual department via department details page', function() {
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })
 
@@ -642,7 +659,8 @@ describe('CRUD for department secondary supervisers', function() {
         })
         .then(function() {
           done()
-        }).catch(done)
+        })
+        .catch(done)
     })
   })
 
@@ -671,7 +689,8 @@ describe('CRUD for department secondary supervisers', function() {
       .then(function(text) {
         expect(text).to.match(/Add new employee/)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Create second user B', function(done) {
@@ -746,7 +765,8 @@ describe('CRUD for department secondary supervisers', function() {
           'No remove buttons for supervisers as there are not any'
         )
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it(
@@ -811,7 +831,8 @@ describe('CRUD for department secondary supervisers', function() {
       .then(function(val) {
         expect(val).to.be.eql(String(user_id_B), 'It is indeed user B')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open "add supervisors" pop up again and ensure that user B has tick next to it and user C does not have it', function(done) {

@@ -18,7 +18,9 @@ const logout_user_func = async function(args) {
   await meMenu.click()
 
   // Make sure that Logout link exists
-  const logoutLinks = await driver.findElements(By.css(logout_link_css_selector))
+  const logoutLinks = await driver.findElements(
+    By.css(logout_link_css_selector)
+  )
   expect(logoutLinks.length > 0).to.be.equal(true)
 
   // Click logout link
@@ -27,7 +29,9 @@ const logout_user_func = async function(args) {
   await driver.wait(until.elementLocated(By.css('body')), 1000)
 
   // Check that there is no more Logout link
-  const logoutLinksAfter = await driver.findElements(By.css(logout_link_css_selector))
+  const logoutLinksAfter = await driver.findElements(
+    By.css(logout_link_css_selector)
+  )
   expect(logoutLinksAfter.length > 0).to.be.equal(false)
 
   return { driver }

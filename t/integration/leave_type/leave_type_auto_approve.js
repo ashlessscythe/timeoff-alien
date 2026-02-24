@@ -143,7 +143,8 @@ describe('Auto approval leave type', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Submit new leave request from non admin user', function(done) {
@@ -184,7 +185,8 @@ describe('Auto approval leave type', function() {
       .then(function(status) {
         expect(status).to.be.eq('Approved')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from user B', function(done) {
@@ -243,7 +245,8 @@ describe('Auto approval leave type', function() {
         expect(subjects).to.contain('New leave was added and auto approved.')
         expect(subjects).to.contain('New leave was added')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from admin user', function(done) {
@@ -292,7 +295,8 @@ describe('Auto approval leave type', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure that it is gone without need to be approved', function(done) {
@@ -301,7 +305,8 @@ describe('Auto approval leave type', function() {
       .then(function(elements) {
         expect(elements.length).to.be.eq(0)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from user B', function(done) {
@@ -338,7 +343,8 @@ describe('Auto approval leave type', function() {
       .then(function(elements) {
         expect(elements.length).to.be.eq(0)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open requests page', function(done) {
@@ -378,12 +384,16 @@ describe('Auto approval leave type', function() {
         expect(subjects).to.contain('Leave was revoked and auto approved')
         expect(subjects).to.contain('Leave was revoked')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

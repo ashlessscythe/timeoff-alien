@@ -182,7 +182,8 @@ app.use(async function(req, res, next) {
       userIds = activeUsers.map(user => user.id)
     } else {
       const supervisedUsers =
-        Array.isArray(req.user.supervised_users) && req.user.supervised_users.length
+        Array.isArray(req.user.supervised_users) &&
+        req.user.supervised_users.length
           ? req.user.supervised_users
           : [req.user]
 
@@ -202,16 +203,16 @@ app.use(async function(req, res, next) {
 
     const [usersWithDepartments, leaveTypes] = await Promise.all([
       prisma.users.findMany({
-      where: { id: { in: userIds } },
-      select: {
-        id: true,
-        departments: {
-          select: {
-            allowed_increments: true
+        where: { id: { in: userIds } },
+        select: {
+          id: true,
+          departments: {
+            select: {
+              allowed_increments: true
+            }
           }
         }
-      }
-    }),
+      }),
       prisma.leave_types.findMany({
         where: { company_id: req.user.company_id },
         select: { id: true, allow_non_default_increments: true }
@@ -240,10 +241,11 @@ app.use(async function(req, res, next) {
     res.locals.allowed_increments_by_user = allowedByUser
     const allowNonDefaultByLeaveType = {}
     leaveTypes.forEach(leaveType => {
-      allowNonDefaultByLeaveType[leaveType.id] = !!leaveType.allow_non_default_increments
+      allowNonDefaultByLeaveType[
+        leaveType.id
+      ] = !!leaveType.allow_non_default_increments
     })
-    res.locals.allowed_non_default_increments_by_leave_type =
-      allowNonDefaultByLeaveType
+    res.locals.allowed_non_default_increments_by_leave_type = allowNonDefaultByLeaveType
     return next()
   } catch (error) {
     console.error('Failed to load allowed increments by user:', error)

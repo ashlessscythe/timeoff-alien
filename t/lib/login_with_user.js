@@ -15,7 +15,10 @@ const login_with_user_func = async function(args) {
   const driver = args.driver || build_driver()
 
   // Make sure we are in desktop version
-  await driver.manage().window().setSize(1024, 768)
+  await driver
+    .manage()
+    .window()
+    .setSize(1024, 768)
 
   // Open front page
   await driver.get(application_host)
@@ -36,10 +39,14 @@ const login_with_user_func = async function(args) {
   expect(h1Text).to.be.equal('Login')
 
   // Fill login form
-  const usernameInput = await driver.findElement(By.css('input[name="username"]'))
+  const usernameInput = await driver.findElement(
+    By.css('input[name="username"]')
+  )
   await usernameInput.sendKeys(user_email)
-  
-  const passwordInput = await driver.findElement(By.css('input[name="password"]'))
+
+  const passwordInput = await driver.findElement(
+    By.css('input[name="password"]')
+  )
   await passwordInput.sendKeys(password)
 
   // Submit login button

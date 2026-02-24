@@ -123,13 +123,14 @@ describe('Basic audit for user changes', function() {
   })
 
   it('Fetch the Audit feed from integration API', function(done) {
-    axios.get(`${applicationHost}integration/v1/audit`, {
-      data: '{}',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    })
+    axios
+      .get(`${applicationHost}integration/v1/audit`, {
+        data: '{}',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then(res => res.data)
       .then(obj => {
         const twoEvents = obj

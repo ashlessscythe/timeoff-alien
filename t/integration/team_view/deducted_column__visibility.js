@@ -252,7 +252,8 @@ describe('Check that values for new columns are shown only for employess current
 
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from user A (admin)', function(done) {
@@ -316,7 +317,8 @@ describe('Check that values for new columns are shown only for employess current
 
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from user B', function(done) {
@@ -380,7 +382,8 @@ describe('Check that values for new columns are shown only for employess current
 
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {

@@ -124,7 +124,8 @@ describe('Check filtering on "users" page', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('... and make sure only user from IT department is shown', function(done) {
@@ -137,7 +138,8 @@ describe('Check filtering on "users" page', function() {
       .then(function(text) {
         expect(text).to.be.equal('IT')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Click on "Sales"', function(done) {
@@ -151,7 +153,8 @@ describe('Check filtering on "users" page', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('... department and make sure that only one user from that department is shown', function(done) {
@@ -164,7 +167,8 @@ describe('Check filtering on "users" page', function() {
       .then(function(text) {
         expect(text).to.be.equal('Sales')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Click on "All" filter', function(done) {
@@ -176,7 +180,8 @@ describe('Check filtering on "users" page', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('... and make sure that both users are presenyed', function(done) {
@@ -187,8 +192,11 @@ describe('Check filtering on "users" page', function() {
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

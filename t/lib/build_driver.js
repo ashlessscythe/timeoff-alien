@@ -2,7 +2,7 @@ const webdriver = require('selenium-webdriver')
 const chrome = require('selenium-webdriver/chrome')
 const firefox = require('selenium-webdriver/firefox')
 
-module.exports = function () {
+module.exports = function() {
   // Default to Chrome, but allow Firefox if specified
   const browser = process.env.USE_FIREFOX ? 'firefox' : 'chrome'
 

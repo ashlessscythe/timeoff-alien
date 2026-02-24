@@ -84,9 +84,9 @@ $(document).ready(function() {
   $(function() {
     // Check if company first day of week is available in the page
     if (typeof window.companyFirstDayOfWeek !== 'undefined') {
-      $.fn.datepicker.defaults.weekStart = window.companyFirstDayOfWeek;
+      $.fn.datepicker.defaults.weekStart = window.companyFirstDayOfWeek
     }
-  });
+  })
 })(jQuery)
 
 $(function() {

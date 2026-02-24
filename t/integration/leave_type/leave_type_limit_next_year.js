@@ -185,7 +185,8 @@ describe('Leave type limits for next year: ' + next_year, function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from admin account', function(done) {
@@ -247,8 +248,11 @@ describe('Leave type limits for next year: ' + next_year, function() {
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

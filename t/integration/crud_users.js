@@ -50,49 +50,59 @@ describe('CRUD for users', function() {
   it('Create new company', function(done) {
     register_new_user_func({
       application_host
-    }).then(function(data) {
-      driver = data.driver
-      done()
-    }).catch(done)
+    })
+      .then(function(data) {
+        driver = data.driver
+        done()
+      })
+      .catch(done)
   })
 
   it('Create ADMIN-to-be user', function(done) {
     add_new_user_func({
       application_host,
       driver
-    }).then(function(data) {
-      email_admin = data.new_user_email
-      done()
-    }).catch(done)
+    })
+      .then(function(data) {
+        email_admin = data.new_user_email
+        done()
+      })
+      .catch(done)
   })
 
   it('Create MANAGER-to-be user', function(done) {
     add_new_user_func({
       application_host,
       driver
-    }).then(function(data) {
-      email_manager = data.new_user_email
-      done()
-    }).catch(done)
+    })
+      .then(function(data) {
+        email_manager = data.new_user_email
+        done()
+      })
+      .catch(done)
   })
 
   it('Create EMPLOYEE-to-be user', function(done) {
     add_new_user_func({
       application_host,
       driver
-    }).then(function(data) {
-      email_employee = data.new_user_email
-      done()
-    }).catch(done)
+    })
+      .then(function(data) {
+        email_employee = data.new_user_email
+        done()
+      })
+      .catch(done)
   })
 
   it('Open department management page', function(done) {
     open_page_func({
       url: application_host + 'settings/departments/',
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Get the Admin, Manager and Employee IDs', function(done) {
@@ -171,25 +181,32 @@ describe('CRUD for users', function() {
     open_page_func({
       url: application_host + 'users/',
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Check that system has 4 users (one currently logged in and 3 added)', function(done) {
-    driver.findElements(By.css('td.user_department')).then(function(elements) {
-      expect(elements.length).to.be.equal(4)
-      done()
-    }).catch(done)
+    driver
+      .findElements(By.css('td.user_department'))
+      .then(function(elements) {
+        expect(elements.length).to.be.equal(4)
+        done()
+      })
+      .catch(done)
   })
 
   it('Open EMPLOYEE user details page', function(done) {
     open_page_func({
       url: application_host + 'users/edit/' + employee_user_id + '/',
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('And remove account', function(done) {
@@ -198,25 +215,32 @@ describe('CRUD for users', function() {
       driver,
       message: /Employee records were removed from the system/,
       confirm_dialog: true
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Check that system has 3 users (one currently logged in and 2 added)', function(done) {
-    driver.findElements(By.css('td.user_department')).then(function(elements) {
-      expect(elements.length).to.be.equal(3)
-      done()
-    }).catch(done)
+    driver
+      .findElements(By.css('td.user_department'))
+      .then(function(elements) {
+        expect(elements.length).to.be.equal(3)
+        done()
+      })
+      .catch(done)
   })
 
   it('Open MANAGER user details page', function(done) {
     open_page_func({
       url: application_host + 'users/edit/' + manager_user_id + '/',
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Try to remove account', function(done) {
@@ -225,34 +249,43 @@ describe('CRUD for users', function() {
       driver,
       message: /Cannot remove supervisor/,
       confirm_dialog: true
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it("Open 'users' page", function(done) {
     open_page_func({
       url: application_host + 'users/',
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Check that system still has 3 users (one currently logged in and 2 added)', function(done) {
-    driver.findElements(By.css('td.user_department')).then(function(elements) {
-      expect(elements.length).to.be.equal(3)
-      done()
-    }).catch(done)
+    driver
+      .findElements(By.css('td.user_department'))
+      .then(function(elements) {
+        expect(elements.length).to.be.equal(3)
+        done()
+      })
+      .catch(done)
   })
 
   it('Open departments', function(done) {
     open_page_func({
       url: application_host + 'settings/departments/',
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('... and update the very first user is an supervisor', function(done) {
@@ -296,9 +329,11 @@ describe('CRUD for users', function() {
     open_page_func({
       url: application_host + 'users/edit/' + manager_user_id + '/',
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Remove account', function(done) {
@@ -307,26 +342,33 @@ describe('CRUD for users', function() {
       driver,
       message: /Employee records were removed from the system/,
       confirm_dialog: true
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Check that system does not have ex-MANAGER', function(done) {
-    driver.findElements(By.css('td.user_department')).then(function(elements) {
-      // 1 that registered company and other is ADMIN
-      expect(elements.length).to.be.equal(2)
-      done()
-    }).catch(done)
+    driver
+      .findElements(By.css('td.user_department'))
+      .then(function(elements) {
+        // 1 that registered company and other is ADMIN
+        expect(elements.length).to.be.equal(2)
+        done()
+      })
+      .catch(done)
   })
 
   it('Open ADMIN user details page', function(done) {
     open_page_func({
       url: application_host + 'users/edit/' + admin_user_id + '/',
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Make sure that ADMIN has admin privilegues', function(done) {

@@ -36,7 +36,7 @@ const submit_form_func = async function(args) {
     }
 
     const el = await driver.findElement(By.css(test_case.selector))
-    
+
     if (test_case.hasOwnProperty('option_selector')) {
       await el.click()
       const option = await el.findElement(By.css(test_case.option_selector))
@@ -65,7 +65,9 @@ const submit_form_func = async function(args) {
 
   // Accept the confirm dialog
   if (confirm_dialog) {
-    await driver.executeScript('window.confirm = function(msg) { return true; }')
+    await driver.executeScript(
+      'window.confirm = function(msg) { return true; }'
+    )
   }
 
   // Submit the form

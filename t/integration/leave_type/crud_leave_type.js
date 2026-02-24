@@ -589,8 +589,11 @@ describe('CRUD for leave types', function() {
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

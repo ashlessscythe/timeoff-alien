@@ -150,13 +150,14 @@ describe('Enable/disable Integration APIs', function() {
   })
 
   it('Ensure that old API key is not valid anymore', function(done) {
-    axios.get(`${applicationHost}integration/v1/report/absence`, {
-      data: '{}',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${oldToken}`
-      }
-    })
+    axios
+      .get(`${applicationHost}integration/v1/report/absence`, {
+        data: '{}',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${oldToken}`
+        }
+      })
       .then(res => {
         throw new Error('TOM_TEST')
       })
@@ -174,13 +175,14 @@ describe('Enable/disable Integration APIs', function() {
   })
 
   it('Ensure that newly renenerated API key works fine', function(done) {
-    axios.get(`${applicationHost}integration/v1/report/absence`, {
-      data: '{}',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${newToken}`
-      }
-    })
+    axios
+      .get(`${applicationHost}integration/v1/report/absence`, {
+        data: '{}',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${newToken}`
+        }
+      })
       .then(res => res.data)
       .then(obj => {
         expect(obj[0].user.email).to.be.equal(
@@ -215,13 +217,14 @@ describe('Enable/disable Integration APIs', function() {
   })
 
   it('Ensure that API end points do not work anymore', function(done) {
-    axios.get(`${applicationHost}integration/v1/report/absence`, {
-      data: '{}',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${newToken}`
-      }
-    })
+    axios
+      .get(`${applicationHost}integration/v1/report/absence`, {
+        data: '{}',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${newToken}`
+        }
+      })
       .then(res => {
         throw new Error('TOM_TEST')
       })

@@ -122,7 +122,8 @@ describe('Leave request cancelation', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Submit new leave request from user B for one weekday', function(done) {
@@ -174,7 +175,8 @@ describe('Leave request cancelation', function() {
       .then(function(elements) {
         expect(elements.length).to.be.eq(1)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure that new request is in Pending status', function(done) {
@@ -186,7 +188,8 @@ describe('Leave request cancelation', function() {
       .then(function(status) {
         expect(status).to.be.eq('Pending')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Cancel leave request', function(done) {
@@ -205,7 +208,8 @@ describe('Leave request cancelation', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure that My requests page does not contain any entries', function(done) {
@@ -214,7 +218,8 @@ describe('Leave request cancelation', function() {
       .then(function(elements) {
         expect(elements.length).to.be.eq(0)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it(' Logout from user B account', function(done) {
@@ -273,7 +278,8 @@ describe('Leave request cancelation', function() {
         expect(subjects).to.contain('Leave request was cancelled')
         expect(subjects).to.contain('Cancel leave request')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open user B absences section', function(done) {
@@ -296,7 +302,8 @@ describe('Leave request cancelation', function() {
         const allowances = text.match(/(\d+) out of (\d+)/).slice(1, 3)
         expect(allowances[0]).to.be.eq(allowances[1])
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from user A (admin)', function(done) {
@@ -330,7 +337,8 @@ describe('Leave request cancelation', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Submit leave request for the same date as the first', function(done) {
@@ -370,13 +378,17 @@ describe('Leave request cancelation', function() {
       .then(function(status) {
         expect(status).to.be.eq('Pending')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })
 
@@ -464,7 +476,8 @@ describe('Check only requestor can see the Cancel button', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Submit new leave requesti from user B', function(done) {
@@ -505,7 +518,8 @@ describe('Check only requestor can see the Cancel button', function() {
       .then(function(cancel_btn) {
         expect(cancel_btn).to.be.ok
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from user A (admin)', function(done) {
@@ -542,12 +556,16 @@ describe('Check only requestor can see the Cancel button', function() {
       .then(function(cancel_btns) {
         expect(cancel_btns.length).to.be.eq(0)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

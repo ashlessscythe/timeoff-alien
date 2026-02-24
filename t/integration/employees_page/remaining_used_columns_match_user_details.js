@@ -76,7 +76,8 @@ describe('Leave request cancelation', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Submit new leave request for user A one weekday', function(done) {
@@ -122,7 +123,8 @@ describe('Leave request cancelation', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open user A details page (abcenses section)', function(done) {
@@ -143,7 +145,8 @@ describe('Leave request cancelation', function() {
       .then(function(text) {
         expect(text).to.be.eq('15 out of 20')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open employees list page', function(done) {
@@ -166,7 +169,8 @@ describe('Leave request cancelation', function() {
       .then(function(text) {
         expect(text).to.be.eq('15')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure "used" shows 5', function(done) {
@@ -180,7 +184,8 @@ describe('Leave request cancelation', function() {
       .then(function(text) {
         expect(text).to.be.eq('5')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open requests page', function(done) {
@@ -204,7 +209,8 @@ describe('Leave request cancelation', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open user A details page (abcenses section)', function(done) {
@@ -225,7 +231,8 @@ describe('Leave request cancelation', function() {
       .then(function(text) {
         expect(text).to.be.eq('15 out of 20')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open employees list page', function(done) {
@@ -248,7 +255,8 @@ describe('Leave request cancelation', function() {
       .then(function(text) {
         expect(text).to.be.eq('15')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Ensure "used" shows 5', function(done) {
@@ -262,12 +270,16 @@ describe('Leave request cancelation', function() {
       .then(function(text) {
         expect(text).to.be.eq('5')
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

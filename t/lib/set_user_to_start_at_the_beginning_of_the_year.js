@@ -10,7 +10,9 @@ const getUserId = async ({ userId, email, driver }) => {
   if (userId) {
     return userId
   }
-  const { user: { id } } = await userInfoFunc({ email, driver })
+  const {
+    user: { id }
+  } = await userInfoFunc({ email, driver })
   return id
 }
 
@@ -23,9 +25,9 @@ module.exports = async ({
   overwriteDate = null
 }) => {
   const id = await getUserId({ userId, email, driver })
-  
+
   await openPageFunc({ driver, url: `${applicationHost}users/edit/${id}/` })
-  
+
   await submitFormFunc({
     driver,
     form_params: [
@@ -39,8 +41,8 @@ module.exports = async ({
     submit_button_selector: 'button#save_changes_btn',
     message: /Details for .* were updated/
   })
-  
+
   await openPageFunc({ driver, url: applicationHost })
-  
+
   return { driver }
 }

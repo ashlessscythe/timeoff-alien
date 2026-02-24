@@ -173,7 +173,8 @@ describe('Changing default company wide schedule', function() {
       .then(function(css) {
         expect(css).to.match(/\bweekend_cell\b/)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('... and ensure that Monday is still working day', function(done) {
@@ -185,7 +186,8 @@ describe('Changing default company wide schedule', function() {
       .then(function(css) {
         expect(css).not.to.match(/\bweekend_cell\b/)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open Team view page', function(done) {
@@ -207,7 +209,8 @@ describe('Changing default company wide schedule', function() {
       .then(function(css) {
         expect(css).to.match(/\bweekend_cell\b/)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('... and ensure Monday is still working day', function(done) {
@@ -219,13 +222,17 @@ describe('Changing default company wide schedule', function() {
       .then(function(css) {
         expect(css).not.to.match(/\bweekend_cell\b/)
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })
 
@@ -275,7 +282,8 @@ describe('Leave request reflects changes in company schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Submit new leave requesti for 7 calendar days', function(done) {
@@ -317,7 +325,8 @@ describe('Leave request reflects changes in company schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open company details page', function(done) {
@@ -365,12 +374,16 @@ describe('Leave request reflects changes in company schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

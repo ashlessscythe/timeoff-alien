@@ -10,7 +10,7 @@ const check_elements_func = async function(args) {
 
   for (const test_case of elements_to_check) {
     const el = await driver.findElement(By.css(test_case.selector))
-    
+
     let text
     if (test_case.hasOwnProperty('tick')) {
       const isSelected = await el.isSelected()
@@ -18,7 +18,7 @@ const check_elements_func = async function(args) {
     } else {
       text = await el.getAttribute('value')
     }
-    
+
     expect(text).to.be.equal(test_case.value)
   }
 

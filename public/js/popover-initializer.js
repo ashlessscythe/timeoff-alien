@@ -2,7 +2,9 @@ $(document).ready(function() {
   console.log('Popover initializer loaded')
 
   // User details popover - explicitly exclude leave-details-summary-trigger
-  $('.user-details-summary-trigger:not(.leave-details-summary-trigger)').popover({
+  $(
+    '.user-details-summary-trigger:not(.leave-details-summary-trigger)'
+  ).popover({
     title: 'Employee summary',
     html: true,
     trigger: 'hover',

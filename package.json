@@ -16,7 +16,8 @@
     "axios": ">=0.28.2",
     "tar": ">=2.1.2",
     "follow-redirects": ">=1.15.6",
-    "underscore": ">=1.12.1"
+    "underscore": ">=1.12.1",
+    "minimatch": ">=10.2.1"
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",

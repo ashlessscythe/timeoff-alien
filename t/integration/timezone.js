@@ -41,11 +41,13 @@ describe('Check Time zones', function() {
   it('Create a company', function(done) {
     register_new_user_func({
       application_host
-    }).then(function(data) {
-      driver = data.driver
-      user_email = data.email
-      done()
-    }).catch(done)
+    })
+      .then(function(data) {
+        driver = data.driver
+        user_email = data.email
+        done()
+      })
+      .catch(done)
   })
 
   it('Ensure user starts at the very beginning of current year', function(done) {
@@ -74,9 +76,11 @@ describe('Check Time zones', function() {
       submit_button_selector: company_edit_form_id + ' button[type="submit"]',
       message: /successfully/i,
       should_be_successful: true
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Get the date from Book leave modal and put it into today_tonga variable', function(done) {
@@ -208,9 +212,11 @@ describe('Check Time zones', function() {
       submit_button_selector: company_edit_form_id + ' button[type="submit"]',
       message: /successfully/i,
       should_be_successful: true
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Get the date from Book leave modal and put it into today_usa', function(done) {

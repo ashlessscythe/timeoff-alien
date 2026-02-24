@@ -21,7 +21,9 @@ const command2 = `pg_dump "${dbUrl}" -F c --no-owner --no-privileges -f "${backu
 console.log(`Creating plaintext backup: ${backupPath}.sql`)
 exec(command1, (error, stdout, stderr) => {
   if (error) {
-    console.error(`Error executing pg_dump for plaintext backup: ${error.message}`)
+    console.error(
+      `Error executing pg_dump for plaintext backup: ${error.message}`
+    )
     console.error(`stderr: ${stderr}`)
     return
   }
@@ -32,7 +34,9 @@ exec(command1, (error, stdout, stderr) => {
   console.log(`Creating compressed backup: ${backupPath}.dump`)
   exec(command2, (error, stdout, stderr) => {
     if (error) {
-      console.error(`Error executing pg_dump for compressed backup: ${error.message}`)
+      console.error(
+        `Error executing pg_dump for compressed backup: ${error.message}`
+      )
       console.error(`stderr: ${stderr}`)
       return
     }

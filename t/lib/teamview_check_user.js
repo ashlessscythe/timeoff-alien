@@ -31,8 +31,7 @@ module.exports = async function(args) {
 
   const elements = await driver.findElements(
     By.css(
-      'tr.teamview-user-list-row > td.cross-link > ' +
-        (is_link ? 'a' : 'span')
+      'tr.teamview-user-list-row > td.cross-link > ' + (is_link ? 'a' : 'span')
     )
   )
 

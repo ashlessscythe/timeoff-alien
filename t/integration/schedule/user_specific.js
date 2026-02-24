@@ -112,7 +112,8 @@ describe('Basic user specific schedule', function() {
           .then(function(caption) {
             expect(caption).to.be.equal('Override company wide schedule')
             done()
-          }).catch(done)
+          })
+          .catch(done)
       })
   })
 
@@ -338,7 +339,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Make sure team view shows user B has Wed, Sat, Sun as non-working days', function(done) {
@@ -394,7 +396,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open Calendar page', function(done) {
@@ -441,7 +444,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open Book leave popup window', function(done) {
@@ -456,7 +460,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Submit new leave requesti from user A for 7 calendar days', function(done) {
@@ -498,7 +503,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Logout from user A (admin)', function(done) {
@@ -564,7 +570,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   //*    * Book a holiday for 7 days and make sure that 4 days deducted from allowance
@@ -580,7 +587,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Submit new leave requesti from user A for 7 calendar days', function(done) {
@@ -645,7 +653,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Open user B schedule', function(done) {
@@ -672,7 +681,8 @@ describe('Basic user specific schedule', function() {
           .then(function(caption) {
             expect(caption).to.be.equal('Save employee specific schedule')
             done()
-          }).catch(done)
+          })
+          .catch(done)
       })
   })
 
@@ -794,7 +804,8 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Make sure team view shows user B also has Sat, Sun as non-working days', function(done) {
@@ -850,13 +861,17 @@ describe('Basic user specific schedule', function() {
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })
 
@@ -1163,8 +1178,11 @@ describe('Populate company wide schedule before using user specific one', functi
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

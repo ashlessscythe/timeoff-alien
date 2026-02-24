@@ -45,7 +45,8 @@ describe('Try to use non defaul date formats for editing employee details', func
       })
       .then(function() {
         done()
-      }).catch(done)
+      })
+      .catch(done)
   })
 
   it('Update Start date to be date that was reportedly problematic', function(done) {
@@ -66,8 +67,11 @@ describe('Try to use non defaul date formats for editing employee details', func
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })

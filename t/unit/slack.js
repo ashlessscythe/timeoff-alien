@@ -5,8 +5,8 @@ const _ = require('underscore')
 const bluebird = require('bluebird')
 const Slack = require('../../lib/slack')
 
-describe('Check Slack', function () {
-  it('Knows how to render and parse template', function (done) {
+describe('Check Slack', function() {
+  it('Knows how to render and parse template', function(done) {
     var slack = new Slack()
 
     bluebird
@@ -16,14 +16,14 @@ describe('Check Slack', function () {
           context: {
             user: {
               name: 'FOO',
-              reload_with_session_details: function () {
+              reload_with_session_details: function() {
                 return bluebird.resolve(1)
               }
             }
           }
         })
       )
-      .then(function (slack_obj) {
+      .then(function(slack_obj) {
         expect(slack_obj.text).to.match(/Hello FOO\./)
 
         done()

@@ -30,20 +30,24 @@ describe('Emails are case insensitive', function() {
     register_new_user_func({
       application_host,
       user_email: new Date().getTime() + 'John.Smith@TEST.com'
-    }).then(function(data) {
-      admin_email = data.email
-      driver = data.driver
-      done()
-    }).catch(done)
+    })
+      .then(function(data) {
+        admin_email = data.email
+        driver = data.driver
+        done()
+      })
+      .catch(done)
   })
 
   it('Logount from current session', function(done) {
     logout_user_func({
       application_host,
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Login with lower case email', function(done) {
@@ -51,18 +55,22 @@ describe('Emails are case insensitive', function() {
       application_host,
       user_email: admin_email.toLowerCase(),
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Logout', function(done) {
     logout_user_func({
       application_host,
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   it('Try to login with upper case email', function(done) {
@@ -70,14 +78,19 @@ describe('Emails are case insensitive', function() {
       application_host,
       user_email: admin_email.toUpperCase(),
       driver
-    }).then(function() {
-      done()
-    }).catch(done)
+    })
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 
   after(function(done) {
-    driver.quit().then(function() {
-      done()
-    }).catch(done)
+    driver
+      .quit()
+      .then(function() {
+        done()
+      })
+      .catch(done)
   })
 })
