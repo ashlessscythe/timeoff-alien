@@ -127,8 +127,9 @@ model departments {
   is_accrued_allowance    Boolean                  @default(false)
   shifts                  String?                  // JSON array of shift names: ["day"], ["day", "swing"], ["day", "swing", "night"]
   shift_hours             String?                  // JSON object: {"day": {"start": "08:00", "end": "17:00"}, "swing": {"start": "17:00", "end": "01:00"}}
-  allowed_increments      String?                  @default("[\"full_day\",\"half_day\"]")
-  created_at              DateTime                 @db.Timestamptz(6)
+  allowed_increments           String?   @default("[\"full_day\",\"half_day\"]")
+  minimum_notice_by_leave_type String?   // JSON object: {"leave_type_id": days} e.g. {"5": 3}
+  created_at                  DateTime  @db.Timestamptz(6)
   updated_at              DateTime                 @db.Timestamptz(6)
   company_id              Int
   manager_id              Int?
@@ -174,8 +175,9 @@ model leave_types {
   is_special        Boolean   @default(false)
   allowed_increments String?  // JSON array: ["full_day", "half_day", "hourly", "quarter_hr"]
   allow_non_default_increments Boolean @default(false)
-  companies        companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
-  leaves           leaves[]
+  minimum_days_notice         Int      @default(0) // Minimum days notice required (0 = no minimum)
+  companies                   companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  leaves                      leaves[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

@@ -166,6 +166,7 @@ app.use(async function(req, res, next) {
   if (!req.user) {
     res.locals.allowed_increments_by_user = {}
     res.locals.allowed_non_default_increments_by_leave_type = {}
+    res.locals.minimum_days_notice_by_user_and_leave_type = {}
     return next()
   }
 
@@ -198,6 +199,7 @@ app.use(async function(req, res, next) {
 
     if (userIds.length === 0) {
       res.locals.allowed_increments_by_user = {}
+      res.locals.minimum_days_notice_by_user_and_leave_type = {}
       return next()
     }
 
@@ -208,14 +210,19 @@ app.use(async function(req, res, next) {
           id: true,
           departments: {
             select: {
-              allowed_increments: true
+              allowed_increments: true,
+              minimum_notice_by_leave_type: true
             }
           }
         }
       }),
       prisma.leave_types.findMany({
         where: { company_id: req.user.company_id },
-        select: { id: true, allow_non_default_increments: true }
+        select: {
+          id: true,
+          allow_non_default_increments: true,
+          minimum_days_notice: true
+        }
       })
     ])
 
@@ -246,11 +253,55 @@ app.use(async function(req, res, next) {
       ] = !!leaveType.allow_non_default_increments
     })
     res.locals.allowed_non_default_increments_by_leave_type = allowNonDefaultByLeaveType
+
+    // Effective minimum days notice per (user, leave_type): department override or leave type default
+    const minimumDaysNoticeByUserAndLeaveType = {}
+    usersWithDepartments.forEach(user => {
+      minimumDaysNoticeByUserAndLeaveType[user.id] = {}
+      let deptNoticeMap = {}
+      if (
+        user.departments &&
+        user.departments.minimum_notice_by_leave_type
+      ) {
+        try {
+          const parsed = JSON.parse(
+            user.departments.minimum_notice_by_leave_type
+          )
+          if (parsed && typeof parsed === 'object') {
+            deptNoticeMap = parsed
+          }
+        } catch (err) {
+          console.error(
+            'Failed to parse minimum_notice_by_leave_type for user ' +
+              user.id +
+              ':',
+            err
+          )
+        }
+      }
+      leaveTypes.forEach(leaveType => {
+        const deptDays =
+          deptNoticeMap[leaveType.id] ?? deptNoticeMap[String(leaveType.id)]
+        const effective =
+          deptDays !== undefined && deptDays !== null && deptDays !== ''
+            ? parseInt(deptDays, 10)
+            : (leaveType.minimum_days_notice ?? 0)
+        minimumDaysNoticeByUserAndLeaveType[user.id][leaveType.id] = isNaN(
+          effective
+        )
+          ? 0
+          : Math.max(0, effective)
+      })
+    })
+    res.locals.minimum_days_notice_by_user_and_leave_type =
+      minimumDaysNoticeByUserAndLeaveType
+
     return next()
   } catch (error) {
     console.error('Failed to load allowed increments by user:', error)
     res.locals.allowed_increments_by_user = {}
     res.locals.allowed_non_default_increments_by_leave_type = {}
+    res.locals.minimum_days_notice_by_user_and_leave_type = {}
     return next()
   }
 })

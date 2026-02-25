@@ -8,7 +8,8 @@
         data-user-department-id="{{#if logged_user.department_id}}{{logged_user.department_id}}{{/if}}"
         data-logged-user-id="{{#if logged_user.id}}{{logged_user.id}}{{/if}}"
         data-allowed-increments-by-user="{{#if allowed_increments_by_user}}{{json allowed_increments_by_user}}{{/if}}"
-        data-allowed-non-default-increments-by-leave-type="{{#if allowed_non_default_increments_by_leave_type}}{{json allowed_non_default_increments_by_leave_type}}{{/if}}">
+        data-allowed-non-default-increments-by-leave-type="{{#if allowed_non_default_increments_by_leave_type}}{{json allowed_non_default_increments_by_leave_type}}{{/if}}"
+        data-minimum-days-notice-by-user-and-leave-type="{{#if minimum_days_notice_by_user_and_leave_type}}{{json minimum_days_notice_by_user_and_leave_type}}{{/if}}">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
               aria-hidden="true">&times;</span></button>
@@ -165,6 +166,7 @@
     var allowedIncrements = ['full_day', 'half_day', 'hourly', 'quarter_hr']; // Default, will be overridden
     var allowedIncrementsByUser = {};
     var allowedNonDefaultByLeaveType = {};
+    var minimumDaysNoticeByUserAndLeaveType = {};
     var userAllowsNonDefaultIncrements = false;
 
     // Helper functions for time calculations
@@ -225,6 +227,39 @@
       } catch (e) {
         console.error('Failed to parse allowed non-default increments mapping:', e);
       }
+    }
+
+    function parseMinimumDaysNoticeByUserAndLeaveType() {
+      var mappingStr = form.getAttribute('data-minimum-days-notice-by-user-and-leave-type') || '{}';
+      try {
+        var parsed = mappingStr ? JSON.parse(mappingStr) : {};
+        if (parsed && typeof parsed === 'object') {
+          minimumDaysNoticeByUserAndLeaveType = parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse minimum days notice mapping:', e);
+      }
+    }
+
+    function getEffectiveMinimumDaysNotice() {
+      var userId = getSelectedUserId();
+      var leaveTypeId = getSelectedLeaveTypeId();
+      if (!userId || !leaveTypeId) return 0;
+      var byUser = minimumDaysNoticeByUserAndLeaveType[userId];
+      if (!byUser) return 0;
+      var days = byUser[leaveTypeId] ?? byUser[String(leaveTypeId)];
+      return (days !== undefined && days !== null && !isNaN(parseInt(days, 10))) ? Math.max(0, parseInt(days, 10)) : 0;
+    }
+
+    function daysFromTodayToDate(dateStr) {
+      if (!dateStr || !dateStr.trim()) return null;
+      var d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      d.setHours(0, 0, 0, 0);
+      var diffMs = d.getTime() - today.getTime();
+      return Math.floor(diffMs / (24 * 60 * 60 * 1000));
     }
 
     function getSelectedUserId() {
@@ -451,6 +486,7 @@
     // Initialize on load
     parseAllowedIncrementsByUser();
     parseAllowedNonDefaultByLeaveType();
+    parseMinimumDaysNoticeByUserAndLeaveType();
     setAllowedIncrementsForSelection();
     updateIncrementTypeOptions();
     updateNonDefaultHint();
@@ -646,6 +682,19 @@
           // Still show warning but allow submission (server will reject anyway)
           if (!confirm('You are attempting to request time off for next year before the cutoff date. This request will likely be rejected. Do you want to continue?')) {
             return;
+          }
+        }
+
+        // Check minimum days notice
+        var minimumNotice = getEffectiveMinimumDaysNotice();
+        if (minimumNotice > 0) {
+          var fromDateStr = fromDate.value;
+          var daysUntil = daysFromTodayToDate(fromDateStr);
+          if (daysUntil !== null && daysUntil < minimumNotice) {
+            var msg = 'This request is short notice. This request requires ' + minimumNotice + ' day(s) prior. Do you want to continue?';
+            if (!confirm(msg)) {
+              return;
+            }
           }
         }
 
