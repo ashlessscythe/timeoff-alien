@@ -9,7 +9,7 @@
   "optionalDependencies": {
     "mysql2": "^3.9.1",
     "redis": "^3.1.2",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^6.0.1"
   },
   "overrides": {
     "diff": ">=8.0.3",
@@ -17,7 +17,10 @@
     "tar": ">=2.1.2",
     "follow-redirects": ">=1.15.6",
     "underscore": ">=1.12.1",
-    "minimatch": ">=10.2.1"
+    "minimatch": ">=10.2.1",
+    "mocha": {
+      "serialize-javascript": "^7.0.3"
+    }
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
