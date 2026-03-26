@@ -214,8 +214,12 @@ $(document).ready(function() {
     title: 'Employee summary',
     html: true,
     trigger: 'hover',
-    placement: 'auto',
-    delay: { show: 1000, hide: 10 },
+    // Open inside the main Bootstrap container so it stays within the padded content area
+    placement: 'right',
+    delay: { show: 200, hide: 50 },
+    container: '.container',
+    // Constrain the popover to the same container width so it does not slip under the outer margin
+    viewport: { selector: '.container', padding: 8 },
     content: function() {
       const divId = 'tmp-id-' + $.now()
       return detailsInPopup($(this).attr('data-user-id'), divId)
