@@ -48,7 +48,7 @@
     "morgan": "^1.9.1",
     "multer": "^2.0.1",
     "nconf": "^0.12.1",
-    "nodemailer": "^7.0.10",
+    "nodemailer": "^8.0.4",
     "nodemailer-smtp-transport": "^2.4.2",
     "optimist": "^0.5.2",
     "passport": "^0.7.0",
