@@ -1,0 +1,42 @@
+{{> header }}
+
+<h1>Company week schedule</h1>
+
+<p class="lead">Define which days count as working days for your company. You can override this per employee on their Schedule tab.</p>
+
+{{> show_flash_messages }}
+
+<div class="row">&nbsp;</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">Working days</div>
+      <div class="panel-body">
+        <form class="form-horizontal" method="POST" action="/settings/schedule/" id="company_schedule_form">
+          <input type="hidden" name="company_wide" value="1">
+          <div class="form-group">
+            <div class="col-md-offset-2">
+              {{> schedule_widget}}
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-offset-2">
+              <em>Press each button to toggle working / non-working day.</em>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+              <button type="submit" class="btn btn-success pull-right single-click">Save schedule</button>
+            </div>
+          </div>
+        </form>
+        <p class="col-md-offset-2"><a href="/settings/general/">← Back to general settings</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">&nbsp;</div>
+
+{{> footer }}
