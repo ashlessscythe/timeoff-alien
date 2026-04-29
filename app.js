@@ -106,27 +106,8 @@ app.use(
 // Setup authentication mechanism
 const passport = require('./lib/passport')()
 
-const session = require('express-session')
-// initalize sequelize with session store
-const SequelizeStore = require('connect-session-sequelize')(session.Store)
-const config = require('./lib/config')
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: config.get('sessions:ttl')
-    },
-    store: new SequelizeStore({
-      db: app.get('db_model').sequelize,
-      // Add this option to fix the Sequelize v6 compatibility issue
-      // This tells connect-session-sequelize to use the Sequelize v6 API
-      // instead of trying to use the removed .import method
-      modelKey: 'Session'
-    })
-  })
-)
+const { createSessionMiddleware } = require('./lib/session/expressSession')
+app.use(createSessionMiddleware())
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -310,9 +291,6 @@ app.use(
   require('./lib/route/users/summary'),
   require('./lib/route/users')
 )
-
-// Prisma-based users route for performance testing
-app.use('/users-prisma/', require('./lib/route/users/prisma-users'))
 
 app.use('/requests/', require('./lib/route/requests'))
 

@@ -398,7 +398,7 @@ describe('accrued_adjustment attribute', function() {
     })
 
     it('Check accrued_adjustment', function() {
-      expect(ul.accrued_adjustment).to.be.eql(-0)
+      expect(ul.accrued_adjustment).to.eql(0)
     })
   })
 

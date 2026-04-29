@@ -14,11 +14,9 @@ model SequelizeMeta {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Sessions {
-  sid       String    @id @db.VarChar(36)
-  expires   DateTime? @db.Timestamptz(6)
-  data      String?
-  createdAt DateTime  @db.Timestamptz(6)
-  updatedAt DateTime  @db.Timestamptz(6)
+  sid    String   @id @db.VarChar(255)
+  sess   Json     @db.JsonB
+  expire DateTime @db.Timestamptz(6)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments

@@ -19,12 +19,7 @@ if (cluster.isMaster) {
 } else {
   app.set('port', process.env.PORT || 3000)
 
-  app
-    .get('db_model')
-    .sequelize.sync()
-    .then(function() {
-      var server = app.listen(app.get('port'), function() {
-        console.log('Started to listen on port ' + server.address().port)
-      })
-    })
+  var server = app.listen(app.get('port'), function() {
+    console.log('Started to listen on port ' + server.address().port)
+  })
 }

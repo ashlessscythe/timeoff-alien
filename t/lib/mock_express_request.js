@@ -15,7 +15,7 @@ module.exports = function(args) {
     user: {
       company: {
         get_default_date_format: function() {
-          'YYYY-MM-DD'
+          return 'YYYY-MM-DD'
         },
         normalise_date: function(date) {
           return date

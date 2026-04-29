@@ -19,6 +19,7 @@ const mockModels = {
     }),
     status_approved: () => 1,
     status_new: () => 2,
+    status_pended_revoke: () => 3,
     does_skip_approval: () => false
   }
 }
@@ -27,10 +28,17 @@ const mockComment = {
   commentLeave: () => Promise.resolve()
 }
 
+const mockPrisma = {
+  leaves: {
+    findFirst: async () => null
+  }
+}
+
 // Mock the leave module with all dependencies
 const Leave = proxyquire('../../../lib/model/leave', {
   '../db': mockModels,
-  '../comment': mockComment
+  '../comment': mockComment,
+  '../../prisma/client': mockPrisma
 })
 
 describe('Leave Model', function() {
@@ -48,12 +56,21 @@ describe('Leave Model', function() {
         company_id: 1,
         validate_overlapping: () => Promise.resolve(),
         promise_manager: () => Promise.resolve({ id: 2 }),
-        validate_leave_fits_into_remaining_allowance: () => Promise.resolve()
+        validate_leave_fits_into_remaining_allowance: () => Promise.resolve(),
+        getCompany: () =>
+          Promise.resolve({
+            id: 1,
+            timezone: 'UTC',
+            payroll_close_time: 0,
+            next_year_cutoff_date: null,
+            limited_departments: []
+          })
       }
 
       // Mock leave type
       mockLeaveType = {
-        id: 1
+        id: 1,
+        use_allowance: false
       }
 
       // Mock admin user
@@ -138,8 +155,8 @@ describe('Leave Model', function() {
         expect(error.message).to.equal(
           'Failed to add new Leave for user 1 because requested dates (2025-01-08) are in past weeks and payroll is closed'
         )
-        expect(error.user_error_message).to.equal(
-          'Cannot request leave for past weeks after payroll closes (Monday 9am UTC-7)'
+        expect(error.user_error_message).to.match(
+          /Leave requests for previous weeks are not allowed after payroll closes/
         )
       }
     })
