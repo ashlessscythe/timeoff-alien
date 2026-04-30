@@ -1,6 +1,10 @@
 $(document).ready(function() {
   console.log('Popover initializer loaded')
 
+  // Simple in-memory cache to avoid refetching the same user summary repeatedly
+  // (popover content can be triggered many times while moving the mouse around).
+  const userSummaryCache = {}
+
   // User details popover - explicitly exclude leave-details-summary-trigger
   $(
     '.user-details-summary-trigger:not(.leave-details-summary-trigger)'
@@ -24,10 +28,19 @@ $(document).ready(function() {
   function detailsInPopup(id, divId, url) {
     console.log('Fetching details for ID:', id)
 
+    if (userSummaryCache[id]) {
+      // Render cached HTML on next tick so the container exists
+      setTimeout(function() {
+        $('#' + divId).html(userSummaryCache[id])
+      }, 0)
+      return '<div id="' + divId + '">' + userSummaryCache[id] + '</div>'
+    }
+
     $.ajax({
       url: url + id + '/',
       success: function(response) {
         console.log('Received response for ID:', id)
+        userSummaryCache[id] = response
         $('#' + divId).html(response)
       },
       error: function(xhr, status, error) {
