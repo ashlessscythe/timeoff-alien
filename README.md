@@ -168,27 +168,20 @@ For a complete list of options, refer to the `.env.example` file in the project 
 
 ## 🧪 Run tests
 
+Tests use [Vitest](https://vitest.dev/) with [supertest](https://github.com/ladjs/supertest) against the exported Express app (no browser). Integration tests expect Postgres and load [`.env.test`](./.env.test.example) via Vitest `globalSetup`.
+
 ```bash
-# Unit tests (fast, 14 tests)
-npm run test:unit
-
-# Integration tests - Quick smoke test (3 tests, ~30 seconds)
-npm run test:integration:quick
-
-# Integration tests - By category (see TEST_BATCHES_SUMMARY.md)
-npm run test:integration:auth        # Authentication (5 tests)
-npm run test:integration:leaves      # Leave requests (13 tests)
-npm run test:integration:users       # User management (8 tests)
-
-# All tests (requires app running: npm run dev)
+# All tests (integration + any future unit tests under tests/)
 npm test
+
+# Integration only
+npm run test:integration
+
+# Watch mode
+npm run test:watch
 ```
 
-**📚 Testing Documentation:**
-- [TEST_BATCHES_SUMMARY.md](./t/TEST_BATCHES_SUMMARY.md) - Quick reference for test batches
-- [TEST_QUICK_START.md](./t/TEST_QUICK_START.md) - Quick start guide
-- [INTEGRATION_TESTS.md](./t/INTEGRATION_TESTS.md) - Detailed integration test guide
-- [TESTING.md](./t/TESTING.md) - Comprehensive testing documentation
+Copy `.env.test.example` to `.env.test` and set `DATABASE_URL` to a **dedicated** test database (not your dev data). `OPTION_ALLOW_NEW_REGISTRATIONS=true` is required for registration flows in tests.
 
 ## 💾 Backup and Restore
 

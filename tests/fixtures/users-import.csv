@@ -1,0 +1,3 @@
+email,slack_username,lastname,name,department
+import_one@example.com,,One,Import,Sales
+import_two@example.com,,Two,Import,Sales

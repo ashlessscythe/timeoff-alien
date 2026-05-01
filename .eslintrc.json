@@ -6,28 +6,29 @@
     },
     "extends": [
       "standard",
-      "prettier",
-      "plugin:mocha/recommended"
+      "prettier"
     ],
     "parserOptions": {
         "ecmaVersion": "latest"
     },
-    "plugins": [
-      "mocha"
-    ],
     "rules": {
-      "camelcase": 0,
-      "space-before-function-paren": 0,
-      "arrow-body-style": ["error", "as-needed"],
-      //"prefer-arrow-callback": [
-      //  "error",
-      //  { "allowNamedFunctions": true }
-      //],
-      "func-style": [
-        "error",
-        "declaration",
-        { "allowArrowFunctions": true }
-      ]
-
-    }
+        "camelcase": 0,
+        "space-before-function-paren": 0,
+        "arrow-body-style": ["error", "as-needed"],
+        "func-style": [
+            "error",
+            "declaration",
+            { "allowArrowFunctions": true }
+        ]
+    },
+    "overrides": [
+      {
+        "files": ["tests/**/*.mjs"],
+        "env": {
+          "node": true
+        },
+        "plugins": ["vitest"],
+        "extends": ["plugin:vitest/legacy-recommended"]
+      }
+    ]
 }
