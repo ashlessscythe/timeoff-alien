@@ -26,7 +26,7 @@ export async function registerCompanyAndAdmin(agent, opts = {}) {
       password: TEST_PASSWORD,
       password_confirmed: TEST_PASSWORD,
       country: 'US',
-      timezone: 'America/Denver'
+      timezone: opts.timezone || 'America/Denver'
     })
     .redirects(5)
 
@@ -79,7 +79,8 @@ export async function addEmployee(adminAgent, opts) {
     manager = false,
     departmentId,
     slackUsername = '',
-    startDate = '2026-02-01'
+    startDate = '2026-02-01',
+    autoApprove = false
   } = opts
 
   if (!email) throw new Error('addEmployee: email is required')
@@ -93,11 +94,12 @@ export async function addEmployee(adminAgent, opts) {
     department: String(departmentId),
     start_date: startDate,
     password_one: password,
-    password_confirm: password,
-    auto_approve: 'false'
+    password_confirm: password
   }
   if (admin) body.admin = 'on'
   if (manager) body.manager = 'on'
+  if (autoApprove) body.auto_approve = 'on'
+  else body.auto_approve = 'false'
 
   return adminAgent
     .post('/users/add/')
@@ -135,13 +137,149 @@ export function buildUserEditFormBody(user, flags = {}) {
     email_address: user.email,
     slack_username: user.slack_username || '',
     department: String(user.department_id),
-    start_date: formatStartDate(user.start_date)
+    start_date:
+      flags.start_date !== undefined
+        ? flags.start_date
+        : formatStartDate(user.start_date)
   }
-  if (user.end_date) {
+  if (flags.end_date !== undefined && flags.end_date !== null) {
+    body.end_date = flags.end_date
+  } else if (user.end_date) {
     body.end_date = formatStartDate(user.end_date)
   }
   if (admin) body.admin = 'on'
   if (manager) body.manager = 'on'
   if (autoApprove) body.auto_approve = 'on'
   return body
+}
+
+/** POST /calendar/bookleave/ (defaults: self, full day). */
+export async function bookLeave(agent, opts) {
+  const {
+    leaveTypeId,
+    fromDate,
+    toDate,
+    fromDatePart = '1',
+    toDatePart = '1',
+    incrementType = 'day',
+    incrementValue,
+    reason = 'Vitest',
+    user
+  } = opts
+  const body = {
+    leave_type: String(leaveTypeId),
+    from_date: fromDate,
+    to_date: toDate || fromDate,
+    from_date_part: String(fromDatePart),
+    to_date_part: String(toDatePart),
+    reason,
+    increment_type: incrementType
+  }
+  if (user !== undefined && user !== null && user !== '') {
+    body.user = String(user)
+  }
+  if (incrementValue) body.increment_value = String(incrementValue)
+
+  return agent
+    .post('/calendar/bookleave/')
+    .type('form')
+    .send(body)
+    .redirects(5)
+}
+
+/**
+ * Build POST body for /settings/leavetypes including all existing rows + optional __new row.
+ * @param {import('@prisma/client').PrismaClient} prisma
+ */
+export async function buildLeavetypesFormBody(prisma, companyId, newRow = null) {
+  const existing = await prisma.leave_types.findMany({
+    where: { company_id: companyId },
+    orderBy: { id: 'asc' }
+  })
+  const body = {}
+  if (newRow) {
+    body.name__new = newRow.name
+    body.color__new = newRow.color || '#AA5500'
+    body.limit__new = String(newRow.limit ?? 0)
+    body.use_allowance__new = newRow.use_allowance ? 'on' : 'off'
+    body.use_personal__new = newRow.use_personal ? 'on' : 'off'
+    body.auto_approve__new = newRow.auto_approve ? 'on' : 'off'
+    body.manager_only__new = newRow.manager_only ? 'on' : 'off'
+    body.is_special__new = newRow.is_special ? 'on' : 'off'
+    body.allow_non_default_increments__new = newRow.allow_non_default_increments
+      ? 'on'
+      : 'off'
+    body.first_record = 'new'
+  }
+  for (const lt of existing) {
+    const s = String(lt.id)
+    body[`name__${s}`] = lt.name
+    body[`color__${s}`] = lt.color
+    body[`limit__${s}`] = String(lt.limit)
+    body[`use_allowance__${s}`] = lt.use_allowance ? 'on' : 'off'
+    body[`use_personal__${s}`] = lt.use_personal ? 'on' : 'off'
+    body[`auto_approve__${s}`] = lt.auto_approve ? 'on' : 'off'
+    body[`manager_only__${s}`] = lt.manager_only ? 'on' : 'off'
+    body[`is_special__${s}`] = lt.is_special ? 'on' : 'off'
+    body[`allow_non_default_increments__${s}`] = lt.allow_non_default_increments
+      ? 'on'
+      : 'off'
+  }
+  return body
+}
+
+export async function createLeaveType(adminAgent, prisma, companyId, newRow) {
+  const body = await buildLeavetypesFormBody(prisma, companyId, newRow)
+  return adminAgent
+    .post('/settings/leavetypes')
+    .type('form')
+    .send(body)
+    .redirects(5)
+}
+
+export async function createDepartment(adminAgent, opts) {
+  const {
+    name,
+    allowance = '15',
+    personal = '0',
+    managerId,
+    includePublicHolidays = true,
+    isAccrued = false,
+    allowedIncrements = ['full_day', 'half_day']
+  } = opts
+  return adminAgent
+    .post('/settings/departments/')
+    .type('form')
+    .send({
+      name__new: name,
+      allowance__new: String(allowance),
+      personal__new: String(personal),
+      manager_id__new: String(managerId),
+      include_public_holidays__new: includePublicHolidays ? 'on' : 'off',
+      is_accrued_allowance__new: isAccrued ? 'on' : 'off',
+      'allowed_increments[]': allowedIncrements
+    })
+    .redirects(5)
+}
+
+export async function enableIntegrationApi(adminAgent) {
+  return adminAgent
+    .post('/settings/company/integration-api/')
+    .type('form')
+    .send({
+      integration_api_enabled: 'on',
+      regenerate_token: '1'
+    })
+    .redirects(5)
+}
+
+export async function seedIntegrationApiToken(prisma, companyId, token) {
+  await prisma.companies.update({
+    where: { id: companyId },
+    data: {
+      integration_api_enabled: true,
+      integration_api_token: token
+    }
+  })
+  return token
 }
