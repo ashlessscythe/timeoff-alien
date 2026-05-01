@@ -1,16 +1,16 @@
-import { describe, it, expect } from 'vitest'
-import app from '../support/loadEnvAndApp.mjs'
+import { createRequire } from 'module'
+import { describe, expect, it } from 'vitest'
 import {
-  createAgent,
-  registerCompanyAndAdmin,
   addEmployee,
   bookLeave,
-  createLeaveType,
+  createAgent,
   createDepartment,
+  createLeaveType,
   loginAsNewAgent,
+  registerCompanyAndAdmin,
   TEST_PASSWORD
 } from '../support/http.mjs'
-import { createRequire } from 'module'
+import app from '../support/loadEnvAndApp.mjs'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
