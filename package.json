@@ -89,6 +89,7 @@
     "lint:fix": "eslint --ext .js \"**/*.js\" --fix",
     "lint:report": "eslint --ext .js \"**/*.js\" --max-warnings 0 || true",
     "test": "npm run test:unit && npm run test:integration",
+    "test:quick": "npm run test:unit",
     "test:unit": "vitest run -c vitest.unit.config.js",
     "test:integration": "vitest run",
     "test:coverage": "vitest run --coverage",

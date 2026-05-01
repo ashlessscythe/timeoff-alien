@@ -84,6 +84,11 @@ volumes:
 - `latest`: Latest stable release
 - `dev`: Development build
 
+## TODO (Docker)
+
+- [ ] Refresh this doc and any `Dockerfile` / `docker-compose` flow against the main [README](https://github.com/ashlessscythe/timeoff-alien/blob/public/README.md) (env vars, database options, Vitest test commands for image CI if we add them).
+- [ ] Decide whether the published image should document or run a smoke test / `npm test` subset and update build pipelines accordingly.
+
 ## Support
 
 Please report any issues or feedback by opening an issue in the [GitHub repository](https://github.com/ashlessscythe/timeoff-alien).

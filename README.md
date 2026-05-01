@@ -168,23 +168,43 @@ For a complete list of options, refer to the `.env.example` file in the project 
 
 ## 🧪 Run tests
 
-Tests use [Vitest](https://vitest.dev/) with [supertest](https://github.com/ladjs/supertest) against the exported Express app (no browser). Integration tests expect Postgres and load [`.env.test`](./.env.test.example) via Vitest `globalSetup`.
+The suite uses [Vitest](https://vitest.dev/) (replacing Mocha). Integration tests use [supertest](https://github.com/ladjs/supertest) against the exported Express app (no browser).
+
+| Command | What it does |
+| --- | --- |
+| `npm test` | Full suite: unit then integration |
+| `npm run test:quick` | Same as unit — fast feedback, no database |
+| `npm run test:unit` | `tests/unit/**/*.test.mjs` only ([`vitest.unit.config.js`](./vitest.unit.config.js)) |
+| `npm run test:integration` | `tests/integration/**/*.test.mjs` ([`vitest.config.js`](./vitest.config.js), Postgres + `globalSetup`) |
+| `npm run test:watch` | Vitest watch (default config; use for integration or pass `-c vitest.unit.config.js` for unit) |
+| `npm run test:coverage` | Integration config with V8 coverage; reports under `coverage/` |
+
+**Unit tests** do not load `globalSetup` and do not need a running database.
+
+**Integration tests** expect Postgres. Copy [`.env.test.example`](./.env.test.example) to `.env.test` and set `DATABASE_URL` to a **dedicated** test database (not your dev data). `OPTION_ALLOW_NEW_REGISTRATIONS=true` is required for registration flows in tests.
 
 ```bash
-# All tests (integration + any future unit tests under tests/)
+# Quick (unit only, no DB)
+npm run test:quick
+
+# Everything CI-style
 npm test
 
-# Integration only
+# Integration only (needs .env.test + Postgres)
 npm run test:integration
 
-# Watch mode
+# Watch mode (default vitest.config.js; Ctrl+C to exit)
 npm run test:watch
 
-# Coverage (V8): HTML + lcov under coverage/
-npm run test:coverage
-```
+# Unit tests in watch mode
+npx vitest -c vitest.unit.config.js
 
-Copy `.env.test.example` to `.env.test` and set `DATABASE_URL` to a **dedicated** test database (not your dev data). `OPTION_ALLOW_NEW_REGISTRATIONS=true` is required for registration flows in tests.
+# Coverage (V8): integration tests + text/html/lcov under coverage/
+npm run test:coverage
+
+# Unit-only coverage (same reporters, uses vitest.unit.config.js)
+npx vitest run -c vitest.unit.config.js --coverage
+```
 
 ## 💾 Backup and Restore
 
