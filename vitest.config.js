@@ -15,6 +15,12 @@ module.exports = {
     testTimeout: 60000,
     hookTimeout: 60000,
     include: ['tests/**/*.test.mjs'],
-    exclude: ['node_modules/**']
+    exclude: ['node_modules/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      include: ['lib/**/*.js', 'app.js'],
+      exclude: ['lib/prisma/client.js', 'tests/**', 'node_modules/**']
+    }
   }
 }

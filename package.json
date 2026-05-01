@@ -64,6 +64,7 @@
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",
     "@types/supertest": "^6.0.3",
+    "@vitest/coverage-v8": "^3.2.4",
     "clean-css-cli": "^5.6.3",
     "dotenv": "^16.4.7",
     "eslint": "^8.51.0",
@@ -88,6 +89,7 @@
     "lint:fix": "eslint --ext .js \"**/*.js\" --fix",
     "lint:report": "eslint --ext .js \"**/*.js\" --max-warnings 0 || true",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:integration": "vitest run tests/integration",
     "test:formidable": "node scripts/test-formidable-migration.js",

@@ -179,6 +179,9 @@ npm run test:integration
 
 # Watch mode
 npm run test:watch
+
+# Coverage (V8): HTML + lcov under coverage/
+npm run test:coverage
 ```
 
 Copy `.env.test.example` to `.env.test` and set `DATABASE_URL` to a **dedicated** test database (not your dev data). `OPTION_ALLOW_NEW_REGISTRATIONS=true` is required for registration flows in tests.
