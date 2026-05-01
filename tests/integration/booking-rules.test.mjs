@@ -380,3 +380,590 @@ describe('user-level auto_approve', () => {
     expect(row.status).toBe(leaveConstants.status_approved())
   })
 })
+
+describe('allowance pool routing', () => {
+  it('rejects personal leave that exceeds personal pool even when regular pool has room', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+    // 10 total = 5 regular + 5 personal
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 10, personal: 5, manager_id: admin.id }
+    })
+
+    const ltName = `Personal ${Date.now()}`
+    await createLeaveType(agent, prisma, admin.company_id, {
+      name: ltName,
+      color: '#AABBCC',
+      limit: 0,
+      use_allowance: true,
+      use_personal: true,
+      auto_approve: false,
+      manager_only: false,
+      is_special: false,
+      allow_non_default_increments: false
+    })
+    const personalLt = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: ltName }
+    })
+
+    const empEmail = `pers_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'Pers',
+      lastname: 'Test'
+    })
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    const from = nextUtcWeekdayIso(new Date(), 'Monday', 14)
+    const to = addCalendarDaysIso(from, 5) // 6 weekdays Mon..Sat, 5 working days
+
+    const before = await prisma.leaves.count({ where: { user_id: empUser.id } })
+    await bookLeave(emp, {
+      leaveTypeId: personalLt.id,
+      fromDate: from,
+      toDate: addCalendarDaysIso(from, 7),
+      reason: 'overpersonal'
+    })
+    const after = await prisma.leaves.count({ where: { user_id: empUser.id } })
+    expect(after).toBe(before)
+  })
+
+  it('allows personal leave that fits within personal pool', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 10, personal: 5, manager_id: admin.id }
+    })
+    const ltName = `Personal ${Date.now()}`
+    await createLeaveType(agent, prisma, admin.company_id, {
+      name: ltName,
+      color: '#AABBCC',
+      limit: 0,
+      use_allowance: true,
+      use_personal: true,
+      auto_approve: false,
+      manager_only: false,
+      is_special: false,
+      allow_non_default_increments: false
+    })
+    const personalLt = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: ltName }
+    })
+    const empEmail = `persok_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'OK',
+      lastname: 'Pers'
+    })
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    const from = nextUtcWeekdayIso(new Date(), 'Monday', 21)
+    const to = addCalendarDaysIso(from, 4) // Mon..Fri = 5 working days
+
+    await bookLeave(emp, {
+      leaveTypeId: personalLt.id,
+      fromDate: from,
+      toDate: to,
+      reason: 'fitspersonal'
+    })
+
+    const row = await prisma.leaves.findFirst({
+      where: { user_id: empUser.id, leave_type_id: personalLt.id },
+      orderBy: { id: 'desc' }
+    })
+    expect(row).toBeTruthy()
+  })
+
+  it('rejects regular leave that exceeds regular pool even when personal pool is intact', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    // 7 total = 2 regular + 5 personal
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 7, personal: 5, manager_id: admin.id }
+    })
+
+    const empEmail = `reg_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'Reg',
+      lastname: 'Pool'
+    })
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+    const holiday = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: 'Holiday' }
+    })
+
+    const from = nextUtcWeekdayIso(new Date(), 'Monday', 14)
+    const to = addCalendarDaysIso(from, 4) // 5 working days > 2 regular
+    const before = await prisma.leaves.count({ where: { user_id: empUser.id } })
+    await bookLeave(emp, {
+      leaveTypeId: holiday.id,
+      fromDate: from,
+      toDate: to,
+      reason: 'overregular'
+    })
+    const after = await prisma.leaves.count({ where: { user_id: empUser.id } })
+    expect(after).toBe(before)
+  })
+
+  it('personal_adjustment increases personal pool capacity', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 20, personal: 2, manager_id: admin.id }
+    })
+
+    const ltName = `Personal ${Date.now()}`
+    await createLeaveType(agent, prisma, admin.company_id, {
+      name: ltName,
+      color: '#AABBCC',
+      limit: 0,
+      use_allowance: true,
+      use_personal: true,
+      auto_approve: false,
+      manager_only: false,
+      is_special: false,
+      allow_non_default_increments: false
+    })
+    const personalLt = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: ltName }
+    })
+
+    const empEmail = `padj_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'Padj',
+      lastname: 'Pers'
+    })
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    // Seed personal_adjustment of +3 -> total personal = 5
+    const from = nextUtcWeekdayIso(new Date(), 'Monday', 14)
+    const year = parseInt(from.slice(0, 4), 10)
+    await prisma.user_allowance_adjustment.upsert({
+      where: { user_id_year: { user_id: empUser.id, year } },
+      update: { personal_adjustment: 3 },
+      create: {
+        user_id: empUser.id,
+        year,
+        personal_adjustment: 3,
+        adjustment: 0,
+        carried_over_allowance: 0,
+        created_at: new Date()
+      }
+    })
+
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const to = addCalendarDaysIso(from, 4) // 5 working days
+    await bookLeave(emp, {
+      leaveTypeId: personalLt.id,
+      fromDate: from,
+      toDate: to,
+      reason: 'personal-adjusted'
+    })
+    const row = await prisma.leaves.findFirst({
+      where: { user_id: empUser.id, leave_type_id: personalLt.id },
+      orderBy: { id: 'desc' }
+    })
+    expect(row).toBeTruthy()
+  })
+
+  it('carried_over_allowance increases regular pool', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    // 5 total, 0 personal -> regular pool = 5; with carry_over=5 regular pool = 10
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 5, personal: 0, manager_id: admin.id }
+    })
+
+    const empEmail = `carry_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'Carry',
+      lastname: 'Over'
+    })
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    const from = nextUtcWeekdayIso(new Date(), 'Monday', 14)
+    const year = parseInt(from.slice(0, 4), 10)
+    await prisma.user_allowance_adjustment.upsert({
+      where: { user_id_year: { user_id: empUser.id, year } },
+      update: { carried_over_allowance: 5 },
+      create: {
+        user_id: empUser.id,
+        year,
+        adjustment: 0,
+        personal_adjustment: 0,
+        carried_over_allowance: 5,
+        created_at: new Date()
+      }
+    })
+
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const holiday = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: 'Holiday' }
+    })
+
+    // Book 8 working days (> 5 base allowance, fits with +5 carry over -> 10)
+    const to = addCalendarDaysIso(from, 11)
+    await bookLeave(emp, {
+      leaveTypeId: holiday.id,
+      fromDate: from,
+      toDate: to,
+      reason: 'carry-over-fits'
+    })
+    const row = await prisma.leaves.findFirst({
+      where: { user_id: empUser.id, leave_type_id: holiday.id },
+      orderBy: { id: 'desc' }
+    })
+    expect(row).toBeTruthy()
+  })
+})
+
+describe('per-leave-type limit enforcement', () => {
+  it('rejects when Sick Leave booking exceeds limit and accepts when it fits', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+    // Tighten Sick Leave limit to 2 for this test
+    const sick = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: 'Sick Leave' }
+    })
+    expect(sick).toBeTruthy()
+    expect(sick.use_allowance).toBe(false)
+    await prisma.leave_types.update({
+      where: { id: sick.id },
+      data: { limit: 2 }
+    })
+
+    const empEmail = `sick_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'Sicky',
+      lastname: 'Limit'
+    })
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    const tooLongFrom = nextUtcWeekdayIso(new Date(), 'Monday', 14)
+    const tooLongTo = addCalendarDaysIso(tooLongFrom, 2) // 3 working days
+    const before = await prisma.leaves.count({
+      where: { user_id: empUser.id, leave_type_id: sick.id }
+    })
+    await bookLeave(emp, {
+      leaveTypeId: sick.id,
+      fromDate: tooLongFrom,
+      toDate: tooLongTo,
+      reason: 'over-limit'
+    })
+    const afterRej = await prisma.leaves.count({
+      where: { user_id: empUser.id, leave_type_id: sick.id }
+    })
+    expect(afterRej).toBe(before)
+
+    // Now book 2 days -> should succeed
+    const okFrom = nextUtcWeekdayIso(new Date(), 'Monday', 35)
+    const okTo = addCalendarDaysIso(okFrom, 1) // 2 working days
+    await bookLeave(emp, {
+      leaveTypeId: sick.id,
+      fromDate: okFrom,
+      toDate: okTo,
+      reason: 'within-limit'
+    })
+    const afterOk = await prisma.leaves.count({
+      where: { user_id: empUser.id, leave_type_id: sick.id }
+    })
+    expect(afterOk).toBe(before + 1)
+  })
+})
+
+describe('non-default increments enforcement (server-side)', () => {
+  it('rejects hourly when department is restricted to default increments even if leave type opts in', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+    const deptName = `DefaultsOnly ${Date.now()}`
+    await createDepartment(agent, {
+      name: deptName,
+      allowance: '20',
+      personal: '0',
+      managerId: admin.id,
+      allowedIncrements: ['full_day', 'half_day']
+    })
+    const dept = await prisma.departments.findFirst({
+      where: { company_id: admin.company_id, name: deptName }
+    })
+
+    const ltName = `HourlyAllowed ${Date.now()}`
+    await createLeaveType(agent, prisma, admin.company_id, {
+      name: ltName,
+      color: '#22DDAA',
+      limit: 0,
+      use_allowance: true,
+      use_personal: false,
+      auto_approve: false,
+      manager_only: false,
+      is_special: false,
+      allow_non_default_increments: true
+    })
+    const lt = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: ltName }
+    })
+
+    const empEmail = `hr_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: dept.id,
+      name: 'Hr',
+      lastname: 'DeptBlock'
+    })
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    const day = addDaysIso(20)
+    const before = await prisma.leaves.count({
+      where: { user_id: empUser.id }
+    })
+    await emp
+      .post('/calendar/bookleave/')
+      .type('form')
+      .send({
+        leave_type: String(lt.id),
+        from_date: day,
+        to_date: day,
+        from_date_part: '1',
+        to_date_part: '1',
+        time_start: '09:00:00',
+        time_end: '11:00:00',
+        increment_type: 'hr',
+        increment_value: '2',
+        reason: 'dept-blocks-hourly'
+      })
+      .redirects(5)
+    const after = await prisma.leaves.count({
+      where: { user_id: empUser.id }
+    })
+    expect(after).toBe(before)
+  })
+
+  it('rejects hourly when department allows it but leave type does not opt in', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+    const deptName = `HourlyOk ${Date.now()}`
+    await createDepartment(agent, {
+      name: deptName,
+      allowance: '20',
+      personal: '0',
+      managerId: admin.id,
+      allowedIncrements: ['full_day', 'half_day', 'hourly']
+    })
+    const dept = await prisma.departments.findFirst({
+      where: { company_id: admin.company_id, name: deptName }
+    })
+
+    const ltName = `NoNonDefault ${Date.now()}`
+    await createLeaveType(agent, prisma, admin.company_id, {
+      name: ltName,
+      color: '#3344FF',
+      limit: 0,
+      use_allowance: true,
+      use_personal: false,
+      auto_approve: false,
+      manager_only: false,
+      is_special: false,
+      allow_non_default_increments: false
+    })
+    const lt = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: ltName }
+    })
+
+    const empEmail = `hr2_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: dept.id,
+      name: 'Hr',
+      lastname: 'LtBlock'
+    })
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    const day = addDaysIso(21)
+    const before = await prisma.leaves.count({
+      where: { user_id: empUser.id }
+    })
+    await emp
+      .post('/calendar/bookleave/')
+      .type('form')
+      .send({
+        leave_type: String(lt.id),
+        from_date: day,
+        to_date: day,
+        from_date_part: '1',
+        to_date_part: '1',
+        time_start: '09:00:00',
+        time_end: '11:00:00',
+        increment_type: 'hr',
+        increment_value: '2',
+        reason: 'lt-blocks-hourly'
+      })
+      .redirects(5)
+    const after = await prisma.leaves.count({
+      where: { user_id: empUser.id }
+    })
+    expect(after).toBe(before)
+  })
+
+  it('accepts hourly when both department and leave type allow it', async () => {
+    const agent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+    const deptName = `BothOk ${Date.now()}`
+    await createDepartment(agent, {
+      name: deptName,
+      allowance: '20',
+      personal: '0',
+      managerId: admin.id,
+      allowedIncrements: ['full_day', 'half_day', 'hourly']
+    })
+    const dept = await prisma.departments.findFirst({
+      where: { company_id: admin.company_id, name: deptName }
+    })
+
+    const ltName = `HrFully ${Date.now()}`
+    await createLeaveType(agent, prisma, admin.company_id, {
+      name: ltName,
+      color: '#BB99CC',
+      limit: 0,
+      use_allowance: true,
+      use_personal: false,
+      auto_approve: false,
+      manager_only: false,
+      is_special: false,
+      allow_non_default_increments: true
+    })
+    const lt = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: ltName }
+    })
+
+    const empEmail = `hrok_${Date.now()}@example.com`
+    await addEmployee(agent, {
+      email: empEmail,
+      departmentId: dept.id,
+      name: 'Ok',
+      lastname: 'Hourly'
+    })
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    const day = nextUtcWeekdayIso(new Date(), 'Tuesday', 14)
+    await emp
+      .post('/calendar/bookleave/')
+      .type('form')
+      .send({
+        leave_type: String(lt.id),
+        from_date: day,
+        to_date: day,
+        from_date_part: '1',
+        to_date_part: '1',
+        time_start: '09:00:00',
+        time_end: '11:00:00',
+        increment_type: 'hr',
+        increment_value: '2',
+        reason: 'hourly-success'
+      })
+      .redirects(5)
+
+    const row = await prisma.leaves.findFirst({
+      where: { user_id: empUser.id, leave_type_id: lt.id },
+      orderBy: { id: 'desc' }
+    })
+    expect(row).toBeTruthy()
+    expect(row.time_start).toBe('09:00:00')
+    expect(row.time_end).toBe('11:00:00')
+  })
+})
+
+describe('approval-time pool re-validation', () => {
+  it('hard-rejects approval when allowance is reduced after a leave is pending', async () => {
+    const adminAgent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+    // Allow 5 days, 0 personal, admin is manager of department
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 5, personal: 0, manager_id: admin.id }
+    })
+
+    const empEmail = `racey_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'Race',
+      lastname: 'Cond'
+    })
+    const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+    const holiday = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: 'Holiday' }
+    })
+
+    const from = nextUtcWeekdayIso(new Date(), 'Monday', 14)
+    const to = addCalendarDaysIso(from, 2) // 3 working days
+
+    // Booking succeeds (5 - 3 = 2 remaining)
+    await bookLeave(emp, {
+      leaveTypeId: holiday.id,
+      fromDate: from,
+      toDate: to,
+      reason: 'pending-before-cap'
+    })
+    const pending = await prisma.leaves.findFirst({
+      where: { user_id: empUser.id, leave_type_id: holiday.id },
+      orderBy: { id: 'desc' }
+    })
+    expect(pending).toBeTruthy()
+    expect(pending.status).toBe(leaveConstants.status_new())
+
+    // Admin reduces department allowance to 2, but the leave is for 3 days
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 2 }
+    })
+
+    // Manager (admin) attempts to approve -> hard reject
+    await adminAgent
+      .post('/requests/approve/')
+      .type('form')
+      .send({ request: String(pending.id), comment: 'try-approve' })
+      .redirects(5)
+
+    const after = await prisma.leaves.findUnique({ where: { id: pending.id } })
+    expect(after.status).toBe(leaveConstants.status_new())
+  })
+})
