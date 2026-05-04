@@ -8,6 +8,7 @@ const {
   wrapSchedule
 } = require('../../lib/model/sessionUser.js')
 const userUtils = require('../../lib/prisma/userUtils.js')
+const leaveConstants = require('../../lib/model/leave_constants.js')
 
 function makeBankHoliday(dateIso) {
   return {
@@ -138,6 +139,32 @@ describe('deducted-days engines', () => {
       expect(n).toBe(3)
     })
 
+    it('scopes get_deducted_days_number to the requested year for cross-year spans', () => {
+      const user = makeUser({ includePublicHolidays: true, bankHolidays: [] })
+      const leave = wrapLeave(
+        makeLeaveRow({
+          user,
+          dateStart: '2025-12-29',
+          dateEnd: '2026-01-02'
+        }),
+        null
+      )
+      const n2025 = leave.get_deducted_days_number({
+        ignore_allowance: true,
+        leave_type: { use_allowance: true },
+        user,
+        year: moment.utc('2025', 'YYYY')
+      })
+      expect(n2025).toBe(3)
+      const n2026 = leave.get_deducted_days_number({
+        ignore_allowance: true,
+        leave_type: { use_allowance: true },
+        user,
+        year: moment.utc('2026', 'YYYY')
+      })
+      expect(n2026).toBe(2)
+    })
+
     it('computes time-based leave as a fraction of working hours', () => {
       const user = makeUser({
         shiftHours: JSON.stringify({ shift_1: { start: '09:00', end: '17:00' } })
@@ -247,6 +274,193 @@ describe('deducted-days engines', () => {
       )
       expect(taken).toBeCloseTo(2 / 8, 6)
     })
+
+    it('ignores rejected and canceled rows when using default allowance statuses', () => {
+      const schedule = {
+        monday: 1,
+        tuesday: 1,
+        wednesday: 1,
+        thursday: 1,
+        friday: 1,
+        saturday: 2,
+        sunday: 2
+      }
+      const user = {
+        id: 1,
+        company: { bank_holidays: [] },
+        department: { include_public_holidays: true },
+        cached_schedule: schedule
+      }
+      const lt = { use_allowance: true }
+      const leaves = [
+        {
+          status: leaveConstants.status_approved(),
+          date_start: new Date('2026-09-01T00:00:00.000Z'),
+          date_end: new Date('2026-09-01T00:00:00.000Z'),
+          day_part_start: 1,
+          day_part_end: 1,
+          leave_types: lt
+        },
+        {
+          status: leaveConstants.status_rejected(),
+          date_start: new Date('2026-09-02T00:00:00.000Z'),
+          date_end: new Date('2026-09-02T00:00:00.000Z'),
+          day_part_start: 1,
+          day_part_end: 1,
+          leave_types: lt
+        },
+        {
+          status: leaveConstants.status_canceled(),
+          date_start: new Date('2026-09-03T00:00:00.000Z'),
+          date_end: new Date('2026-09-03T00:00:00.000Z'),
+          day_part_start: 1,
+          day_part_end: 1,
+          leave_types: lt
+        }
+      ]
+      const taken = userUtils.calculateNumberOfDaysTakenFromAllowance(
+        user,
+        leaves,
+        2026,
+        { schedule, company: user.company, department: user.department }
+      )
+      expect(taken).toBe(1)
+    })
+
+    it('counts only days in the requested calendar year for cross-year spans', () => {
+      const schedule = {
+        monday: 1,
+        tuesday: 1,
+        wednesday: 1,
+        thursday: 1,
+        friday: 1,
+        saturday: 2,
+        sunday: 2
+      }
+      const user = {
+        id: 1,
+        company: { bank_holidays: [] },
+        department: { include_public_holidays: true },
+        cached_schedule: schedule
+      }
+      const leaves = [
+        {
+          status: leaveConstants.status_approved(),
+          date_start: new Date('2025-12-29T00:00:00.000Z'),
+          date_end: new Date('2026-01-02T00:00:00.000Z'),
+          day_part_start: 1,
+          day_part_end: 1,
+          leave_types: { use_allowance: true }
+        }
+      ]
+      const taken2025 = userUtils.calculateNumberOfDaysTakenFromAllowance(
+        user,
+        leaves,
+        2025,
+        { schedule, company: user.company, department: user.department }
+      )
+      // Mon 29, Tue 30, Wed 31 Dec 2025 (Thu Jan 1 / Fri Jan 2 fall in 2026)
+      expect(taken2025).toBe(3)
+
+      const taken2026 = userUtils.calculateNumberOfDaysTakenFromAllowance(
+        user,
+        leaves,
+        2026,
+        { schedule, company: user.company, department: user.department }
+      )
+      expect(taken2026).toBe(2)
+    })
+
+    it('treats Saturday as working when schedule marks it working (parity with sessionUser)', () => {
+      const schedule = {
+        monday: 2,
+        tuesday: 2,
+        wednesday: 2,
+        thursday: 2,
+        friday: 2,
+        saturday: 1,
+        sunday: 2
+      }
+      const userRow = {
+        id: 1,
+        company: { bank_holidays: [] },
+        department: { include_public_holidays: true },
+        cached_schedule: wrapSchedule(schedule, null)
+      }
+      const leave = wrapLeave(
+        makeLeaveRow({
+          user: userRow,
+          dateStart: '2026-08-15',
+          dateEnd: '2026-08-15'
+        }),
+        null
+      )
+      const n = leave.get_deducted_days_number({
+        ignore_allowance: true,
+        leave_type: { use_allowance: true },
+        user: userRow,
+        year: moment.utc('2026', 'YYYY')
+      })
+      expect(n).toBe(1)
+
+      const uuUser = {
+        id: 1,
+        company: { bank_holidays: [] },
+        department: { include_public_holidays: true },
+        cached_schedule: schedule
+      }
+      const taken = userUtils.calculateNumberOfDaysTakenFromAllowance(
+        uuUser,
+        [
+          {
+            status: 2,
+            date_start: new Date('2026-08-15T00:00:00.000Z'),
+            date_end: new Date('2026-08-15T00:00:00.000Z'),
+            day_part_start: 1,
+            day_part_end: 1,
+            leave_types: { use_allowance: true }
+          }
+        ],
+        2026,
+        { schedule, company: uuUser.company, department: uuUser.department }
+      )
+      expect(taken).toBe(1)
+    })
+
+    it('userUtils skips bank holidays when include_public_holidays is false', () => {
+      const schedule = {
+        monday: 1,
+        tuesday: 1,
+        wednesday: 1,
+        thursday: 1,
+        friday: 1,
+        saturday: 2,
+        sunday: 2
+      }
+      const user = {
+        id: 1,
+        company: { bank_holidays: [{ date: new Date('2026-09-08T00:00:00.000Z') }] },
+        department: { include_public_holidays: false },
+        cached_schedule: schedule
+      }
+      const leaves = [
+        {
+          status: 2,
+          date_start: new Date('2026-09-07T00:00:00.000Z'),
+          date_end: new Date('2026-09-09T00:00:00.000Z'),
+          day_part_start: 1,
+          day_part_end: 1,
+          leave_types: { use_allowance: true }
+        }
+      ]
+      const taken = userUtils.calculateNumberOfDaysTakenFromAllowance(
+        user,
+        leaves,
+        2026,
+        { schedule, company: user.company, department: user.department }
+      )
+      // Mon-Wed all count; Tue 2026-09-08 is a bank holiday but should still deduct
+      expect(taken).toBe(3)
+    })
   })
 })
-

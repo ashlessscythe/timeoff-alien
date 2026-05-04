@@ -13,6 +13,7 @@ import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
+const { loadSessionUserById } = require('../../lib/model/sessionUser.js')
 
 describe('delegation booking authorization', () => {
   it('employee cannot book leave for another employee (forged user index falls back to self)', async () => {
@@ -140,6 +141,62 @@ describe('delegation booking authorization', () => {
       orderBy: { id: 'desc' }
     })
     expect(lastMgrLeave).toBeTruthy()
+  })
+
+  it('manager can book leave for a supervised employee using the managed-users index', async () => {
+    const adminAgent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+    const mgrEmail = `mgr_pos_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: mgrEmail,
+      departmentId: admin.department_id,
+      manager: true,
+      name: 'Morgan',
+      lastname: 'Manager'
+    })
+    const mgr = await prisma.users.findFirst({ where: { email: mgrEmail } })
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { manager_id: mgr.id }
+    })
+
+    const empEmail = `emp_pos_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'Erin',
+      lastname: 'Employee'
+    })
+    const emp = await prisma.users.findFirst({ where: { email: empEmail } })
+
+    const holiday = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: 'Holiday' }
+    })
+
+    const { agent: mgrAgent } = await loginAsNewAgent(app, mgrEmail, TEST_PASSWORD)
+    const mgrSession = await loadSessionUserById(prisma, mgr.id)
+    await mgrSession.reload_with_session_details()
+    const managed = await mgrSession.promise_users_I_can_manage()
+    const idx = managed.findIndex(u => u.id === emp.id)
+    expect(idx).toBeGreaterThanOrEqual(0)
+
+    const before = await prisma.leaves.count({ where: { user_id: emp.id } })
+    await bookLeave(mgrAgent, {
+      leaveTypeId: holiday.id,
+      fromDate: '2026-11-12',
+      toDate: '2026-11-12',
+      reason: 'mgr-books-emp',
+      user: idx
+    })
+    expect(await prisma.leaves.count({ where: { user_id: emp.id } })).toBe(before + 1)
+    const row = await prisma.leaves.findFirst({
+      where: { user_id: emp.id, leave_type_id: holiday.id },
+      orderBy: { id: 'desc' }
+    })
+    expect(row).toBeTruthy()
+    expect(row.user_id).toBe(emp.id)
   })
 })
 
