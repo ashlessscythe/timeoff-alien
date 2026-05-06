@@ -11,35 +11,54 @@ if (!dbUrl) {
 
 const scriptDir = path.dirname(__filename)
 
-const getLatestBackupFile = () => {
+function getLatestBackupFile() {
   const files = fs
     .readdirSync(scriptDir)
-    .filter(file => file.startsWith('backup_') && file.endsWith('.sql'))
+    .filter(
+      file =>
+        file.startsWith('backup_') && (file.endsWith('.dump') || file.endsWith('.sql'))
+    )
   return files.sort().reverse()[0]
 }
 
-const inputFile = process.argv[2] || getLatestBackupFile()
-if (!inputFile) {
-  console.error('No backup file specified and no backups found')
+function resolveInputPath(arg) {
+  const fallback = getLatestBackupFile()
+  const input = arg || fallback
+  if (!input) return null
+
+  const direct = path.isAbsolute(input) ? input : path.join(scriptDir, input)
+  if (fs.existsSync(direct)) return direct
+
+  // Allow passing a basename without extension.
+  if (!path.extname(direct)) {
+    const dumpCandidate = `${direct}.dump`
+    if (fs.existsSync(dumpCandidate)) return dumpCandidate
+    const sqlCandidate = `${direct}.sql`
+    if (fs.existsSync(sqlCandidate)) return sqlCandidate
+  }
+  return direct
+}
+
+const inputPath = resolveInputPath(process.argv[2])
+if (!inputPath || !fs.existsSync(inputPath)) {
+  console.error('No backup file found. Provide a filename/path, or create a backup first.')
   process.exit(1)
 }
 
-const inputPath = path.join(scriptDir, inputFile)
-const compressedFile = inputPath
+console.log(`Restoring from: ${inputPath}`)
 
-console.log(`Processing file: ${inputPath}`)
-
-// Restore from compressed format
-// const restoreCommand = `pg_restore -d "${dbUrl}" "${compressedFile}"`
-// const restoreCommand = `pg_restore --clean --if-exists --no-owner --no-privileges -d "${dbUrl}" "${compressedFile}"`
-const restoreCommand = `psql "${dbUrl}" -f "${sqlFile}"`
+const isDump = inputPath.endsWith('.dump')
+const restoreCommand = isDump
+  ? `pg_restore --clean --if-exists --no-owner --no-privileges -d "${dbUrl}" "${inputPath}"`
+  : `psql "${dbUrl}" -v ON_ERROR_STOP=1 -f "${inputPath}"`
 
 exec(restoreCommand, { shell: '/bin/bash' }, (error, stdout, stderr) => {
+  if (stdout) console.log(stdout)
+  if (stderr) console.error(stderr)
   if (error) {
     console.error(`Error restoring database: ${error.message}`)
-    console.error(`Exit code: ${error.code}`)
-    console.error(`Signal: ${error.signal}`)
+    process.exitCode = typeof error.code === 'number' ? error.code : 1
+    return
   }
-  console.log(`stdout: ${stdout}`)
-  console.error(`stderr: ${stderr}`)
+  console.log('Database restore complete.')
 })

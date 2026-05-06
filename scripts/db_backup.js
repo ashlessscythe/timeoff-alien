@@ -25,6 +25,7 @@ exec(command1, (error, stdout, stderr) => {
       `Error executing pg_dump for plaintext backup: ${error.message}`
     )
     console.error(`stderr: ${stderr}`)
+    process.exitCode = 1
     return
   }
   console.log(`Plaintext backup saved to: ${backupPath}.sql`)
@@ -38,6 +39,7 @@ exec(command1, (error, stdout, stderr) => {
         `Error executing pg_dump for compressed backup: ${error.message}`
       )
       console.error(`stderr: ${stderr}`)
+      process.exitCode = 1
       return
     }
     console.log(`Compressed backup saved to: ${backupPath}.dump`)
