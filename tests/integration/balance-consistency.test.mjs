@@ -4,12 +4,17 @@ import {
   createAgent,
   registerCompanyAndAdmin,
   createLeaveType,
-  bookLeave
+  bookLeave,
+  addEmployee,
+  loginAsNewAgent,
+  TEST_PASSWORD
 } from '../support/http.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
+const leaveConstants = require('../../lib/model/leave_constants.js')
+const moment = require('moment')
 
 function parseUsersCsvRow(csvText, email) {
   const lines = csvText.trim().split('\n')
@@ -70,6 +75,38 @@ describe('balance consistency across app surfaces', () => {
       data: { allowance: 10, personal: 2, manager_id: admin.id }
     })
 
+    // Explicit schedules (company + user-specific) to ensure deductions respect work calendars.
+    await prisma.schedules.create({
+      data: {
+        company_id: admin.company_id,
+        user_id: null,
+        monday: 1,
+        tuesday: 1,
+        wednesday: 1,
+        thursday: 1,
+        friday: 1,
+        saturday: 2,
+        sunday: 2,
+        created_at: moment.utc().toDate(),
+        updated_at: moment.utc().toDate()
+      }
+    })
+    await prisma.schedules.create({
+      data: {
+        company_id: admin.company_id,
+        user_id: admin.id,
+        monday: 1,
+        tuesday: 1,
+        wednesday: 1,
+        thursday: 1,
+        friday: 1,
+        saturday: 2,
+        sunday: 2,
+        created_at: moment.utc().toDate(),
+        updated_at: moment.utc().toDate()
+      }
+    })
+
     const personalName = `Personal ${Date.now()}`
     await createLeaveType(agent, prisma, admin.company_id, {
       name: personalName,
@@ -91,6 +128,12 @@ describe('balance consistency across app surfaces', () => {
     })
     expect(holiday).toBeTruthy()
     expect(personal).toBeTruthy()
+
+    // Ensure these bookings count as approved/used immediately for deterministic assertions.
+    await prisma.leave_types.update({
+      where: { id: holiday.id },
+      data: { auto_approve: true }
+    })
 
     // Book 2 vacation + 1 personal = 3 used; remaining_allowance=7; personal_remaining=1; vacation_remaining=6
     await bookLeave(agent, {
@@ -145,6 +188,129 @@ describe('balance consistency across app surfaces', () => {
 
     expect(calVacation).toBe(6)
     expect(personalDays).toBe(1)
-  })
+  }, 120000)
+
+  it('calendar big numbers deduct pending requests (employee view)', async () => {
+    const adminAgent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    expect(admin).toBeTruthy()
+
+    // Small, deterministic personal pool.
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 10, personal: 2, manager_id: admin.id }
+    })
+
+    const empEmail = `emp_pending_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'E',
+      lastname: 'Pending'
+    })
+
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+    expect(empUser).toBeTruthy()
+
+    // Ensure schedule is explicitly covered by this test:
+    // - company schedule: default Mon-Fri working, weekend off
+    // - user schedule: same (so 2026-08-13 Thu counts as a working day)
+    await prisma.schedules.create({
+      data: {
+        company_id: admin.company_id,
+        user_id: null,
+        monday: 1,
+        tuesday: 1,
+        wednesday: 1,
+        thursday: 1,
+        friday: 1,
+        saturday: 2,
+        sunday: 2,
+        created_at: moment.utc().toDate(),
+        updated_at: moment.utc().toDate()
+      }
+    })
+    await prisma.schedules.create({
+      data: {
+        company_id: admin.company_id,
+        user_id: empUser.id,
+        monday: 1,
+        tuesday: 1,
+        wednesday: 1,
+        thursday: 1,
+        friday: 1,
+        saturday: 2,
+        sunday: 2,
+        created_at: moment.utc().toDate(),
+        updated_at: moment.utc().toDate()
+      }
+    })
+
+    const personalName = `Personal Pending ${Date.now()}`
+    await createLeaveType(adminAgent, prisma, admin.company_id, {
+      name: personalName,
+      color: '#AABBCC',
+      limit: 0,
+      use_allowance: true,
+      use_personal: true,
+      auto_approve: false,
+      manager_only: false,
+      is_special: false,
+      allow_non_default_increments: false
+    })
+
+    const personal = await prisma.leave_types.findFirst({
+      where: { company_id: admin.company_id, name: personalName }
+    })
+    expect(personal).toBeTruthy()
+
+    const { agent: empAgent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+
+    // Book 1 personal day as employee -> pending.
+    // Use a weekday so it deducts from allowance (weekends may count as 0).
+    await bookLeave(empAgent, {
+      leaveTypeId: personal.id,
+      fromDate: '2026-08-13',
+      toDate: '2026-08-13',
+      reason: 'pending personal'
+    })
+
+    const leave = await prisma.leaves.findFirst({
+      where: { user_id: empUser.id, leave_type_id: personal.id },
+      orderBy: { id: 'desc' }
+    })
+    expect(leave).toBeTruthy()
+    expect(leave.status).toBe(leaveConstants.status_new())
+
+    const cal = await empAgent.get('/calendar/?year=2026').redirects(5)
+    expect(cal.status).toBe(200)
+
+    // vacation_remaining should be unchanged (10-2 personal carve-out => 8 vacation pool, 0 regular taken)
+    const calVacation = parseCalendarBigNumber(cal.text, 'data-tom-days-available-in-allowance')
+    expect(calVacation).toBe(8)
+
+    // personal_remaining should reflect pending (-1): 2 - 1 = 1
+    const personalSpanRe = new RegExp(
+      'data-tom-days-available-in-allowance[\\s\\S]*?<\\/span>' +
+        '\\s*<span class="slash"[\\s\\S]*?<\\/span>' +
+        '\\s*<span class="big-number[^"]*"[^>]*>\\s*([\\s\\S]*?)\\s*<\\/span>',
+      'i'
+    )
+    const personalSpan = cal.text.match(personalSpanRe)
+    if (!personalSpan) throw new Error('Could not locate personal big-number span')
+    const personalChunk = personalSpan[1]
+    const pd = personalChunk.match(/(-)?\s*(\d+)d/i)
+    if (!pd) throw new Error('Could not parse personal days from calendar')
+    const personalDays = (pd[1] ? -1 : 1) * Number(pd[2])
+    expect(personalDays).toBe(1)
+
+    // Pending should NOT count as "used/taken" across other surfaces.
+    // Users list CSV `days_used` must remain 0 for a purely-pending booking.
+    const usersCsv = await adminAgent.get('/users/?as-csv=1').redirects(0)
+    expect(usersCsv.status).toBe(200)
+    const csv = parseUsersCsvRow(usersCsv.text, empEmail)
+    expect(csv.days_used).toBe(0)
+  }, 120000)
 })
 

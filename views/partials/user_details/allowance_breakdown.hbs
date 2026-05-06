@@ -58,7 +58,7 @@ It relies on following entries in context:
   </dd>
   {{/if}}
   <dd>
-    <em>Used so far</em>
+    <em>Used or requested so far</em>
     <span class="pull-right" data-content="Total number of days already taken from allowance." data-placement="top"
       data-toggle="popover" data-trigger="focus hover">{{#if_equal user_allowance.number_of_days_taken_from_allowance
       0}}-{{else}}{{ format_days_and_hours user_allowance.number_of_days_taken_from_allowance}}{{/if_equal}}</span>

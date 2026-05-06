@@ -46,14 +46,27 @@ function buildAllowance({
   nominalAllowance,
   nominalPersonal,
   numberOfDaysTaken,
+  numberOfDaysTakenPersonal,
+  numberOfDaysTakenRegular,
   now
 }) {
+  const personalTaken =
+    numberOfDaysTakenPersonal === undefined
+      ? user.calculate_number_of_days_taken_from_allowance({ count_personal: true })
+      : numberOfDaysTakenPersonal
+  const regularTaken =
+    numberOfDaysTakenRegular === undefined
+      ? user.calculate_number_of_days_taken_from_allowance({ count_regular: true })
+      : numberOfDaysTakenRegular
+
   return new UserAllowance({
     user,
     manual_adjustment: manualAdjustment,
     personal_adjustment: personalAdjustment,
     carry_over: carryOver,
     number_of_days_taken_from_allowance: numberOfDaysTaken,
+    number_of_days_taken_personal: personalTaken,
+    number_of_days_taken_regular: regularTaken,
     nominal_allowance: nominalAllowance,
     nominal_personal: nominalPersonal,
     now: now || moment.utc('2026-06-15')
