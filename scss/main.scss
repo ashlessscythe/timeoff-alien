@@ -699,6 +699,25 @@ body .allowance-breakdown .big-number-container .slash {
   }
 }
 
+@media (max-width: 767px) {
+  .navbar-header {
+    .mobile-header-cta {
+      float: right;
+      margin-top: 8px;
+      margin-right: 10px;
+      padding: 6px 10px;
+      line-height: 1.2;
+    }
+  }
+
+  .navbar-brand {
+    max-width: calc(100% - 140px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 /* Buttons - Theme-aware styling */
 .btn {
   background-color: var(--button-bg);
