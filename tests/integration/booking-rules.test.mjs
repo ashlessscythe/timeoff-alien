@@ -253,7 +253,10 @@ describe('leave type behavior', () => {
     expect(fresh.my_leaves.length).toBeGreaterThanOrEqual(1)
     const allowance = await UserAllowance.promise_allowance({
       user: fresh,
-      year
+      year,
+      // Newly-booked leave is pending (status_new) in this flow; for this test we
+      // want to assert the allowance pool deduction includes pending bookings.
+      include_pending: true
     })
     expect(allowance.number_of_days_taken_from_allowance).toBeGreaterThanOrEqual(1)
   })

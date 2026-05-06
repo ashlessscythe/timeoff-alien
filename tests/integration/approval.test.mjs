@@ -14,6 +14,10 @@ const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 const leaveConstants = require('../../lib/model/leave_constants.js')
 
+function day(iso) {
+  return new Date(`${iso}T00:00:00.000Z`)
+}
+
 describe('leave approval', () => {
   it('manager can approve an employee pending leave', async () => {
     const adminAgent = createAgent(app)
@@ -183,4 +187,97 @@ describe('leave approval', () => {
     const after = await prisma.leaves.findUnique({ where: { id: leave.id } })
     expect(after.status).toBe(leaveConstants.status_new())
   })
+
+  it('manager cannot approve a leave if employee would exceed allowance including other pending requests', async () => {
+    const adminAgent = createAgent(app)
+    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+    // Set tiny allowance to make the conflict obvious: 1 day total, 0 personal.
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { allowance: 1, personal: 0 }
+    })
+
+    const mgrEmail = `mgr_over_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: mgrEmail,
+      departmentId: admin.department_id,
+      manager: true,
+      name: 'M',
+      lastname: 'Manager'
+    })
+    const empEmail = `emp_over_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: admin.department_id,
+      name: 'E',
+      lastname: 'Employee'
+    })
+
+    const mgrUser = await prisma.users.findFirst({ where: { email: mgrEmail } })
+    await prisma.departments.update({
+      where: { id: admin.department_id },
+      data: { manager_id: mgrUser.id }
+    })
+
+    const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+    const holiday = await prisma.leave_types.findFirst({
+      where: { company_id: empUser.company_id, name: 'Holiday' }
+    })
+    expect(holiday).toBeTruthy()
+
+    // Bypass booking validation by inserting two pending leaves directly.
+    // Approval should consider the OTHER pending leave as consuming allowance too.
+    const ts = new Date()
+    const leave1 = await prisma.leaves.create({
+      data: {
+        user_id: empUser.id,
+        leave_type_id: holiday.id,
+        approver_id: mgrUser.id,
+        status: leaveConstants.status_new(),
+        employee_comment: 'pending-1',
+        // Use weekdays so the leave deducts allowance under default Mon–Fri schedule.
+        date_start: day('2026-12-21'),
+        date_end: day('2026-12-21'),
+        day_part_start: 1,
+        day_part_end: 1,
+        time_start: null,
+        time_end: null,
+        created_at: ts,
+        updated_at: ts
+      }
+    })
+    const leave2 = await prisma.leaves.create({
+      data: {
+        user_id: empUser.id,
+        leave_type_id: holiday.id,
+        approver_id: mgrUser.id,
+        status: leaveConstants.status_new(),
+        employee_comment: 'pending-2',
+        date_start: day('2026-12-22'),
+        date_end: day('2026-12-22'),
+        day_part_start: 1,
+        day_part_end: 1,
+        time_start: null,
+        time_end: null,
+        created_at: ts,
+        updated_at: ts
+      }
+    })
+
+    const { agent: mgr } = await loginAsNewAgent(app, mgrEmail, TEST_PASSWORD)
+    const res = await mgr
+      .post('/requests/approve/')
+      .type('form')
+      .send({ request: String(leave1.id), comment: 'try approve' })
+      .redirects(5)
+
+    expect(res.status).toBeLessThan(400)
+
+    const after1 = await prisma.leaves.findUnique({ where: { id: leave1.id } })
+    const after2 = await prisma.leaves.findUnique({ where: { id: leave2.id } })
+    expect(after1.status).toBe(leaveConstants.status_new())
+    expect(after2.status).toBe(leaveConstants.status_new())
+  }, 120000)
 })

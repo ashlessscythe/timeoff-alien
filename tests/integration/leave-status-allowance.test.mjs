@@ -12,7 +12,7 @@ function day(iso) {
 }
 
 describe('allowance counting by leave status', () => {
-  it('counts only new, approved, and pended_revoke toward used days (rejected/canceled excluded)', async () => {
+  it('counts only approved and pended_revoke toward used days (rejected/canceled/new excluded)', async () => {
     const agent = createAgent(app)
     const { email } = await registerCompanyAndAdmin(agent)
     const user = await prisma.users.findFirst({ where: { email } })
@@ -64,7 +64,10 @@ describe('allowance counting by leave status', () => {
     })
     expect(row).toBeTruthy()
     const cols = row.split(',').map(s => s.replace(/^"|"$/g, ''))
-    expect(Number(cols[idx.days_used])).toBe(3)
+    // "Used" should reflect only approved leave (pended_revoke is treated as approved),
+    // while pending requests are shown separately as deducted/pending in the UI.
+    expect(Number(cols[idx.days_used])).toBe(2)
+    // Remaining allowance in the CSV reflects allowance AFTER deducting pending requests too.
     expect(Number(cols[idx.remaining_allowance])).toBe(22)
   })
 })
