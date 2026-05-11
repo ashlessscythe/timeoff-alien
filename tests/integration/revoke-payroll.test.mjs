@@ -206,9 +206,17 @@ describe('POST /requests/revoke/ payroll week + same company', () => {
   }, 120000)
 
   it('before payroll close: employee can revoke own approved leave from prior week (pended_revoke)', async () => {
-    const { pastLeave, emp } = await setupManagerEmployeeApprovedLeave({
-      pastWeekIso: '2026-05-05',
-      currentWeekIso: '2026-05-12'
+    const { pastLeave, emp, empUser, mgrUser } =
+      await setupManagerEmployeeApprovedLeave({
+        pastWeekIso: '2026-05-05',
+        currentWeekIso: '2026-05-12'
+      })
+
+    const auditsMgrBefore = await prisma.email_audits.count({
+      where: { user_id: mgrUser.id, company_id: empUser.company_id }
+    })
+    const auditsEmpBefore = await prisma.email_audits.count({
+      where: { user_id: empUser.id, company_id: empUser.company_id }
     })
 
     await beforePayrollCloseMay2026(() =>
@@ -221,6 +229,35 @@ describe('POST /requests/revoke/ payroll week + same company', () => {
 
     const row = await prisma.leaves.findUnique({ where: { id: pastLeave.id } })
     expect(row.status).toBe(leaveConstants.status_pended_revoke())
+
+    const auditsMgrAfter = await prisma.email_audits.count({
+      where: { user_id: mgrUser.id, company_id: empUser.company_id }
+    })
+    const auditsEmpAfter = await prisma.email_audits.count({
+      where: { user_id: empUser.id, company_id: empUser.company_id }
+    })
+    expect(auditsMgrAfter - auditsMgrBefore).toBeGreaterThanOrEqual(1)
+    expect(auditsEmpAfter - auditsEmpBefore).toBeGreaterThanOrEqual(1)
+
+    const supervisorCopy = await prisma.email_audits.findFirst({
+      where: {
+        company_id: empUser.company_id,
+        user_id: mgrUser.id,
+        subject: { contains: 'Revoke leave request', mode: 'insensitive' }
+      },
+      orderBy: { id: 'desc' }
+    })
+    expect(supervisorCopy).toBeTruthy()
+
+    const requestorCopy = await prisma.email_audits.findFirst({
+      where: {
+        company_id: empUser.company_id,
+        user_id: empUser.id,
+        subject: { contains: 'waiting decision', mode: 'insensitive' }
+      },
+      orderBy: { id: 'desc' }
+    })
+    expect(requestorCopy).toBeTruthy()
   }, 120000)
 
   it('admin of another company cannot revoke a leave from a different company (status unchanged)', async () => {
