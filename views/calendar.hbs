@@ -212,5 +212,19 @@
 
 {{/unless}}
 
+{{> modal_leave_reject }}
+{{> modal_leave_approve }}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Same delegated wiring as team view: leave-summary popovers inject approve/reject
+    // buttons that target these modals (see views/leave/popup_leave_details.hbs).
+    $(document).on('click', 'button[data-target="#approveModal"], button[data-target="#rejectModal"]', function () {
+      const leaveId = $(this).data('leave-id')
+      const modalId = $(this).data('target')
+      $(modalId).find('input[name="request"]').val(leaveId)
+    })
+  })
+</script>
 
 {{> footer }}

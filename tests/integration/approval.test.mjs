@@ -18,6 +18,58 @@ function day(iso) {
   return new Date(`${iso}T00:00:00.000Z`)
 }
 
+function uniqueSuffix() {
+  return `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+}
+
+/** Pending holiday leave for an employee; department manager is mgr agent. */
+async function setupManagerEmployeePendingLeave() {
+  const adminAgent = createAgent(app)
+  const sfx = uniqueSuffix()
+  const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+  const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+
+  const mgrEmail = `mgr_appr_${sfx}@example.com`
+  await addEmployee(adminAgent, {
+    email: mgrEmail,
+    departmentId: admin.department_id,
+    manager: true,
+    name: 'M',
+    lastname: 'Manager'
+  })
+  const empEmail = `emp_appr_${sfx}@example.com`
+  await addEmployee(adminAgent, {
+    email: empEmail,
+    departmentId: admin.department_id,
+    name: 'E',
+    lastname: 'Employee'
+  })
+
+  const mgrUser = await prisma.users.findFirst({ where: { email: mgrEmail } })
+  await prisma.departments.update({
+    where: { id: admin.department_id },
+    data: { manager_id: mgrUser.id }
+  })
+
+  const { agent: emp } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+  const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
+  const holiday = await prisma.leave_types.findFirst({
+    where: { company_id: empUser.company_id, name: 'Holiday' }
+  })
+  await bookLeave(emp, {
+    leaveTypeId: holiday.id,
+    fromDate: '2026-12-10',
+    toDate: '2026-12-10',
+    reason: 'pending'
+  })
+  const leave = await prisma.leaves.findFirst({
+    where: { user_id: empUser.id },
+    orderBy: { id: 'desc' }
+  })
+  const { agent: mgr } = await loginAsNewAgent(app, mgrEmail, TEST_PASSWORD)
+  return { mgr, leave }
+}
+
 describe('leave approval', () => {
   it('manager can approve an employee pending leave', async () => {
     const adminAgent = createAgent(app)
@@ -279,5 +331,41 @@ describe('leave approval', () => {
     const after2 = await prisma.leaves.findUnique({ where: { id: leave2.id } })
     expect(after1.status).toBe(leaveConstants.status_new())
     expect(after2.status).toBe(leaveConstants.status_new())
+  }, 120000)
+
+  it.each([
+    // Path-only Referer: full URLs would redirect supertest off the injected app (ECONNREFUSED).
+    ['/requests/', 'requests list'],
+    ['/calendar/teamview/', 'team calendar'],
+    ['/calendar/', 'employee calendar']
+  ])(
+    'manager approves pending leave with same handler (Referer: %s — %s)',
+    async (referer, _surfaceLabel) => {
+      const { mgr, leave } = await setupManagerEmployeePendingLeave()
+      expect(leave.status).toBe(leaveConstants.status_new())
+
+      const appr = await mgr
+        .post('/requests/approve/')
+        .set('Referer', referer)
+        .type('form')
+        .send({ request: String(leave.id), comment: 'ok' })
+        .redirects(5)
+      expect(appr.status).toBeLessThan(400)
+
+      const after = await prisma.leaves.findUnique({ where: { id: leave.id } })
+      expect(after.status).toBe(leaveConstants.status_approved())
+    },
+    120000
+  )
+
+  it('employee calendar page includes approval modals used by leave-summary popover', async () => {
+    const adminAgent = createAgent(app)
+    await registerCompanyAndAdmin(adminAgent)
+    const cal = await adminAgent.get('/calendar/').redirects(5)
+    expect(cal.status).toBe(200)
+    expect(cal.text).toContain('id="approveModal"')
+    expect(cal.text).toContain('id="rejectModal"')
+    expect(cal.text).toContain('action="/requests/approve/"')
+    expect(cal.text).toContain('action="/requests/reject/"')
   }, 120000)
 })
