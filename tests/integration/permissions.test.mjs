@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -8,6 +8,7 @@ import {
   expectRedirectToHome,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline, deleteCompanyAndChildren } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -38,47 +39,65 @@ async function expectGetOk(agent, path) {
   expect(res.status).toBe(200)
 }
 
-describe('role-based access', () => {
-  let departmentId
-  let managerEmail
-  let employeeEmail
-  let companyId
+/** @type {import('supertest').TestAgent} */
+let adminAgent
+let adminId
+let companyId
+let primaryDepartmentId
+let departmentId
+let managerEmail
+let employeeEmail
 
-  beforeAll(async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({
-      where: { email: adminEmail }
-    })
-    expect(admin).toBeTruthy()
-    departmentId = admin.department_id
-    companyId = admin.company_id
-
-    const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
-    managerEmail = `mgr_${suffix}@example.com`
-    employeeEmail = `emp_${suffix}@example.com`
-
-    const mgrRes = await addEmployee(adminAgent, {
-      email: managerEmail,
-      departmentId,
-      manager: true,
-      admin: false,
-      name: 'Morgan',
-      lastname: 'Manager'
-    })
-    expect(mgrRes.status).toBeLessThan(400)
-
-    const empRes = await addEmployee(adminAgent, {
-      email: employeeEmail,
-      departmentId,
-      manager: false,
-      admin: false,
-      name: 'Erin',
-      lastname: 'Employee'
-    })
-    expect(empRes.status).toBeLessThan(400)
+async function seedManagerAndEmployee() {
+  const admin = await prisma.users.findUnique({ where: { id: adminId } })
+  const deptId = admin.department_id
+  await addEmployee(adminAgent, {
+    email: managerEmail,
+    departmentId: deptId,
+    manager: true,
+    admin: false,
+    name: 'Morgan',
+    lastname: 'Manager'
   })
+  await addEmployee(adminAgent, {
+    email: employeeEmail,
+    departmentId: deptId,
+    manager: false,
+    admin: false,
+    name: 'Erin',
+    lastname: 'Employee'
+  })
+}
 
+beforeAll(async () => {
+  adminAgent = createAgent(app)
+  const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+  const admin = await prisma.users.findFirst({
+    where: { email: adminEmail }
+  })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+  departmentId = admin.department_id
+
+  const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+  managerEmail = `mgr_${suffix}@example.com`
+  employeeEmail = `emp_${suffix}@example.com`
+
+  await seedManagerAndEmployee()
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+  await seedManagerAndEmployee()
+})
+
+describe('role-based access', () => {
   describe('guest', () => {
     it('redirects unauthenticated users from restricted routes', async () => {
       const agent = createAgent(app)
@@ -143,6 +162,12 @@ describe('role-based access', () => {
       for (const path of paths) {
         await expectGetOk(agent, path)
       }
+
+      const createdAdmin = await prisma.users.findFirst({
+        where: { email: `admin_paths_${suffix}@example.com` }
+      })
+      expect(createdAdmin).toBeTruthy()
+      await deleteCompanyAndChildren(prisma, createdAdmin.company_id)
     })
   })
 

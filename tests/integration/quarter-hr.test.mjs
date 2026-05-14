@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -9,6 +9,7 @@ import {
   createLeaveType,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -17,13 +18,47 @@ const { loadSessionUserById } = require('../../lib/model/sessionUser.js')
 const UserAllowance = require('../../lib/model/user_allowance.js')
 const moment = require('moment')
 
+/** @type {import('supertest').TestAgent} */
+let adminAgent
+let adminId
+let companyId
+let primaryDepartmentId
+/** @type {number[]} */
+let baselineLeaveTypeIds
+
+beforeAll(async () => {
+  adminAgent = createAgent(app)
+  const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+  const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+  baselineLeaveTypeIds = (
+    await prisma.leave_types.findMany({
+      where: { company_id: companyId },
+      select: { id: true }
+    })
+  ).map(r => r.id)
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+  if (baselineLeaveTypeIds?.length) {
+    await prisma.leave_types.deleteMany({
+      where: { company_id: companyId, id: { notIn: baselineLeaveTypeIds } }
+    })
+  }
+})
+
 describe('quarter-hour booking', () => {
   it('accepts 15-minute booking when dept + leave type allow it and deducts fractional allowance', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
-    // Department that allows quarter-hour increments
     const deptName = `QuarterHr ${Date.now()}`
     await createDepartment(adminAgent, {
       name: deptName,
@@ -47,7 +82,6 @@ describe('quarter-hour booking', () => {
     const emp = await prisma.users.findFirst({ where: { email: empEmail } })
     expect(emp).toBeTruthy()
 
-    // Leave type that opts into non-default increments
     const ltName = `QuarterLt ${Date.now()}`
     await createLeaveType(adminAgent, prisma, admin.company_id, {
       name: ltName,
@@ -95,9 +129,7 @@ describe('quarter-hour booking', () => {
       year
     })
 
-    // 15 minutes out of 8 working hours = 0.25/8 = 0.03125 days
     expect(allowance.number_of_days_taken_from_allowance).toBeGreaterThan(0)
     expect(allowance.number_of_days_taken_from_allowance).toBeCloseTo(0.03125, 4)
   })
 })
-

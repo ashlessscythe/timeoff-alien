@@ -1,17 +1,52 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import { createAgent, registerCompanyAndAdmin } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 
+/** @type {import('supertest').TestAgent} */
+let agent
+let adminId
+let companyId
+let primaryDepartmentId
+/** @type {number[]} */
+let baselineLeaveTypeIds
+
+beforeAll(async () => {
+  agent = createAgent(app)
+  const { email } = await registerCompanyAndAdmin(agent)
+  const admin = await prisma.users.findFirst({ where: { email } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+  baselineLeaveTypeIds = (
+    await prisma.leave_types.findMany({
+      where: { company_id: companyId },
+      select: { id: true }
+    })
+  ).map(r => r.id)
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+  if (baselineLeaveTypeIds?.length) {
+    await prisma.leave_types.deleteMany({
+      where: { company_id: companyId, id: { notIn: baselineLeaveTypeIds } }
+    })
+  }
+})
+
 describe('leave types', () => {
   it('adds a leave type via POST /settings/leavetypes', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-
-    const admin = await prisma.users.findFirst({ where: { email } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
     const ltName = `Conference ${Date.now()}`
     const before = await prisma.leave_types.count({
       where: { company_id: admin.company_id }

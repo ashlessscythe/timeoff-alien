@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import request from 'supertest'
 import { randomUUID } from 'crypto'
 import app from '../support/loadEnvAndApp.mjs'
@@ -8,16 +8,46 @@ import {
   enableIntegrationApi,
   seedIntegrationApiToken
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 
+/** @type {import('supertest').TestAgent} */
+let agent
+let adminId
+let companyId
+let primaryDepartmentId
+
+beforeAll(async () => {
+  agent = createAgent(app)
+  const { email } = await registerCompanyAndAdmin(agent)
+  const user = await prisma.users.findFirst({ where: { email } })
+  expect(user).toBeTruthy()
+  adminId = user.id
+  companyId = user.company_id
+  primaryDepartmentId = user.department_id
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+  await prisma.companies.update({
+    where: { id: companyId },
+    data: {
+      integration_api_enabled: false,
+      integration_api_token: null
+    }
+  })
+})
+
 describe('integration API (Bearer)', () => {
   it('enables API via settings UI and accepts bearer token on /integration/v1/', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-    const user = await prisma.users.findFirst({ where: { email } })
+    const user = await prisma.users.findUnique({ where: { id: adminId } })
     const save = await enableIntegrationApi(agent)
     expect(save.status).toBeLessThan(400)
 
@@ -35,9 +65,7 @@ describe('integration API (Bearer)', () => {
   })
 
   it('seeded token works for /report/allowance; wrong or missing token returns 401', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-    const user = await prisma.users.findFirst({ where: { email } })
+    const user = await prisma.users.findUnique({ where: { id: adminId } })
     const token = randomUUID()
     await seedIntegrationApiToken(prisma, user.company_id, token)
 

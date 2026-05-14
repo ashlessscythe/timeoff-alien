@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -8,6 +8,7 @@ import {
   loginAsNewAgent,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -22,12 +23,50 @@ function uniqueSuffix() {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
 }
 
-/** Pending holiday leave for an employee; department manager is mgr agent. */
-async function setupManagerEmployeePendingLeave() {
-  const adminAgent = createAgent(app)
-  const sfx = uniqueSuffix()
+/** @type {import('supertest').TestAgent} */
+let adminAgent
+let adminId
+let companyId
+let primaryDepartmentId
+/** @type {number[]} */
+let baselineLeaveTypeIds
+
+beforeAll(async () => {
+  adminAgent = createAgent(app)
   const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
   const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+  baselineLeaveTypeIds = (
+    await prisma.leave_types.findMany({
+      where: { company_id: companyId },
+      select: { id: true }
+    })
+  ).map(r => r.id)
+}, 120000)
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+  if (baselineLeaveTypeIds?.length) {
+    await prisma.leave_types.deleteMany({
+      where: {
+        company_id: companyId,
+        id: { notIn: baselineLeaveTypeIds }
+      }
+    })
+  }
+})
+
+/** Pending holiday leave for an employee; department manager is mgr agent. */
+async function setupManagerEmployeePendingLeave() {
+  const admin = await prisma.users.findUnique({ where: { id: adminId } })
+  const sfx = uniqueSuffix()
 
   const mgrEmail = `mgr_appr_${sfx}@example.com`
   await addEmployee(adminAgent, {
@@ -72,9 +111,7 @@ async function setupManagerEmployeePendingLeave() {
 
 describe('leave approval', () => {
   it('manager can approve an employee pending leave', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
     const mgrEmail = `mgr_appr_${Date.now()}@example.com`
     await addEmployee(adminAgent, {
@@ -128,11 +165,8 @@ describe('leave approval', () => {
   }, 120000)
 
   it('manager can approve a pending personal leave at exact personal limit', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
-    // Make sure the department has exactly 1 personal day available.
     await prisma.departments.update({
       where: { id: admin.department_id },
       data: { personal: 1 }
@@ -200,9 +234,7 @@ describe('leave approval', () => {
   }, 120000)
 
   it('employee cannot approve their own pending leave via requests handler', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
     const empEmail = `emp_self_${Date.now()}@example.com`
     await addEmployee(adminAgent, {
       email: empEmail,
@@ -241,11 +273,8 @@ describe('leave approval', () => {
   })
 
   it('manager cannot approve a leave if employee would exceed allowance including other pending requests', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
-    // Set tiny allowance to make the conflict obvious: 1 day total, 0 personal.
     await prisma.departments.update({
       where: { id: admin.department_id },
       data: { allowance: 1, personal: 0 }
@@ -279,8 +308,6 @@ describe('leave approval', () => {
     })
     expect(holiday).toBeTruthy()
 
-    // Bypass booking validation by inserting two pending leaves directly.
-    // Approval should consider the OTHER pending leave as consuming allowance too.
     const ts = new Date()
     const leave1 = await prisma.leaves.create({
       data: {
@@ -289,7 +316,6 @@ describe('leave approval', () => {
         approver_id: mgrUser.id,
         status: leaveConstants.status_new(),
         employee_comment: 'pending-1',
-        // Use weekdays so the leave deducts allowance under default Mon–Fri schedule.
         date_start: day('2026-12-21'),
         date_end: day('2026-12-21'),
         day_part_start: 1,
@@ -334,7 +360,6 @@ describe('leave approval', () => {
   }, 120000)
 
   it.each([
-    // Path-only Referer: full URLs would redirect supertest off the injected app (ECONNREFUSED).
     ['/requests/', 'requests list'],
     ['/calendar/teamview/', 'team calendar'],
     ['/calendar/', 'employee calendar']
@@ -359,8 +384,6 @@ describe('leave approval', () => {
   )
 
   it('employee calendar page includes approval modals used by leave-summary popover', async () => {
-    const adminAgent = createAgent(app)
-    await registerCompanyAndAdmin(adminAgent)
     const cal = await adminAgent.get('/calendar/').redirects(5)
     expect(cal.status).toBe(200)
     expect(cal.text).toContain('id="approveModal"')

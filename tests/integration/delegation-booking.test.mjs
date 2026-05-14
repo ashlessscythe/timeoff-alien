@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -9,17 +9,40 @@ import {
   createDepartment,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 const { loadSessionUserById } = require('../../lib/model/sessionUser.js')
 
+/** @type {import('supertest').TestAgent} */
+let adminAgent
+let adminId
+let companyId
+let primaryDepartmentId
+
+beforeAll(async () => {
+  adminAgent = createAgent(app)
+  const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+  const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+})
+
 describe('delegation booking authorization', () => {
   it('employee cannot book leave for another employee (forged user index falls back to self)', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
     const emp1Email = `emp1_${Date.now()}@example.com`
     const emp2Email = `emp2_${Date.now()}@example.com`
@@ -53,7 +76,7 @@ describe('delegation booking authorization', () => {
       fromDate: '2026-09-01',
       toDate: '2026-09-01',
       reason: 'forge-user-index',
-      user: 9999 // out of range; should not target another employee
+      user: 9999
     })
 
     const afterEmp2 = await prisma.leaves.count({ where: { user_id: emp2.id } })
@@ -67,12 +90,8 @@ describe('delegation booking authorization', () => {
   })
 
   it('manager cannot book leave for users outside supervised departments', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
-    // Create a second department; admin is manager for its own dept by default in setup,
-    // but managers should only see supervised departments in promise_users_I_can_manage.
     const dept2Name = `Dept2 ${Date.now()}`
     await createDepartment(adminAgent, {
       name: dept2Name,
@@ -97,7 +116,6 @@ describe('delegation booking authorization', () => {
     const mgr = await prisma.users.findFirst({ where: { email: mgrEmail } })
     expect(mgr).toBeTruthy()
 
-    // Ensure mgr is manager of dept1 only (not dept2)
     await prisma.departments.update({
       where: { id: admin.department_id },
       data: { manager_id: mgr.id }
@@ -122,7 +140,6 @@ describe('delegation booking authorization', () => {
       where: { user_id: outsider.id }
     })
 
-    // Forged index should not resolve to outsider; should fall back to manager self.
     await bookLeave(mgrAgent, {
       leaveTypeId: holiday.id,
       fromDate: '2026-09-02',
@@ -144,9 +161,7 @@ describe('delegation booking authorization', () => {
   })
 
   it('manager can book leave for a supervised employee using the managed-users index', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
     const mgrEmail = `mgr_pos_${Date.now()}@example.com`
     await addEmployee(adminAgent, {
@@ -199,4 +214,3 @@ describe('delegation booking authorization', () => {
     expect(row.user_id).toBe(emp.id)
   })
 })
-

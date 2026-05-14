@@ -1,18 +1,45 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import { createAgent, registerCompanyAndAdmin } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 
+/** @type {import('supertest').TestAgent} */
+let agent
+let adminId
+let companyId
+let primaryDepartmentId
+let adminEmail
+
+beforeAll(async () => {
+  agent = createAgent(app)
+  const reg = await registerCompanyAndAdmin(agent)
+  adminEmail = reg.email
+  const user = await prisma.users.findFirst({
+    where: { email: adminEmail },
+    include: { companies: true }
+  })
+  expect(user).toBeTruthy()
+  adminId = user.id
+  companyId = user.company_id
+  primaryDepartmentId = user.department_id
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+})
+
 describe('leave request', () => {
   it('books a single-day leave via POST /calendar/bookleave/', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-
     const user = await prisma.users.findFirst({
-      where: { email },
+      where: { email: adminEmail },
       include: { companies: true }
     })
     const holiday = await prisma.leave_types.findFirst({
@@ -51,11 +78,8 @@ describe('leave request', () => {
   })
 
   it('books leave without reason and does not create a LEAVE comment row', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-
     const user = await prisma.users.findFirst({
-      where: { email },
+      where: { email: adminEmail },
       include: { companies: true }
     })
     const holiday = await prisma.leave_types.findFirst({
@@ -90,14 +114,9 @@ describe('leave request', () => {
     expect(leaveComment).toBeNull()
   })
 
-  // Regression: new-request emails must await `record_email_addressed_to_me` before
-  // `send_mail` and bookleave must await the email promise so audits exist after POST.
   it('records email_audits for new leave request emails before bookleave finishes', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-
     const user = await prisma.users.findFirst({
-      where: { email },
+      where: { email: adminEmail },
       include: { companies: true }
     })
     const holiday = await prisma.leave_types.findFirst({
@@ -105,9 +124,6 @@ describe('leave request', () => {
     })
     expect(holiday).toBeTruthy()
 
-    // Admin is department manager, so new-request emails go to the same user twice
-    // (supervisor copy + requestor copy). Both must be in email_audits when the POST
-    // completes — regress if audit writes are not awaited before redirect.
     const auditsBefore = await prisma.email_audits.count({
       where: { company_id: user.company_id, user_id: user.id }
     })

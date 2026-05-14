@@ -1,19 +1,41 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import { createAgent, registerCompanyAndAdmin } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 
+/** @type {import('supertest').TestAgent} */
+let agent
+let adminId
+let companyId
+let primaryDepartmentId
+
+beforeAll(async () => {
+  agent = createAgent(app)
+  const { email } = await registerCompanyAndAdmin(agent)
+  const admin = await prisma.users.findFirst({ where: { email } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+})
+
 describe('users CSV import', () => {
   it('imports users from CSV via POST /users/import/', async () => {
-    const agent = createAgent(app)
-    await registerCompanyAndAdmin(agent)
-
     const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
     const e1 = `import_one_${suffix}@example.com`
     const e2 = `import_two_${suffix}@example.com`

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -9,16 +9,52 @@ import {
   bookLeave,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 
+/** @type {import('supertest').TestAgent} */
+let adminAgent
+let adminId
+let companyId
+let primaryDepartmentId
+/** @type {number[]} */
+let baselineLeaveTypeIds
+
+beforeAll(async () => {
+  adminAgent = createAgent(app)
+  const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
+  const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+  baselineLeaveTypeIds = (
+    await prisma.leave_types.findMany({
+      where: { company_id: companyId },
+      select: { id: true }
+    })
+  ).map(r => r.id)
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+  if (baselineLeaveTypeIds?.length) {
+    await prisma.leave_types.deleteMany({
+      where: { company_id: companyId, id: { notIn: baselineLeaveTypeIds } }
+    })
+  }
+})
+
 describe('manager_only leave type enforcement', () => {
   it('blocks non-manager employees from booking manager_only leave types', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
     const empEmail = `emp_${Date.now()}@example.com`
     await addEmployee(adminAgent, {
@@ -60,9 +96,7 @@ describe('manager_only leave type enforcement', () => {
   })
 
   it('allows managers to book manager_only leave types', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
     const mgrEmail = `mgr_${Date.now()}@example.com`
     await addEmployee(adminAgent, {
@@ -104,4 +138,3 @@ describe('manager_only leave type enforcement', () => {
     expect(after).toBe(before + 1)
   })
 })
-

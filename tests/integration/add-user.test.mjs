@@ -1,25 +1,49 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
   registerCompanyAndAdmin,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 
+/** @type {import('supertest').TestAgent} */
+let agent
+let adminId
+let companyId
+let primaryDepartmentId
+
+beforeAll(async () => {
+  agent = createAgent(app)
+  const { email: adminEmail } = await registerCompanyAndAdmin(agent)
+  const admin = await prisma.users.findFirst({
+    where: { email: adminEmail },
+    include: { departments: true }
+  })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+})
+
 describe('add user (admin)', () => {
   it('creates an employee via POST /users/add/', async () => {
-    const agent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
-
-    const admin = await prisma.users.findFirst({
-      where: { email: adminEmail },
+    const admin = await prisma.users.findUnique({
+      where: { id: adminId },
       include: { departments: true }
     })
-    expect(admin).toBeTruthy()
 
     const newEmail = `employee_${Date.now()}@example.com`
     const res = await agent

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -7,6 +7,7 @@ import {
   loginAsNewAgent,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetUserProfileEmailState, deleteCompanyAndChildren } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -15,16 +16,22 @@ const prisma = require('../../lib/prisma/client.js')
 describe('GET /me/ profile', () => {
   let employeeEmail
   let companyId
+  /** @type {import('supertest').TestAgent} */
+  let adminAgent
+  let fixtureEmployeeId
+  let initialEmployeeEmail
+  let extraCompanyIdToDelete = null
 
   beforeAll(async () => {
-    const adminAgent = createAgent(app)
+    adminAgent = createAgent(app)
     const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
     const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
     expect(admin).toBeTruthy()
     companyId = admin.company_id
 
     const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
-    employeeEmail = `emp_me_${suffix}@example.com`
+    initialEmployeeEmail = `emp_me_${suffix}@example.com`
+    employeeEmail = initialEmployeeEmail
     const empRes = await addEmployee(adminAgent, {
       email: employeeEmail,
       departmentId: admin.department_id,
@@ -34,6 +41,24 @@ describe('GET /me/ profile', () => {
       lastname: 'Profile'
     })
     expect(empRes.status).toBeLessThan(400)
+    const emp = await prisma.users.findFirst({ where: { email: employeeEmail } })
+    fixtureEmployeeId = emp.id
+  })
+
+  afterEach(async () => {
+    await resetUserProfileEmailState(prisma, {
+      userId: fixtureEmployeeId,
+      baselineEmail: initialEmployeeEmail
+    })
+    employeeEmail = initialEmployeeEmail
+    if (extraCompanyIdToDelete) {
+    try {
+      await deleteCompanyAndChildren(prisma, extraCompanyIdToDelete)
+    } catch (_e) {
+      /* best-effort */
+    }
+      extraCompanyIdToDelete = null
+    }
   })
 
   it('returns 200 for logged-in employee', async () => {
@@ -144,28 +169,29 @@ describe('GET /me/ profile', () => {
   })
 
   it('rejects email already used by another user at request step', async () => {
-    const adminAgent = createAgent(app)
     const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
     const otherEmail = `other_${suffix}@example.com`
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent, {
+    const dupAgent = createAgent(app)
+    const { email: adminDupEmail } = await registerCompanyAndAdmin(dupAgent, {
       email: `admin_dup_${suffix}@example.com`,
       companyName: `Co dup ${suffix}`
     })
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
-    await addEmployee(adminAgent, {
+    const adminDup = await prisma.users.findFirst({ where: { email: adminDupEmail } })
+    await addEmployee(dupAgent, {
       email: otherEmail,
-      departmentId: admin.department_id,
+      departmentId: adminDup.department_id,
       manager: false,
       admin: false
     })
 
     const victimEmail = `victim_${suffix}@example.com`
-    await addEmployee(adminAgent, {
+    await addEmployee(dupAgent, {
       email: victimEmail,
-      departmentId: admin.department_id,
+      departmentId: adminDup.department_id,
       manager: false,
       admin: false
     })
+    extraCompanyIdToDelete = adminDup.company_id
 
     const { agent } = await loginAsNewAgent(app, victimEmail, TEST_PASSWORD)
     const before = await prisma.users.findFirst({ where: { email: victimEmail } })

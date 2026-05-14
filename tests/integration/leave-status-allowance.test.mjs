@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import { createAgent, registerCompanyAndAdmin } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -11,11 +12,35 @@ function day(iso) {
   return new Date(`${iso}T00:00:00.000Z`)
 }
 
+/** @type {import('supertest').TestAgent} */
+let agent
+let adminId
+let companyId
+let primaryDepartmentId
+let adminEmail
+
+beforeAll(async () => {
+  agent = createAgent(app)
+  const { email } = await registerCompanyAndAdmin(agent)
+  adminEmail = email
+  const user = await prisma.users.findFirst({ where: { email } })
+  expect(user).toBeTruthy()
+  adminId = user.id
+  companyId = user.company_id
+  primaryDepartmentId = user.department_id
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+})
+
 describe('allowance counting by leave status', () => {
   it('counts only approved and pended_revoke toward used days (rejected/canceled/new excluded)', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-    const user = await prisma.users.findFirst({ where: { email } })
+    const user = await prisma.users.findUnique({ where: { id: adminId } })
     const holiday = await prisma.leave_types.findFirst({
       where: { company_id: user.company_id, name: 'Holiday' }
     })
@@ -60,14 +85,11 @@ describe('allowance counting by leave status', () => {
     const idx = Object.fromEntries(header.map((k, i) => [k, i]))
     const row = lines.slice(1).find(line => {
       const cols = line.split(',').map(s => s.replace(/^"|"$/g, ''))
-      return (cols[idx.email] || '').toLowerCase() === email.toLowerCase()
+      return (cols[idx.email] || '').toLowerCase() === adminEmail.toLowerCase()
     })
     expect(row).toBeTruthy()
     const cols = row.split(',').map(s => s.replace(/^"|"$/g, ''))
-    // "Used" should reflect only approved leave (pended_revoke is treated as approved),
-    // while pending requests are shown separately as deducted/pending in the UI.
     expect(Number(cols[idx.days_used])).toBe(2)
-    // Remaining allowance in the CSV reflects allowance AFTER deducting pending requests too.
     expect(Number(cols[idx.remaining_allowance])).toBe(22)
   })
 })

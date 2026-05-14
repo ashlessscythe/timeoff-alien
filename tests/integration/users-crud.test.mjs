@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -9,16 +9,41 @@ import {
   loginAsNewAgent,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 
+/** @type {import('supertest').TestAgent} */
+let agent
+let adminId
+let companyId
+let primaryDepartmentId
+let adminEmail
+
+beforeAll(async () => {
+  agent = createAgent(app)
+  const { email } = await registerCompanyAndAdmin(agent)
+  adminEmail = email
+  const admin = await prisma.users.findFirst({ where: { email } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+})
+
 describe('users and leave types CRUD edge cases', () => {
   it('rejects duplicate email on add user', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-    const admin = await prisma.users.findFirst({ where: { email } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
     const before = await prisma.users.count({
       where: { company_id: admin.company_id }
     })
@@ -29,7 +54,7 @@ describe('users and leave types CRUD edge cases', () => {
       .send({
         name: 'X',
         lastname: 'Y',
-        email_address: email,
+        email_address: adminEmail,
         department: String(admin.department_id),
         start_date: '2026-02-01',
         password_one: TEST_PASSWORD,
@@ -48,9 +73,7 @@ describe('users and leave types CRUD edge cases', () => {
   })
 
   it('cannot delete a leave type that is in use', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-    const user = await prisma.users.findFirst({ where: { email } })
+    const user = await prisma.users.findUnique({ where: { id: adminId } })
     const holiday = await prisma.leave_types.findFirst({
       where: { company_id: user.company_id, name: 'Holiday' }
     })
@@ -73,9 +96,7 @@ describe('users and leave types CRUD edge cases', () => {
   })
 
   it('deactivated user (end_date in past) cannot establish a session', async () => {
-    const agent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(agent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
     const empEmail = `gone_${Date.now()}@example.com`
     await addEmployee(agent, {
       email: empEmail,

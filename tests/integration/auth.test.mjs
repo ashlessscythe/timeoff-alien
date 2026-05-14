@@ -1,12 +1,14 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import request from 'supertest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
   registerCompanyAndAdmin,
   logout,
+  login,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { restoreFixtureAdminPassword } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -14,10 +16,30 @@ const prisma = require('../../lib/prisma/client.js')
 
 const RESET_PASSWORD = 'VitestResetPw!99ab'
 
+/** @type {import('supertest').TestAgent} */
+let agent
+let adminId
+let adminEmail
+
+beforeAll(async () => {
+  agent = createAgent(app)
+  const { email } = await registerCompanyAndAdmin(agent)
+  adminEmail = email
+  const row = await prisma.users.findFirst({ where: { email } })
+  expect(row).toBeTruthy()
+  adminId = row.id
+})
+
+afterEach(async () => {
+  await restoreFixtureAdminPassword(prisma, {
+    userId: adminId,
+    plainPassword: TEST_PASSWORD
+  })
+  await login(agent, adminEmail, TEST_PASSWORD)
+})
+
 describe('auth flows', () => {
   it('logout invalidates session (GET /calendar/ redirects)', async () => {
-    const agent = createAgent(app)
-    await registerCompanyAndAdmin(agent)
     const ok = await agent.get('/calendar/').redirects(5)
     expect(ok.status).toBe(200)
     await logout(agent)
@@ -27,13 +49,11 @@ describe('auth flows', () => {
   })
 
   it('rejects wrong password on login', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
     await logout(agent)
     const res = await agent
       .post('/login')
       .type('form')
-      .send({ username: email, password: `${TEST_PASSWORD}wrong` })
+      .send({ username: adminEmail, password: `${TEST_PASSWORD}wrong` })
       .redirects(0)
     expect(res.status).toBeGreaterThanOrEqual(300)
     expect(res.status).toBeLessThan(400)
@@ -41,19 +61,17 @@ describe('auth flows', () => {
   })
 
   it('password reset round-trip: forgot -> reset -> login with new password', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
     await logout(agent)
 
     const guest = createAgent(app)
     const forgot = await guest
       .post('/forgot-password/')
       .type('form')
-      .send({ email })
+      .send({ email: adminEmail })
       .redirects(5)
     expect(forgot.status).toBeLessThan(400)
 
-    const row = await prisma.users.findFirst({ where: { email } })
+    const row = await prisma.users.findFirst({ where: { email: adminEmail } })
     expect(row.reset_password_token).toBeTruthy()
 
     const reset = await guest
@@ -71,7 +89,7 @@ describe('auth flows', () => {
     await fresh
       .post('/login')
       .type('form')
-      .send({ username: email, password: RESET_PASSWORD })
+      .send({ username: adminEmail, password: RESET_PASSWORD })
       .redirects(5)
     const cal = await fresh.get('/calendar/').redirects(5)
     expect(cal.status).toBe(200)
@@ -79,7 +97,7 @@ describe('auth flows', () => {
     const oldLogin = await request(app)
       .post('/login')
       .type('form')
-      .send({ username: email, password: TEST_PASSWORD })
+      .send({ username: adminEmail, password: TEST_PASSWORD })
       .redirects(0)
     expect(oldLogin.headers.location || '').toMatch(/login/i)
   })

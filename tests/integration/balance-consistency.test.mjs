@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -9,12 +9,24 @@ import {
   loginAsNewAgent,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
 const leaveConstants = require('../../lib/model/leave_constants.js')
 const moment = require('moment')
+
+/** @type {import('supertest').TestAgent} */
+let adminAgent
+let adminId
+let companyId
+let primaryDepartmentId
+let adminEmail
+/** @type {number[]} */
+let baselineLeaveTypeIds
+let holidayTypeId
+let baselineHolidayAutoApprove
 
 function parseUsersCsvRow(csvText, email) {
   const lines = csvText.trim().split('\n')
@@ -35,8 +47,6 @@ function parseUsersCsvRow(csvText, email) {
 }
 
 function parseCalendarBigNumber(html, marker) {
-  // marker is an attribute snippet like 'data-tom-days-available-in-allowance'
-  // Expect the compact form: "6d" or "0d" with optional "<span>Nh</span>".
   const re = new RegExp(
     `<span[^>]*${marker}[^>]*>\\s*([\\s\\S]*?)\\s*<\\/span>`,
     'i'
@@ -62,20 +72,58 @@ function parseAbsencesUsedRemaining(html) {
   return { used: Number(usedMatch[1]), remaining: Number(remMatch[1]) }
 }
 
+beforeAll(async () => {
+  adminAgent = createAgent(app)
+  const { email } = await registerCompanyAndAdmin(adminAgent)
+  adminEmail = email
+  const admin = await prisma.users.findFirst({ where: { email } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+  baselineLeaveTypeIds = (
+    await prisma.leave_types.findMany({
+      where: { company_id: companyId },
+      select: { id: true }
+    })
+  ).map(r => r.id)
+  const holiday = await prisma.leave_types.findFirst({
+    where: { company_id: companyId, name: 'Holiday' }
+  })
+  expect(holiday).toBeTruthy()
+  holidayTypeId = holiday.id
+  baselineHolidayAutoApprove = holiday.auto_approve
+}, 120000)
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+  if (baselineLeaveTypeIds?.length) {
+    await prisma.leave_types.deleteMany({
+      where: {
+        company_id: companyId,
+        id: { notIn: baselineLeaveTypeIds }
+      }
+    })
+  }
+  await prisma.leave_types.update({
+    where: { id: holidayTypeId },
+    data: { auto_approve: baselineHolidayAutoApprove }
+  })
+})
+
 describe('balance consistency across app surfaces', () => {
   it('calendar, users list (csv), and user absences agree on used/available', async () => {
-    const agent = createAgent(app)
-    const { email } = await registerCompanyAndAdmin(agent)
-    const admin = await prisma.users.findFirst({ where: { email } })
-    expect(admin).toBeTruthy()
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
-    // Deterministic pools: total=10, personal=2
     await prisma.departments.update({
       where: { id: admin.department_id },
       data: { allowance: 10, personal: 2, manager_id: admin.id }
     })
 
-    // Explicit schedules (company + user-specific) to ensure deductions respect work calendars.
     await prisma.schedules.create({
       data: {
         company_id: admin.company_id,
@@ -108,7 +156,7 @@ describe('balance consistency across app surfaces', () => {
     })
 
     const personalName = `Personal ${Date.now()}`
-    await createLeaveType(agent, prisma, admin.company_id, {
+    await createLeaveType(adminAgent, prisma, admin.company_id, {
       name: personalName,
       color: '#AABBCC',
       limit: 0,
@@ -129,36 +177,32 @@ describe('balance consistency across app surfaces', () => {
     expect(holiday).toBeTruthy()
     expect(personal).toBeTruthy()
 
-    // Ensure these bookings count as approved/used immediately for deterministic assertions.
     await prisma.leave_types.update({
       where: { id: holiday.id },
       data: { auto_approve: true }
     })
 
-    // Book 2 vacation + 1 personal = 3 used; remaining_allowance=7; personal_remaining=1; vacation_remaining=6
-    await bookLeave(agent, {
+    await bookLeave(adminAgent, {
       leaveTypeId: holiday.id,
       fromDate: '2026-08-10',
       toDate: '2026-08-11',
       reason: 'vac2'
     })
-    await bookLeave(agent, {
+    await bookLeave(adminAgent, {
       leaveTypeId: personal.id,
       fromDate: '2026-08-12',
       toDate: '2026-08-12',
       reason: 'per1'
     })
 
-    const usersCsv = await agent.get('/users/?as-csv=1').redirects(0)
+    const usersCsv = await adminAgent.get('/users/?as-csv=1').redirects(0)
     expect(usersCsv.status).toBe(200)
     expect(String(usersCsv.headers['content-type'] || '')).toMatch(/text\/csv/i)
-    const csv = parseUsersCsvRow(usersCsv.text, email)
+    const csv = parseUsersCsvRow(usersCsv.text, adminEmail)
 
-    // /calendar displays vacation_remaining and personal_remaining as the big numbers
-    const cal = await agent.get('/calendar/?year=2026').redirects(5)
+    const cal = await adminAgent.get('/calendar/?year=2026').redirects(5)
     expect(cal.status).toBe(200)
     const calVacation = parseCalendarBigNumber(cal.text, 'data-tom-days-available-in-allowance')
-    // Personal number is the *second* big-number span in the breakdown, right after the slash.
     const personalSpanRe = new RegExp(
       'data-tom-days-available-in-allowance[\\s\\S]*?<\\/span>' +
         '\\s*<span class="slash"[\\s\\S]*?<\\/span>' +
@@ -172,7 +216,7 @@ describe('balance consistency across app surfaces', () => {
     if (!pd) throw new Error('Could not parse personal days from calendar')
     const personalDays = (pd[1] ? -1 : 1) * Number(pd[2])
 
-    const abs = await agent
+    const abs = await adminAgent
       .get(`/users/edit/${admin.id}/absences/?year=2026`)
       .redirects(5)
     expect(abs.status).toBe(200)
@@ -191,12 +235,8 @@ describe('balance consistency across app surfaces', () => {
   }, 120000)
 
   it('calendar big numbers deduct pending requests (employee view)', async () => {
-    const adminAgent = createAgent(app)
-    const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
-    const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
-    expect(admin).toBeTruthy()
+    const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
-    // Small, deterministic personal pool.
     await prisma.departments.update({
       where: { id: admin.department_id },
       data: { allowance: 10, personal: 2, manager_id: admin.id }
@@ -213,9 +253,6 @@ describe('balance consistency across app surfaces', () => {
     const empUser = await prisma.users.findFirst({ where: { email: empEmail } })
     expect(empUser).toBeTruthy()
 
-    // Ensure schedule is explicitly covered by this test:
-    // - company schedule: default Mon-Fri working, weekend off
-    // - user schedule: same (so 2026-08-13 Thu counts as a working day)
     await prisma.schedules.create({
       data: {
         company_id: admin.company_id,
@@ -267,8 +304,6 @@ describe('balance consistency across app surfaces', () => {
 
     const { agent: empAgent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
 
-    // Book 1 personal day as employee -> pending.
-    // Use a weekday so it deducts from allowance (weekends may count as 0).
     await bookLeave(empAgent, {
       leaveTypeId: personal.id,
       fromDate: '2026-08-13',
@@ -286,11 +321,9 @@ describe('balance consistency across app surfaces', () => {
     const cal = await empAgent.get('/calendar/?year=2026').redirects(5)
     expect(cal.status).toBe(200)
 
-    // vacation_remaining should be unchanged (10-2 personal carve-out => 8 vacation pool, 0 regular taken)
     const calVacation = parseCalendarBigNumber(cal.text, 'data-tom-days-available-in-allowance')
     expect(calVacation).toBe(8)
 
-    // personal_remaining should reflect pending (-1): 2 - 1 = 1
     const personalSpanRe = new RegExp(
       'data-tom-days-available-in-allowance[\\s\\S]*?<\\/span>' +
         '\\s*<span class="slash"[\\s\\S]*?<\\/span>' +
@@ -305,12 +338,9 @@ describe('balance consistency across app surfaces', () => {
     const personalDays = (pd[1] ? -1 : 1) * Number(pd[2])
     expect(personalDays).toBe(1)
 
-    // Pending should NOT count as "used/taken" across other surfaces.
-    // Users list CSV `days_used` must remain 0 for a purely-pending booking.
     const usersCsv = await adminAgent.get('/users/?as-csv=1').redirects(0)
     expect(usersCsv.status).toBe(200)
     const csv = parseUsersCsvRow(usersCsv.text, empEmail)
     expect(csv.days_used).toBe(0)
   }, 120000)
 })
-

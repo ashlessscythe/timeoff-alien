@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -7,6 +7,7 @@ import {
   loginAsNewAgent,
   TEST_PASSWORD
 } from '../support/http.mjs'
+import { resetCompanyToAdminBaseline, deleteCompanyAndChildren } from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -17,10 +18,6 @@ function day(iso) {
   return new Date(`${iso}T00:00:00.000Z`)
 }
 
-/**
- * Pins `lib/model/payrollCloseWindow` "now" via env (see TIMEOFF_TEST_PAYROLL_NOW).
- * Does not replace global Date (avoids breaking sessions / superagent).
- */
 async function withTestPayrollNow(isoUtc, fn) {
   const prev = process.env.TIMEOFF_TEST_PAYROLL_NOW
   process.env.TIMEOFF_TEST_PAYROLL_NOW = isoUtc
@@ -35,21 +32,52 @@ async function withTestPayrollNow(isoUtc, fn) {
   }
 }
 
-/** Wednesday 2026-05-13 12:00 UTC — after Monday May 11 10:00 UTC payroll close for that week. */
 function afterPayrollCloseMay2026(fn) {
   return withTestPayrollNow('2026-05-13T12:00:00.000Z', fn)
 }
 
-/** Sunday 2026-05-10 08:00 UTC — before Monday May 11 10:00 UTC close. */
 function beforePayrollCloseMay2026(fn) {
   return withTestPayrollNow('2026-05-10T08:00:00.000Z', fn)
 }
 
-async function setupManagerEmployeeApprovedLeave(opts) {
-  const { pastWeekIso, currentWeekIso } = opts
-  const adminAgent = createAgent(app)
+/** @type {import('supertest').TestAgent} */
+let adminAgent
+let adminId
+let companyId
+let primaryDepartmentId
+
+/** Set in the cross-company test; removed in afterEach. */
+let extraCompanyIdToDelete = null
+
+beforeAll(async () => {
+  adminAgent = createAgent(app)
   const { email: adminEmail } = await registerCompanyAndAdmin(adminAgent)
   const admin = await prisma.users.findFirst({ where: { email: adminEmail } })
+  expect(admin).toBeTruthy()
+  adminId = admin.id
+  companyId = admin.company_id
+  primaryDepartmentId = admin.department_id
+})
+
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminId,
+    primaryDepartmentId
+  })
+  if (extraCompanyIdToDelete) {
+    try {
+      await deleteCompanyAndChildren(prisma, extraCompanyIdToDelete)
+    } catch (_e) {
+      /* best-effort */
+    }
+    extraCompanyIdToDelete = null
+  }
+})
+
+async function setupManagerEmployeeApprovedLeave(opts) {
+  const { pastWeekIso, currentWeekIso } = opts
+  const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
   const mgrEmail = `mgr_rev_${Date.now()}@example.com`
   await addEmployee(adminAgent, {
@@ -168,13 +196,13 @@ describe('POST /requests/revoke/ payroll week + same company', () => {
   }, 120000)
 
   it('after payroll close: admin can revoke approved leave from prior week (pended_revoke)', async () => {
-    const { pastLeave, adminAgent } = await setupManagerEmployeeApprovedLeave({
+    const { pastLeave, adminAgent: agent } = await setupManagerEmployeeApprovedLeave({
       pastWeekIso: '2026-05-04',
       currentWeekIso: '2026-05-12'
     })
 
     await afterPayrollCloseMay2026(() =>
-      adminAgent
+      agent
         .post('/requests/revoke/')
         .type('form')
         .send({ request: String(pastLeave.id) })
@@ -206,11 +234,10 @@ describe('POST /requests/revoke/ payroll week + same company', () => {
   }, 120000)
 
   it('before payroll close: employee can revoke own approved leave from prior week (pended_revoke)', async () => {
-    const { pastLeave, emp, empUser, mgrUser } =
-      await setupManagerEmployeeApprovedLeave({
-        pastWeekIso: '2026-05-05',
-        currentWeekIso: '2026-05-12'
-      })
+    const { pastLeave, emp, empUser, mgrUser } = await setupManagerEmployeeApprovedLeave({
+      pastWeekIso: '2026-05-05',
+      currentWeekIso: '2026-05-12'
+    })
 
     const auditsMgrBefore = await prisma.email_audits.count({
       where: { user_id: mgrUser.id, company_id: empUser.company_id }
@@ -272,6 +299,7 @@ describe('POST /requests/revoke/ payroll week + same company', () => {
       where: { email: otherAdminEmail }
     })
     expect(String(otherAdmin.company_id)).not.toBe(String(empUser.company_id))
+    extraCompanyIdToDelete = otherAdmin.company_id
 
     await afterPayrollCloseMay2026(() =>
       otherAgent

@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeAll, afterEach } from 'vitest'
 import app from '../support/loadEnvAndApp.mjs'
 import { createAgent, registerCompanyAndAdmin, addEmployee } from '../support/http.mjs'
+import {
+  resetCompanyToAdminBaseline
+} from '../support/dbCleanup.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -29,8 +32,6 @@ function rowForEmailFromUsersCsv(text, emailLower) {
   return { idx, cols }
 }
 
-const DEFAULT_INCREMENTS = '["full_day","half_day"]'
-
 describe('departments', () => {
   /** @type {import('supertest').TestAgent} */
   let agent
@@ -49,56 +50,10 @@ describe('departments', () => {
   }, 120000)
 
   afterEach(async () => {
-    const companyUserIds = (
-      await prisma.users.findMany({
-        where: { company_id: companyId },
-        select: { id: true }
-      })
-    ).map(u => u.id)
-
-    if (companyUserIds.length > 0) {
-      await prisma.leaves.deleteMany({
-        where: { user_id: { in: companyUserIds } }
-      })
-    }
-
-    const companyDeptIds = (
-      await prisma.departments.findMany({
-        where: { company_id: companyId },
-        select: { id: true }
-      })
-    ).map(d => d.id)
-
-    if (companyDeptIds.length > 0) {
-      await prisma.department_supervisors.deleteMany({
-        where: { department_id: { in: companyDeptIds } }
-      })
-    }
-
-    await prisma.users.deleteMany({
-      where: { company_id: companyId, id: { not: adminId } }
-    })
-
-    await prisma.departments.deleteMany({
-      where: { company_id: companyId, id: { not: primaryDeptId } }
-    })
-
-    await prisma.departments.update({
-      where: { id: primaryDeptId },
-      data: {
-        name: 'Sales',
-        allowance: 20,
-        personal: 5,
-        include_public_holidays: true,
-        is_accrued_allowance: false,
-        manager_id: adminId,
-        allowed_increments: DEFAULT_INCREMENTS
-      }
-    })
-
-    await prisma.users.update({
-      where: { id: adminId },
-      data: { department_id: primaryDeptId }
+    await resetCompanyToAdminBaseline(prisma, {
+      companyId,
+      adminUserId: adminId,
+      primaryDepartmentId: primaryDeptId
     })
   })
 

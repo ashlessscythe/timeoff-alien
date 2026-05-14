@@ -1,5 +1,5 @@
 import { createRequire } from 'module'
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import {
   addEmployee,
   bookLeave,
@@ -10,7 +10,7 @@ import {
   registerCompanyAndAdmin,
   TEST_PASSWORD
 } from '../support/http.mjs'
-import { cleanupCompanyVolatileData } from '../support/dbCleanup.mjs'
+import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
 import app from '../support/loadEnvAndApp.mjs'
 
 const require = createRequire(import.meta.url)
@@ -23,6 +23,9 @@ const { loadSessionUserById } = require('../../lib/model/sessionUser.js')
 let adminAgent
 let adminUser
 let companyId
+let primaryDepartmentId
+/** @type {number[]} */
+let baselineLeaveTypeIds
 let holidayType
 let sickLeaveType
 
@@ -68,6 +71,13 @@ beforeAll(async () => {
   const { email } = await registerCompanyAndAdmin(adminAgent)
   adminUser = await prisma.users.findFirst({ where: { email } })
   companyId = adminUser.company_id
+  primaryDepartmentId = adminUser.department_id
+  baselineLeaveTypeIds = (
+    await prisma.leave_types.findMany({
+      where: { company_id: companyId },
+      select: { id: true }
+    })
+  ).map(r => r.id)
   holidayType = await prisma.leave_types.findFirst({
     where: { company_id: companyId, name: 'Holiday' }
   })
@@ -76,8 +86,20 @@ beforeAll(async () => {
   })
 })
 
-beforeEach(async () => {
-  await cleanupCompanyVolatileData(prisma, companyId)
+afterEach(async () => {
+  await resetCompanyToAdminBaseline(prisma, {
+    companyId,
+    adminUserId: adminUser.id,
+    primaryDepartmentId
+  })
+  if (baselineLeaveTypeIds?.length) {
+    await prisma.leave_types.deleteMany({
+      where: {
+        company_id: companyId,
+        id: { notIn: baselineLeaveTypeIds }
+      }
+    })
+  }
 })
 
 describe('booking validation', () => {
