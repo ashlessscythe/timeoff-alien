@@ -26,7 +26,7 @@ const ADMIN_ONLY_GETS = [
 
 const MANAGER_OR_ADMIN_GETS = ['/reports/', '/users/']
 
-const AUTHENTICATED_GETS = ['/calendar/', '/requests/']
+const AUTHENTICATED_GETS = ['/calendar/', '/requests/', '/me/']
 
 async function expectGetForbidden(agent, path) {
   const res = await agent.get(path).redirects(0)

@@ -265,6 +265,9 @@ model users {
   auto_approve                     Boolean                     @default(false)
   reset_password_token             String?                     @db.VarChar(255)
   reset_password_expires           DateTime?                   @db.Timestamptz(6)
+  pending_email                    String?                     @db.VarChar(255)
+  email_change_token               String?                     @db.VarChar(64)
+  email_change_expires             DateTime?                   @db.Timestamptz(6)
   start_date                       DateTime                    @db.Timestamptz(6)
   end_date                         DateTime?                   @db.Timestamptz(6)
   shifts                           String?                     // JSON array of shift names (overrides department): ["day"], ["day", "swing"]

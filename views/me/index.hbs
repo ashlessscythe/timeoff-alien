@@ -1,0 +1,79 @@
+{{> header }}
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <h1>My profile</h1>
+
+    {{> show_flash_messages }}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title">Email address</h2>
+      </div>
+      <div class="panel-body">
+        {{#if logged_user.company.ldap_auth_enabled}}
+        <p class="text-muted">Your company uses LDAP sign-in. Your email is managed in your organization's directory;
+          it cannot be changed here.</p>
+        <p><strong>Current email:</strong> {{logged_user.email}}</p>
+        {{else}}
+        {{#if email_just_updated}}
+        <div class="alert alert-success" role="alert">
+          <strong>Done.</strong> Your sign-in email was changed. Use the link below when you want to change it again.
+        </div>
+        <p class="text-muted" style="margin-bottom: 12px;">The field is cleared on purpose so you know this step finished.</p>
+        <form class="form-inline" onsubmit="return false;">
+          <div class="form-group" style="margin-right: 8px;">
+            <label class="sr-only" for="email_address">Email</label>
+            <input class="form-control" id="email_address" name="email_address" type="email" value="" autocomplete="off"
+              disabled aria-disabled="true">
+          </div>
+          <button type="button" class="btn btn-success" disabled aria-disabled="true">Email updated</button>
+        </form>
+        <p style="margin-top: 12px;">
+          <a href="/me/">Continue to profile</a> (restores the form with your new email)
+        </p>
+        {{else if logged_user.pending_email}}
+        <p class="alert alert-info">
+          A verification code was sent to <strong>{{logged_user.pending_email}}</strong>.
+          Enter the code below to finish updating your account. Your sign-in email is still
+          <strong>{{logged_user.email}}</strong> until you confirm.
+        </p>
+        <form method="POST" action="/me/email/confirm" class="form-inline" style="margin-bottom: 12px;">
+          <div class="form-group" style="margin-right: 8px;">
+            <label class="sr-only" for="verification_code">Verification code</label>
+            <input class="form-control" id="verification_code" name="verification_code" type="text" required
+              autocomplete="one-time-code" placeholder="Verification code" maxlength="32"
+              pattern="[a-fA-F0-9]+" title="Code from your email">
+          </div>
+          <button type="submit" class="btn btn-primary">Confirm new email</button>
+        </form>
+        <form method="POST" action="/me/email/cancel" style="display: inline;">
+          <button type="submit" class="btn btn-default">Cancel pending change</button>
+        </form>
+        {{else}}
+        <p>We will send a verification code to the new address. Your email is not updated until you enter that code.</p>
+        <form method="POST" action="/me/email" class="form-inline">
+          <div class="form-group" style="margin-right: 8px;">
+            <label class="sr-only" for="email_address">Email</label>
+            <input class="form-control" id="email_address" name="email_address" type="email" required
+              value="{{logged_user.email}}" autocomplete="email">
+          </div>
+          <button type="submit" class="btn btn-primary">Send verification email</button>
+        </form>
+        {{/if}}
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title">Contact administrators</h2>
+      </div>
+      <div class="panel-body">
+        {{> contact_admins_form }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> book_leave_modal }}

@@ -54,7 +54,9 @@ const handlebars = require('express-handlebars').create({
       get_start_leave_day: true,
       get_end_leave_day: true,
       ldap_auth_enabled: true,
-      get_reset_password_token: true
+      get_reset_password_token: true,
+      pending_email: true,
+      email_change_expires: true
     },
     allowedProtoMethods: {
       full_name: true,
@@ -297,6 +299,8 @@ app.use('/requests/', require('./lib/route/requests'))
 app.use('/audit/', require('./lib/route/audit'))
 
 app.use('/reports/', require('./lib/route/reports'))
+
+app.use('/me/', require('./lib/route/me'))
 
 app.use('/messages/', require('./lib/route/messages'))
 

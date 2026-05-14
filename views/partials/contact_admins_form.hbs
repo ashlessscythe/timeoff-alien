@@ -1,0 +1,45 @@
+<div class="alert alert-warning" style="color: #d9534f;">
+  <strong>Wrong form:</strong> For time off requests, go to the <a href="/"
+    style="color: inherit; text-decoration: underline;">dashboard</a> and click "New absence".
+</div>
+
+<div class="alert alert-info">
+  <p>Send a message to administrators for:</p>
+  <ul>
+    <li>Technical issues</li>
+    <li>Feature requests</li>
+    <li>Help with using the system</li>
+    <li>Feedback</li>
+  </ul>
+  <p>We will respond to your registered email address.</p>
+</div>
+
+<form method="POST" action="/messages">
+  <div class="form-group">
+    <label for="contact_admins_name">Name</label>
+    <input type="text" class="form-control" id="contact_admins_name" name="name"
+      value="{{logged_user.name}} {{logged_user.lastname}}" readonly>
+  </div>
+
+  <div class="form-group">
+    <label for="contact_admins_email">Email</label>
+    <input type="email" class="form-control" id="contact_admins_email" name="email"
+      value="{{logged_user.email}}" readonly>
+  </div>
+
+  <div class="form-group">
+    <label for="contact_admins_subject">Subject</label>
+    <input type="text" class="form-control" id="contact_admins_subject" name="subject" required
+      placeholder="What is this about?">
+  </div>
+
+  <div class="form-group">
+    <label for="contact_admins_message">Message</label>
+    <textarea class="form-control" id="contact_admins_message" name="message" rows="5" required></textarea>
+  </div>
+
+  <button type="submit" class="btn btn-success">Send message</button>
+  {{#if cancel_href}}
+  <a href="{{cancel_href}}" class="btn btn-link">Cancel</a>
+  {{/if}}
+</form>
