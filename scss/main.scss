@@ -922,3 +922,45 @@ body .allowance-breakdown .big-number-container .slash {
   border-color: var(--divider-color);
   color: var(--text-color);
 }
+
+/* Cookie consent banner */
+.cookie-consent-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  padding: 1rem 0;
+  background-color: var(--secondary-background-color);
+  border-top: 1px solid var(--divider-color);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.12);
+  color: var(--text-color);
+}
+
+.cookie-consent-banner--hidden {
+  display: none;
+}
+
+body.cookie-consent-banner-visible {
+  padding-bottom: 5.5rem;
+}
+
+.cookie-consent-banner__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cookie-consent-banner__text {
+  flex: 1 1 16rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.cookie-consent-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}

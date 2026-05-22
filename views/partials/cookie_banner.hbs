@@ -1,0 +1,19 @@
+{{#if cookie_banner_enabled}}
+<div id="cookie-consent-banner" class="cookie-consent-banner cookie-consent-banner--hidden" role="dialog"
+  aria-label="Cookie consent" data-ga-tracker="{{ga_tracker}}">
+  <div class="cookie-consent-banner__inner container">
+    <p class="cookie-consent-banner__text">
+      <strong>{{header_title}}</strong> uses essential cookies for login and preferences.
+      {{#if ga_tracker}}
+      With your consent we also use Google Analytics to understand how the site is used.
+      {{/if}}
+      See our <a href="/terms">Terms of Service</a> for more on privacy and security.
+    </p>
+    <div class="cookie-consent-banner__actions">
+      <button type="button" class="btn btn-default" id="cookie-consent-essential">Necessary only</button>
+      <button type="button" class="btn btn-primary" id="cookie-consent-all">Accept all</button>
+    </div>
+  </div>
+</div>
+<script src="/js/cookie-consent.js"></script>
+{{/if}}

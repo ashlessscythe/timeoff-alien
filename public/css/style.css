@@ -646,6 +646,7 @@ body .allowance-breakdown .big-number-container .slash {
 }
 
 @media (max-width: 767px) {
+  /* One row: brand | CTA | menu. Disable Bootstrap clearfix pseudo-elements (they break grid/flex). */
   .navbar-header {
     display: flex;
     flex-direction: row;
@@ -654,13 +655,10 @@ body .allowance-breakdown .big-number-container .slash {
     justify-content: space-between;
     gap: 8px;
   }
-
-  .navbar-header::before,
-  .navbar-header::after {
+  .navbar-header::before, .navbar-header::after {
     content: none !important;
     display: none !important;
   }
-
   .navbar-header .navbar-brand {
     float: none !important;
     flex: 1 1 auto;
@@ -674,7 +672,6 @@ body .allowance-breakdown .big-number-container .slash {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
   .navbar-header .mobile-header-cta {
     flex: 0 0 auto;
     margin: 0 !important;
@@ -685,14 +682,12 @@ body .allowance-breakdown .big-number-container .slash {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
   .navbar-header .navbar-toggle {
     float: none !important;
     flex: 0 0 auto;
     margin: 0 !important;
   }
 }
-
 /* Buttons - Theme-aware styling */
 .btn {
   background-color: var(--button-bg);
@@ -844,6 +839,48 @@ body .allowance-breakdown .big-number-container .slash {
   background-color: var(--secondary-background-color);
   border-color: var(--divider-color);
   color: var(--text-color);
+}
+
+/* Cookie consent banner */
+.cookie-consent-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  padding: 1rem 0;
+  background-color: var(--secondary-background-color);
+  border-top: 1px solid var(--divider-color);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.12);
+  color: var(--text-color);
+}
+
+.cookie-consent-banner--hidden {
+  display: none;
+}
+
+body.cookie-consent-banner-visible {
+  padding-bottom: 5.5rem;
+}
+
+.cookie-consent-banner__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cookie-consent-banner__text {
+  flex: 1 1 16rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.cookie-consent-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 /*# sourceMappingURL=style.css.map */
