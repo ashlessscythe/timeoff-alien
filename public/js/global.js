@@ -305,3 +305,108 @@ $(document).ready(function() {
 
   fetchNotifications()
 })
+
+$(document).ready(function() {
+  var $banner = $('#cookie-consent-banner')
+  if (!$banner.length) {
+    return
+  }
+
+  var CONSENT_COOKIE = 'cookie_consent'
+  var CONSENT_MAX_AGE_DAYS = 365
+  var gaTracker = $banner.attr('data-ga-tracker') || ''
+
+  function readConsentCookie() {
+    var match = document.cookie.match(
+      new RegExp('(?:^|; )' + CONSENT_COOKIE + '=([^;]*)')
+    )
+    return match ? decodeURIComponent(match[1]) : null
+  }
+
+  function writeConsentCookie(value) {
+    var maxAge = CONSENT_MAX_AGE_DAYS * 24 * 60 * 60
+    var secure = window.location.protocol === 'https:' ? '; Secure' : ''
+    document.cookie =
+      CONSENT_COOKIE +
+      '=' +
+      encodeURIComponent(value) +
+      '; Path=/; Max-Age=' +
+      maxAge +
+      '; SameSite=Lax' +
+      secure
+  }
+
+  function hideBanner() {
+    $banner.addClass('cookie-consent-banner--hidden')
+    $('body').removeClass('cookie-consent-banner-visible')
+  }
+
+  function showBanner() {
+    $banner.removeClass('cookie-consent-banner--hidden')
+    $('body').addClass('cookie-consent-banner-visible')
+  }
+
+  function loadGoogleAnalytics() {
+    if (!gaTracker || window.ga) {
+      return
+    }
+
+    ;(function(i, s, o, g, r, a, m) {
+      i.GoogleAnalyticsObject = r
+      i[r] =
+        i[r] ||
+        function() {
+          ;(i[r].q = i[r].q || []).push(arguments)
+        }
+      i[r].l = 1 * new Date()
+      a = s.createElement(o)
+      m = s.getElementsByTagName(o)[0]
+      a.async = 1
+      a.src = g
+      m.parentNode.insertBefore(a, m)
+    })(
+      window,
+      document,
+      'script',
+      '//www.google-analytics.com/analytics.js',
+      'ga'
+    )
+
+    window.ga('create', gaTracker, 'auto')
+    window.ga('send', 'pageview')
+  }
+
+  function applyConsent(consent) {
+    if (consent === 'all') {
+      loadGoogleAnalytics()
+    }
+    hideBanner()
+  }
+
+  function saveConsent(consent) {
+    writeConsentCookie(consent)
+    applyConsent(consent)
+  }
+
+  $banner.on('click', '#cookie-consent-essential', function(e) {
+    e.preventDefault()
+    saveConsent('essential')
+  })
+
+  $banner.on('click', '#cookie-consent-all', function(e) {
+    e.preventDefault()
+    saveConsent('all')
+  })
+
+  $(document).on('click', '[data-cookie-settings]', function(e) {
+    e.preventDefault()
+    showBanner()
+  })
+
+  var existing = readConsentCookie()
+  if (existing === 'essential' || existing === 'all') {
+    applyConsent(existing)
+  } else {
+    showBanner()
+  }
+})

@@ -3,17 +3,24 @@ container_id='book_leave_modal'
 leave_modal_form_action='/calendar/bookleave/'
 }}
 
-<footer class="footer custom-footer">
-  <p>
-    <span class="pull-left">
-      © <a href="{{url_to_the_site_root}}">TimeOff.management</a> 2014-2022 |
+<footer class="footer custom-footer" role="contentinfo">
+  <div class="custom-footer__inner container">
+    <div class="custom-footer__links">
+      <span>© <a href="{{url_to_the_site_root}}">TimeOff.management</a> 2014-2022</span>
+      <span class="custom-footer__sep" aria-hidden="true">|</span>
       <a href="/terms">Terms of Service</a>
-      {{#if cookie_banner_enabled}} | <a href="#" data-cookie-settings>Cookie settings</a>{{/if}}
-    </span>
-    <span class="pull-right">
-      <small class="text-muted">Unauthorized access prohibited. All activities monitored.</small> &nbsp;
-      <a href="//github.com/ashlessscythe/timeoff-alien" target="_blank"><i class="fa fa-github fa-lg"></i></a>
-      <a href="mailto:{{contact_email_address}}"><i class="fa fa-envelope fa-lg"></i></a>
-    </span>
-  </p>
+      {{#if cookie_banner_enabled}}
+      <span class="custom-footer__sep" aria-hidden="true">|</span>
+      <a href="#" data-cookie-settings>Cookie settings</a>
+      {{/if}}
+    </div>
+    <div class="custom-footer__meta">
+      <small class="text-muted custom-footer__notice">Unauthorized access prohibited. All activities monitored.</small>
+      <span class="custom-footer__icons">
+        <a href="//github.com/ashlessscythe/timeoff-alien" target="_blank" rel="noopener noreferrer"
+          aria-label="GitHub repository"><i class="fa fa-github fa-lg"></i></a>
+        <a href="mailto:{{contact_email_address}}" aria-label="Contact email"><i class="fa fa-envelope fa-lg"></i></a>
+      </span>
+    </div>
+  </div>
 </footer>
