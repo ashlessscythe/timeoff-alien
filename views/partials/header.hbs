@@ -201,24 +201,29 @@
     const storedTheme = localStorage.getItem('theme') || 'day';  // Default to 'day' theme
     setTheme(storedTheme);
 
-    // Add event listeners for each theme option in the dropdown
-    themeDropdown.addEventListener('click', (event) => {
-      event.preventDefault();
+    // Theme picker is only rendered for logged-in users
+    if (themeDropdown) {
+      themeDropdown.addEventListener('click', (event) => {
+        event.preventDefault();
 
-      const selectedTheme = event.target.getAttribute('data-theme');
+        const selectedTheme = event.target.getAttribute('data-theme');
 
-      if (selectedTheme) {
-        setTheme(selectedTheme);
-        console.log(`Theme ${selectedTheme} selected`)
-      }
-    });
+        if (selectedTheme) {
+          setTheme(selectedTheme);
+        }
+      });
+    }
 
-    // Fetch and update notification count
+    // Fetch and update notification count (logged-in header only)
     function updateNotificationCount() {
+      const badge = document.querySelector('.notification-badge');
+      if (!badge) {
+        return;
+      }
+
       fetch('/api/v1/notifications/count')
         .then(response => response.json())
         .then(data => {
-          const badge = document.querySelector('.notification-badge');
           if (data.count > 0) {
             badge.textContent = data.count;
             badge.classList.remove('hidden');
@@ -229,9 +234,10 @@
         .catch(error => console.error('Error fetching notification count:', error));
     }
 
-    // Update notification count on page load and every 5 minutes
-    updateNotificationCount();
-    setInterval(updateNotificationCount, 300000);
+    if (document.querySelector('.notification-badge')) {
+      updateNotificationCount();
+      setInterval(updateNotificationCount, 300000);
+    }
 
     // Function to update message count for admins
     function updateMessageCount() {

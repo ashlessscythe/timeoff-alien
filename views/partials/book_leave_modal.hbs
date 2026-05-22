@@ -130,6 +130,10 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     var form = document.getElementById('leaveForm');
+    if (!form) {
+      return;
+    }
+
     var submitBtn = document.getElementById('submitLeaveBtn');
     var fromDate = document.getElementById('from');
     var warningDiv = document.getElementById('next_year_pto_warning');
