@@ -191,12 +191,19 @@ export async function bookLeave(agent, opts) {
  * Build POST body for /settings/leavetypes including all existing rows + optional __new row.
  * @param {import('@prisma/client').PrismaClient} prisma
  */
-export async function buildLeavetypesFormBody(prisma, companyId, newRow = null) {
+export async function buildLeavetypesFormBody(
+  prisma,
+  companyId,
+  newRow = null,
+  opts = {}
+) {
   const existing = await prisma.leave_types.findMany({
     where: { company_id: companyId },
     orderBy: { id: 'asc' }
   })
-  const body = {}
+  const body = {
+    leave_types_sort: opts.leave_types_sort || 'name_desc'
+  }
   if (newRow) {
     body.name__new = newRow.name
     body.color__new = newRow.color || '#AA5500'

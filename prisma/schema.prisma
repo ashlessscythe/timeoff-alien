@@ -89,6 +89,7 @@ model companies {
   first_day_of_week       Int             @default(1)   // 0 for Sunday, 1 for Monday
   next_year_cutoff_date   DateTime?       @db.Date      // Cutoff date after which limited departments can request PTO for next calendar year
   limited_departments      String?                        // JSON array of department IDs that are restricted from requesting next year PTO before cutoff date
+  leave_types_sort         String          @default("name_desc") @db.VarChar(32)
   audit                   audit[]
   bank_holidays           bank_holidays[]
   comments                comments[]
