@@ -18,6 +18,14 @@ function uniqueSuffix() {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
 }
 
+async function allLeaveTypeIdStrings(companyId) {
+  const rows = await prisma.leave_types.findMany({
+    where: { company_id: companyId },
+    select: { id: true }
+  })
+  return rows.map(r => String(r.id))
+}
+
 /** Parse /users/?as-csv=1 row for a given user email (lowercase match). */
 function rowForEmailFromUsersCsv(text, emailLower) {
   const lines = text.trim().split('\n')
@@ -113,7 +121,8 @@ describe('departments', () => {
         personal: '4',
         include_public_holidays: 'on',
         is_accrued_allowance: 'on',
-        'allowed_increments[]': ['full_day', 'half_day', 'hourly']
+        'allowed_increments[]': ['full_day', 'half_day', 'hourly'],
+        'allowed_leave_type_ids[]': await allLeaveTypeIdStrings(a.company_id)
       })
       .redirects(5)
 
@@ -151,7 +160,8 @@ describe('departments', () => {
         manager_id: String(a.id),
         allowance: '20',
         personal: '5',
-        'allowed_increments[]': ['full_day', 'half_day']
+        'allowed_increments[]': ['full_day', 'half_day'],
+        'allowed_leave_type_ids[]': await allLeaveTypeIdStrings(a.company_id)
       })
       .redirects(5)
 
@@ -192,7 +202,8 @@ describe('departments', () => {
         manager_id: String(mgr.id),
         allowance: '20',
         personal: '5',
-        'allowed_increments[]': ['full_day', 'half_day']
+        'allowed_increments[]': ['full_day', 'half_day'],
+        'allowed_leave_type_ids[]': await allLeaveTypeIdStrings(a.company_id)
       })
       .redirects(5)
 
@@ -275,7 +286,8 @@ describe('departments', () => {
         manager_id: String(a.id),
         allowance: '14',
         personal: '0',
-        'allowed_increments[]': ['full_day', 'half_day']
+        'allowed_increments[]': ['full_day', 'half_day'],
+        'allowed_leave_type_ids[]': await allLeaveTypeIdStrings(emp.company_id)
       })
       .redirects(5)
 
@@ -294,6 +306,45 @@ describe('departments', () => {
     expect(cols).toBeTruthy()
     expect(Number(cols[idx.days_used])).toBe(1)
     expect(Number(cols[idx.remaining_allowance])).toBe(13)
+  })
+
+  it('persists available leave types for a department', async () => {
+    const a = await admin()
+    const deptId = a.department_id
+    const leaveTypes = await prisma.leave_types.findMany({
+      where: { company_id: a.company_id }
+    })
+    expect(leaveTypes.length).toBeGreaterThanOrEqual(2)
+
+    const holiday = leaveTypes.find(lt => lt.name === 'Holiday')
+    expect(holiday).toBeTruthy()
+
+    const save = await agent
+      .post(`/settings/departments/edit/${deptId}/`)
+      .type('form')
+      .send({
+        name: 'Sales',
+        manager_id: String(a.id),
+        allowance: '20',
+        personal: '5',
+        'allowed_increments[]': ['full_day', 'half_day'],
+        'allowed_leave_type_ids[]': [String(holiday.id)]
+      })
+      .redirects(5)
+    expect(save.status).toBeLessThan(400)
+
+    const links = await prisma.department_leave_types.findMany({
+      where: { department_id: deptId }
+    })
+    expect(links.map(l => l.leave_type_id)).toEqual([holiday.id])
+
+    const page = await agent
+      .get(`/settings/departments/edit/${deptId}/`)
+      .redirects(5)
+    expect(page.status).toBe(200)
+    expect(page.text).toContain('Available leave types')
+    expect(page.text).toContain('name="allowed_leave_type_ids[]"')
+    expect(page.text).toContain(`value="${holiday.id}"`)
   })
 
   it('refuses to delete a department that still has users', async () => {

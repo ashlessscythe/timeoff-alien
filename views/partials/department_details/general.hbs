@@ -125,6 +125,19 @@
       <span class="help-block">Select which leave increment types are allowed for this department. Employees will only
         be able to request leave using the selected increment types.</span>
     </div>
+
+    <div class="form-group">
+      <label class="control-label">Available leave types</label>
+      {{#each company.leave_types}}
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="allowed_leave_type_ids[]" value="{{this.id}}" {{#unless ../department.restricts_leave_types}}checked="checked"{{else}}{{#if (includes ../department.allowed_leave_type_ids this.id)}}checked="checked"{{/if}}{{/unless}}>
+          {{this.name}}
+        </label>
+      </div>
+      {{/each}}
+      <span class="help-block">Employees in {{department.name}} can only book the selected leave types. When all types are selected, new company leave types are included automatically. Uncheck types this department should not use.</span>
+    </div>
   </div>
 
   <div class="row">

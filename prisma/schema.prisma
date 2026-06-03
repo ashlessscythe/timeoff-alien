@@ -104,6 +104,18 @@ model companies {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model department_leave_types {
+  department_id Int
+  leave_type_id Int
+  departments   departments @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  leave_types   leave_types @relation(fields: [leave_type_id], references: [id], onDelete: Cascade)
+
+  @@id([department_id, leave_type_id])
+  @@index([department_id], map: "department_leave_types_department_id")
+  @@index([leave_type_id], map: "department_leave_types_leave_type_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model department_supervisors {
   created_at    DateTime    @db.Timestamptz(6)
   department_id Int
@@ -132,6 +144,7 @@ model departments {
   company_id              Int
   manager_id              Int?
   department_supervisors  department_supervisors[]
+  department_leave_types  department_leave_types[]
   companies               companies                @relation(fields: [company_id], references: [id], onDelete: Cascade)
   users                   users[]
 
@@ -172,8 +185,9 @@ model leave_types {
   manager_only      Boolean   @default(false)
   is_special        Boolean   @default(false)
   allow_non_default_increments Boolean @default(false)
-  companies        companies @relation(fields: [company_id], references: [id], onDelete: Cascade)
-  leaves           leaves[]
+  companies               companies                @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  department_leave_types  department_leave_types[]
+  leaves                  leaves[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

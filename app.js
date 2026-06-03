@@ -147,10 +147,16 @@ app.use(function(req, res, next) {
   next()
 })
 
+const {
+  getEffectiveAllowedLeaveTypeIds,
+  parseExplicitLeaveTypeIds
+} = require('./lib/route/leaveTypeRules')
+
 app.use(async function(req, res, next) {
   if (!req.user) {
     res.locals.allowed_increments_by_user = {}
     res.locals.allowed_non_default_increments_by_leave_type = {}
+    res.locals.allowed_leave_type_ids_by_user = {}
     return next()
   }
 
@@ -183,6 +189,7 @@ app.use(async function(req, res, next) {
 
     if (userIds.length === 0) {
       res.locals.allowed_increments_by_user = {}
+      res.locals.allowed_leave_type_ids_by_user = {}
       return next()
     }
 
@@ -193,7 +200,10 @@ app.use(async function(req, res, next) {
           id: true,
           departments: {
             select: {
-              allowed_increments: true
+              allowed_increments: true,
+              department_leave_types: {
+                select: { leave_type_id: true }
+              }
             }
           }
         }
@@ -203,6 +213,8 @@ app.use(async function(req, res, next) {
         select: { id: true, allow_non_default_increments: true }
       })
     ])
+
+    const allCompanyLeaveTypeIds = leaveTypes.map(leaveType => leaveType.id)
 
     const allowedByUser = {}
     usersWithDepartments.forEach(user => {
@@ -224,6 +236,19 @@ app.use(async function(req, res, next) {
     })
 
     res.locals.allowed_increments_by_user = allowedByUser
+
+    const allowedLeaveTypesByUser = {}
+    usersWithDepartments.forEach(user => {
+      const explicitIds = user.departments
+        ? parseExplicitLeaveTypeIds(user.departments)
+        : []
+      allowedLeaveTypesByUser[user.id] = getEffectiveAllowedLeaveTypeIds({
+        explicitIds,
+        allCompanyLeaveTypeIds
+      })
+    })
+    res.locals.allowed_leave_type_ids_by_user = allowedLeaveTypesByUser
+
     const allowNonDefaultByLeaveType = {}
     leaveTypes.forEach(leaveType => {
       allowNonDefaultByLeaveType[
@@ -236,6 +261,7 @@ app.use(async function(req, res, next) {
     console.error('Failed to load allowed increments by user:', error)
     res.locals.allowed_increments_by_user = {}
     res.locals.allowed_non_default_increments_by_leave_type = {}
+    res.locals.allowed_leave_type_ids_by_user = {}
     return next()
   }
 })
@@ -245,7 +271,8 @@ app.use(function(_req, res, next) {
   res.locals.custom_java_script = [
     '/js/bootstrap-datepicker.js',
     '/js/popover-initializer.js', // popups
-    isProduction ? '/js/global.min.js' : '/js/global.js'
+    isProduction ? '/js/global.min.js' : '/js/global.js',
+    '/js/book-leave-modal.js'
   ]
   res.locals.custom_css = ['/css/bootstrap-datepicker3.standalone.css']
   if (isProduction) {

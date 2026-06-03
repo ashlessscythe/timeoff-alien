@@ -113,6 +113,9 @@ export async function resetCompanyToAdminBaseline(prisma, opts) {
     await prisma.department_supervisors.deleteMany({
       where: { department_id: { in: companyDeptIds } }
     })
+    await prisma.department_leave_types.deleteMany({
+      where: { department_id: { in: companyDeptIds } }
+    })
   }
 
   await prisma.departments.update({
@@ -255,6 +258,9 @@ export async function deleteCompanyAndChildren(prisma, companyId) {
   ).map(d => d.id)
   if (deptIds.length > 0) {
     await prisma.department_supervisors.deleteMany({
+      where: { department_id: { in: deptIds } }
+    })
+    await prisma.department_leave_types.deleteMany({
       where: { department_id: { in: deptIds } }
     })
   }

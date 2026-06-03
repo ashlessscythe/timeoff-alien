@@ -1,0 +1,622 @@
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.getElementById('leaveForm');
+    if (!form) {
+      return;
+    }
+
+    var submitBtn = document.getElementById('submitLeaveBtn');
+    var fromDate = document.getElementById('from');
+    var warningDiv = document.getElementById('next_year_pto_warning');
+    var warningText = document.getElementById('next_year_pto_warning_text');
+    var employeeSelect = document.getElementById('employee');
+    var leaveTypeSelect = document.getElementById('leave_type');
+    var nonDefaultHint = document.getElementById('non_default_increment_hint');
+
+    // New time-based leave fields
+    var incrementType = document.getElementById('increment_type');
+    var incrementValue = document.getElementById('increment_value');
+    var fromDatePart = document.getElementById('from_date_part');
+    var toDatePart = document.getElementById('to_date_part');
+    var timeStart = document.getElementById('time_start');
+    var timeEnd = document.getElementById('time_end');
+    var toDateHidden = document.getElementById('to'); // Hidden input with name="to_date"
+    var toDateMulti = document.getElementById('to_date_multi');
+    var multiDayGroup = document.getElementById('multi_day_group');
+
+    // Debug: Log if elements are not found
+    if (!toDateHidden) {
+      console.error('to_date hidden input not found!');
+    }
+    if (!fromDate) {
+      console.error('from_date input not found!');
+    }
+
+    // Default working hours (8 hours per day, can be configured)
+    var defaultWorkingHours = 8;
+    var defaultStartTime = '09:00:00';
+
+    // Get allowed increments from department/leave type (will be set via data attributes)
+    var allowedIncrements = ['full_day', 'half_day', 'hourly', 'quarter_hr']; // Default, will be overridden
+    var allowedIncrementsByUser = {};
+    var allowedNonDefaultByLeaveType = {};
+    var allowedLeaveTypeIdsByUser = {};
+    var isManagerOrAdmin =
+      (form.getAttribute('data-is-manager-or-admin') || 'false') === 'true';
+    var loggedUserId = form.getAttribute('data-logged-user-id');
+    var userAllowsNonDefaultIncrements = false;
+
+    // Helper functions for time calculations
+    function parseTime(timeStr) {
+      var parts = timeStr.split(':');
+      return {
+        hours: parseInt(parts[0], 10),
+        minutes: parseInt(parts[1], 10),
+        seconds: parseInt(parts[2] || 0, 10)
+      };
+    }
+
+    function formatTime(time) {
+      return pad(time.hours) + ':' + pad(time.minutes) + ':' + pad(time.seconds);
+    }
+
+    function pad(num) {
+      return (num < 10 ? '0' : '') + num;
+    }
+
+    function addHours(time, hours) {
+      var totalMinutes = time.hours * 60 + time.minutes + hours * 60;
+      return {
+        hours: Math.floor(totalMinutes / 60) % 24,
+        minutes: totalMinutes % 60,
+        seconds: time.seconds
+      };
+    }
+
+    function addMinutes(time, minutes) {
+      var totalMinutes = time.hours * 60 + time.minutes + minutes;
+      return {
+        hours: Math.floor(totalMinutes / 60) % 24,
+        minutes: totalMinutes % 60,
+        seconds: time.seconds
+      };
+    }
+
+    function parseAllowedIncrementsByUser() {
+      var mappingStr = form.getAttribute('data-allowed-increments-by-user') || '{}';
+      try {
+        var parsed = mappingStr ? JSON.parse(mappingStr) : {};
+        if (parsed && typeof parsed === 'object') {
+          allowedIncrementsByUser = parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse allowed increments mapping:', e);
+      }
+    }
+
+    function parseAllowedNonDefaultByLeaveType() {
+      var mappingStr = form.getAttribute('data-allowed-non-default-increments-by-leave-type') || '{}';
+      try {
+        var parsed = mappingStr ? JSON.parse(mappingStr) : {};
+        if (parsed && typeof parsed === 'object') {
+          allowedNonDefaultByLeaveType = parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse allowed non-default increments mapping:', e);
+      }
+    }
+
+    function parseAllowedLeaveTypeIdsByUser() {
+      var mappingStr =
+        form.getAttribute('data-allowed-leave-type-ids-by-user') || '{}';
+      try {
+        var parsed = mappingStr ? JSON.parse(mappingStr) : {};
+        if (parsed && typeof parsed === 'object') {
+          allowedLeaveTypeIdsByUser = parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse allowed leave type mapping:', e);
+      }
+    }
+
+    function isBookingForSelf() {
+      var selectedUserId = getSelectedUserId();
+      if (!employeeSelect) {
+        return true;
+      }
+      return String(selectedUserId) === String(loggedUserId);
+    }
+
+    function getAllowedLeaveTypeIdSetForUser(userId) {
+      var ids = allowedLeaveTypeIdsByUser[userId];
+      if (!ids || !ids.length) {
+        return null;
+      }
+      var set = {};
+      ids.forEach(function (id) {
+        set[String(id)] = true;
+      });
+      return set;
+    }
+
+    function filterLeaveTypeOptionsForUser() {
+      if (!leaveTypeSelect) {
+        return;
+      }
+
+      var userId = getSelectedUserId();
+      var allowedSet = getAllowedLeaveTypeIdSetForUser(userId);
+      var bookingForSelf = isBookingForSelf();
+      var currentValue = leaveTypeSelect.value;
+      var firstVisibleValue = null;
+
+      Array.prototype.forEach.call(leaveTypeSelect.options, function (opt) {
+        if (!opt.value) {
+          return;
+        }
+
+        var leaveTypeId = String(opt.value);
+        var managerOnly = opt.getAttribute('data-manager-only') === 'true';
+        var allowedByDept =
+          !allowedSet || Object.prototype.hasOwnProperty.call(allowedSet, leaveTypeId);
+        var allowedByRole =
+          !managerOnly ||
+          isManagerOrAdmin ||
+          !bookingForSelf;
+        var visible = allowedByDept && allowedByRole;
+
+        opt.hidden = !visible;
+        opt.disabled = !visible;
+
+        if (visible && firstVisibleValue === null) {
+          firstVisibleValue = opt.value;
+        }
+      });
+
+      var selectedOption = leaveTypeSelect.selectedOptions[0];
+      if (
+        selectedOption &&
+        (selectedOption.disabled || selectedOption.hidden) &&
+        firstVisibleValue !== null
+      ) {
+        leaveTypeSelect.value = firstVisibleValue;
+      }
+    }
+
+    function getSelectedUserId() {
+      if (employeeSelect && employeeSelect.selectedOptions && employeeSelect.selectedOptions[0]) {
+        return employeeSelect.selectedOptions[0].getAttribute('data-user-id');
+      }
+      return form.getAttribute('data-logged-user-id');
+    }
+
+    function setAllowedIncrementsForUser() {
+      var userId = getSelectedUserId();
+      if (userId && allowedIncrementsByUser && allowedIncrementsByUser[userId]) {
+        allowedIncrements = allowedIncrementsByUser[userId];
+      } else {
+        allowedIncrements = ['full_day', 'half_day'];
+      }
+    }
+
+    function getSelectedLeaveTypeId() {
+      if (leaveTypeSelect && leaveTypeSelect.value) {
+        return leaveTypeSelect.value;
+      }
+      return null;
+    }
+
+    function allowNonDefaultForSelectedLeaveType() {
+      var leaveTypeId = getSelectedLeaveTypeId();
+      if (!leaveTypeId) return false;
+      if (
+        allowedNonDefaultByLeaveType &&
+        Object.prototype.hasOwnProperty.call(
+          allowedNonDefaultByLeaveType,
+          leaveTypeId
+        )
+      ) {
+        return !!allowedNonDefaultByLeaveType[leaveTypeId];
+      }
+      return false;
+    }
+
+    function setAllowedIncrementsForSelection() {
+      setAllowedIncrementsForUser();
+      userAllowsNonDefaultIncrements =
+        allowedIncrements.indexOf('hourly') !== -1 ||
+        allowedIncrements.indexOf('quarter_hr') !== -1;
+      if (!allowNonDefaultForSelectedLeaveType()) {
+        allowedIncrements = allowedIncrements.filter(function(inc) {
+          return inc === 'full_day' || inc === 'half_day';
+        });
+        if (allowedIncrements.length === 0) {
+          allowedIncrements = ['full_day', 'half_day'];
+        }
+      }
+    }
+
+    function updateNonDefaultHint() {
+      if (!nonDefaultHint) return;
+      if (!userAllowsNonDefaultIncrements) {
+        nonDefaultHint.style.display = 'none';
+        return;
+      }
+      if (allowNonDefaultForSelectedLeaveType()) {
+        nonDefaultHint.style.display = 'none';
+      } else {
+        nonDefaultHint.style.display = 'inline';
+      }
+    }
+
+    // Update increment type dropdown based on allowed increments
+    function updateIncrementTypeOptions() {
+      var types = [];
+      if (allowedIncrements.indexOf('full_day') !== -1) types.push({ value: 'day', label: 'Full Day' });
+      if (allowedIncrements.indexOf('half_day') !== -1) types.push({ value: 'halfday', label: 'Half Day' });
+      if (allowedIncrements.indexOf('hourly') !== -1) types.push({ value: 'hr', label: 'Hours' });
+      if (allowedIncrements.indexOf('quarter_hr') !== -1) types.push({ value: 'min', label: 'Minutes' });
+
+      // If no special increments allowed, only show day/halfday
+      if (types.length === 0 || (types.length === 1 && types[0].value === 'day')) {
+        types = [{ value: 'day', label: 'Full Day' }, { value: 'halfday', label: 'Half Day' }];
+      }
+
+      // Update increment type dropdown
+      var currentValue = incrementType.value;
+      incrementType.innerHTML = '';
+      types.forEach(function (type) {
+        var option = document.createElement('option');
+        option.value = type.value;
+        option.textContent = type.label;
+        if (type.value === currentValue) option.selected = true;
+        incrementType.appendChild(option);
+      });
+
+      // Trigger change to update value dropdown
+      updateIncrementValueOptions();
+    }
+
+    // Update increment value dropdown based on selected type
+    function updateIncrementValueOptions() {
+      var type = incrementType.value;
+      var currentValue = incrementValue.value;
+      incrementValue.innerHTML = '';
+
+      if (type === 'day') {
+        incrementValue.appendChild(createOption('1', 'All day', currentValue === '1'));
+        // Show multi-day option for full day
+        if (multiDayGroup) multiDayGroup.style.display = 'block';
+      } else {
+        // Hide multi-day option for non-full-day increments
+        if (multiDayGroup) multiDayGroup.style.display = 'none';
+        if (toDateMulti) toDateMulti.value = '';
+
+        if (type === 'halfday') {
+          incrementValue.appendChild(createOption('2', 'AM', currentValue === '2'));
+          incrementValue.appendChild(createOption('3', 'PM', currentValue === '3'));
+        } else if (type === 'hr') {
+          for (var i = 1; i <= 8; i++) {
+            incrementValue.appendChild(createOption(i.toString(), i + ' hour' + (i > 1 ? 's' : ''), currentValue === i.toString()));
+          }
+        } else if (type === 'min') {
+          incrementValue.appendChild(createOption('15', '15 minutes', currentValue === '15'));
+          incrementValue.appendChild(createOption('30', '30 minutes', currentValue === '30'));
+        }
+      }
+
+      calculateTimes();
+    }
+
+    function createOption(value, text, selected) {
+      var option = document.createElement('option');
+      option.value = value;
+      option.textContent = text;
+      if (selected) option.selected = true;
+      return option;
+    }
+
+    // Calculate time_start and time_end based on selections
+    function calculateTimes() {
+      var type = incrementType ? incrementType.value : 'day';
+      var value = incrementValue ? incrementValue.value : '1';
+
+      // Ensure fromDate has a value
+      if (!fromDate || !fromDate.value) {
+        console.warn('From date is not set');
+        return;
+      }
+
+      // Set to_date - same as from_date for single-day, or use multi-day input if provided
+      var toDateValue = fromDate.value;
+      if (type === 'day' && toDateMulti && toDateMulti.value && toDateMulti.value.trim() !== '') {
+        toDateValue = toDateMulti.value;
+      }
+
+      // Always ensure to_date is set (default to from_date if not set)
+      if (!toDateValue || toDateValue.trim() === '') {
+        toDateValue = fromDate.value;
+      }
+
+      if (toDateHidden) {
+        toDateHidden.value = toDateValue;
+      }
+
+      // Set day_part and time fields
+      if (type === 'day') {
+        fromDatePart.value = '1';
+        toDatePart.value = '1';
+        timeStart.value = '';
+        timeEnd.value = '';
+      } else if (type === 'halfday') {
+        fromDatePart.value = value; // 2 for AM, 3 for PM
+        toDatePart.value = '1'; // End is same day
+        if (value === '2') {
+          // AM: 09:00 to 13:00 (assuming 8 hour day, 4 hours for half)
+          timeStart.value = defaultStartTime;
+          timeEnd.value = '13:00:00';
+        } else {
+          // PM: 13:00 to 17:00
+          timeStart.value = '13:00:00';
+          timeEnd.value = '17:00:00';
+        }
+      } else if (type === 'hr') {
+        fromDatePart.value = '1';
+        toDatePart.value = '1';
+        var hours = parseInt(value, 10);
+        var startTime = parseTime(defaultStartTime);
+        var endTime = addHours(startTime, hours);
+        timeStart.value = formatTime(startTime);
+        timeEnd.value = formatTime(endTime);
+      } else if (type === 'min') {
+        fromDatePart.value = '1';
+        toDatePart.value = '1';
+        var minutes = parseInt(value, 10);
+        var startTime = parseTime(defaultStartTime);
+        var endTime = addMinutes(startTime, minutes);
+        timeStart.value = formatTime(startTime);
+        timeEnd.value = formatTime(endTime);
+      }
+    }
+
+    // Event listeners for increment type changes
+    if (incrementType) {
+      incrementType.addEventListener('change', function () {
+        updateIncrementValueOptions();
+      });
+    }
+
+    if (incrementValue) {
+      incrementValue.addEventListener('change', function () {
+        calculateTimes();
+      });
+    }
+
+    if (fromDate) {
+      fromDate.addEventListener('change', function () {
+        calculateTimes();
+      });
+    }
+
+    if (toDateMulti) {
+      toDateMulti.addEventListener('change', function () {
+        calculateTimes();
+      });
+    }
+
+    // Initialize on load
+    parseAllowedIncrementsByUser();
+    parseAllowedNonDefaultByLeaveType();
+    parseAllowedLeaveTypeIdsByUser();
+    filterLeaveTypeOptionsForUser();
+    setAllowedIncrementsForSelection();
+    updateIncrementTypeOptions();
+    updateNonDefaultHint();
+
+    if (employeeSelect) {
+      employeeSelect.addEventListener('change', function () {
+        filterLeaveTypeOptionsForUser();
+        setAllowedIncrementsForSelection();
+        updateIncrementTypeOptions();
+        updateNonDefaultHint();
+      });
+    }
+
+    if (leaveTypeSelect) {
+      leaveTypeSelect.addEventListener('change', function () {
+        setAllowedIncrementsForSelection();
+        updateIncrementTypeOptions();
+        updateNonDefaultHint();
+      });
+    }
+
+    // Ensure to_date is set on initial load if from_date has a value
+    if (fromDate && fromDate.value) {
+      calculateTimes();
+    }
+
+    // Also set up a listener to ensure to_date is always synced when from_date changes
+    if (fromDate) {
+      // Use input event as well as change event to catch all updates
+      fromDate.addEventListener('input', function () {
+        calculateTimes();
+      });
+    }
+
+    // Get company restriction data from form data attributes (safer than inline Handlebars)
+    var cutoffDateStr = form.getAttribute('data-next-year-cutoff-date') || '';
+    var limitedDeptsStr = form.getAttribute('data-limited-departments') || '[]';
+    var userDeptIdStr = form.getAttribute('data-user-department-id') || '';
+
+    var companyData = {
+      next_year_cutoff_date: cutoffDateStr || null,
+      limited_departments: (function () {
+        try {
+          return limitedDeptsStr ? JSON.parse(limitedDeptsStr) : [];
+        } catch (e) {
+          return [];
+        }
+      })(),
+      user_department_id: userDeptIdStr ? parseInt(userDeptIdStr, 10) : null
+    };
+
+    function checkNextYearRestriction() {
+      if (!fromDate || !fromDate.value || !companyData.next_year_cutoff_date) {
+        if (warningDiv) warningDiv.style.display = 'none';
+        return;
+      }
+
+      try {
+        // Parse the date from the input (format depends on company date format)
+        var fromDateValue = fromDate.value;
+        if (!fromDateValue) {
+          if (warningDiv) warningDiv.style.display = 'none';
+          return;
+        }
+
+        // Get current year and next year
+        var currentYear = new Date().getFullYear();
+        var nextYear = currentYear + 1;
+
+        // Parse the input date - try to extract year
+        // This is a simplified check - in production you'd want to use moment.js or similar
+        var dateParts = fromDateValue.split(/[-\/]/);
+        var inputYear = parseInt(dateParts[0] || dateParts[2] || currentYear, 10);
+
+        // If year is 2 digits, assume it's in the current century
+        if (inputYear < 100) {
+          inputYear += 2000;
+        }
+
+        // Check if requesting next year
+        if (inputYear === nextYear) {
+          // Parse the cutoff date as a local date to avoid timezone issues
+          // The date comes from database as YYYY-MM-DD, parse it as local date
+          var cutoffDateStr = companyData.next_year_cutoff_date;
+          var cutoffDateParts = cutoffDateStr.split('-');
+          var cutoffDate = new Date(
+            parseInt(cutoffDateParts[0], 10),
+            parseInt(cutoffDateParts[1], 10) - 1, // Month is 0-indexed
+            parseInt(cutoffDateParts[2], 10)
+          );
+
+          var now = new Date();
+          var limitedDepts = companyData.limited_departments || [];
+          var userDeptId = companyData.user_department_id;
+
+          // Check if before cutoff and user's department is limited
+          // Compare dates at midnight local time
+          var nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          var cutoffDateOnly = new Date(cutoffDate.getFullYear(), cutoffDate.getMonth(), cutoffDate.getDate());
+
+          if (nowDateOnly < cutoffDateOnly && limitedDepts.indexOf(userDeptId) !== -1) {
+            var cutoffFormatted = cutoffDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+            if (warningDiv && warningText) {
+              warningText.textContent = 'Requests for ' + nextYear + ' are not allowed yet. Please wait until ' + cutoffFormatted + ' to request time off for the following calendar year.';
+              warningDiv.style.display = 'block';
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Error checking next year restriction:', e);
+      }
+
+      // Hide warning if conditions not met
+      if (warningDiv) warningDiv.style.display = 'none';
+    }
+
+    if (form && submitBtn && fromDate) {
+      // Add event listener to 'from' date input
+      fromDate.addEventListener('change', function () {
+        calculateTimes();
+        checkNextYearRestriction();
+      });
+
+      // Also check when 'to' date changes (for multi-day)
+      if (toDateMulti) {
+        toDateMulti.addEventListener('change', function () {
+          calculateTimes();
+          checkNextYearRestriction();
+        });
+      }
+
+      // Check on initial load if date is already set
+      setTimeout(checkNextYearRestriction, 100);
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Recalculate times to ensure to_date is set correctly
+        calculateTimes();
+
+        // Form validation
+        if (!form.checkValidity()) {
+          e.stopPropagation();
+          form.classList.add('was-validated');
+          return;
+        }
+
+        // Date range validation - ensure to_date is not before from_date
+        // Get to_date from hidden field, or fallback to from_date
+        var toDateValue = (toDateHidden && toDateHidden.value) ? toDateHidden.value : fromDate.value;
+
+        // If still empty, use from_date
+        if (!toDateValue || toDateValue.trim() === '') {
+          toDateValue = fromDate.value;
+          // Update hidden field
+          if (toDateHidden) toDateHidden.value = toDateValue;
+        }
+
+        // Validate that we have both dates
+        if (!fromDate.value || !toDateValue) {
+          alert('Please select a date.');
+          return;
+        }
+
+        // Parse dates as date-only (ignore time) for comparison
+        // Handle different date formats (the datepicker might use different format)
+        var fromDateOnly = new Date(fromDate.value);
+        var toDateOnly = new Date(toDateValue);
+
+        // Check if dates are valid
+        if (isNaN(fromDateOnly.getTime()) || isNaN(toDateOnly.getTime())) {
+          console.error('Invalid date format:', { from: fromDate.value, to: toDateValue });
+          alert('Invalid date format. Please check your dates.');
+          return;
+        }
+
+        // Reset time components for date-only comparison
+        fromDateOnly.setHours(0, 0, 0, 0);
+        toDateOnly.setHours(0, 0, 0, 0);
+
+        if (toDateOnly < fromDateOnly) {
+          alert('The "To" date must be on or after the "From" date.');
+          return;
+        }
+
+        // Check next year restriction one more time before submit
+        checkNextYearRestriction();
+        if (warningDiv && warningDiv.style.display === 'block') {
+          // Still show warning but allow submission (server will reject anyway)
+          if (!confirm('You are attempting to request time off for next year before the cutoff date. This request will likely be rejected. Do you want to continue?')) {
+            return;
+          }
+        }
+
+        // Prevent double submission
+        if (submitBtn.disabled) {
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        // Submit the form
+        form.submit();
+      });
+    }
+});
