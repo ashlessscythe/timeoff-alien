@@ -6,7 +6,7 @@
   {{else}}
 
   <div class="col-md-12">
-    <p class="visible-xs-block"><em class="text-muted">Scroll table horizontally</em></p>
+    <p class="d-block d-md-none"><em class="text-muted">Scroll table horizontally</em></p>
     <div class="table-responsive">
       <table class="table table-hover user-requests-table">
         <thead>
@@ -17,8 +17,8 @@
             <th>Deducted</th>
             <th>Approved by</th>
             <th></th>
-            <th class="col-xs-2">Comment</th>
-            <th><span class="pull-right">Status</span></th>
+            <th class="col-2">Comment</th>
+            <th><span class="float-end">Status</span></th>
           </tr>
         </thead>
 
@@ -41,14 +41,14 @@
               {{#unless this.leave_type.manager_only}}
               <form method="post" action="/requests/revoke/">
                 <input type="hidden" value="{{this.id}}" name="request">
-                <button type="submit" class="pull-right btn btn-default btn-xs revoke-btn single-click"
+                <button type="submit" class="float-end btn btn-outline-secondary btn-xs revoke-btn single-click"
                   title="Revoke leave request. Subject of approval."><i class="fa fa-trash"></i> Revoke</button>
               </form>
               {{/unless}}
               {{else}}
               <form method="post" action="/requests/revoke/">
                 <input type="hidden" value="{{this.id}}" name="request">
-                <button type="submit" class="pull-right btn btn-default btn-xs revoke-btn single-click"
+                <button type="submit" class="float-end btn btn-outline-secondary btn-xs revoke-btn single-click"
                   title="Revoke leave request. Subject of approval."><i class="fa fa-trash"></i> Revoke</button>
               </form>
               {{/if_equal}}
@@ -57,14 +57,14 @@
               {{#if_equal this.user_id ../logged_user.id }}
               <form method="post" action='/requests/cancel/'>
                 <input type="hidden" value="{{this.id}}" name="request">
-                <button type="submit" class="pull-right btn btn-default btn-xs revoke-btn single-click"
+                <button type="submit" class="float-end btn btn-outline-secondary btn-xs revoke-btn single-click"
                   title="Cancel leave request" value="cancel"><i class="fa fa-trash"></i> Cancel</button>
               </form>
               {{/if_equal}}
               {{/if}}
             </td>
             <td>{{this.comment.comment}}</td>
-            <td><span class="pull-right leave-request-row-status">{{#if this.is_new_leave }}Pending{{else}}{{#if
+            <td><span class="float-end leave-request-row-status">{{#if this.is_new_leave }}Pending{{else}}{{#if
                 this.is_approved_leave}}Approved{{else}}Rejected{{/if}}{{/if}}</span></td>
           </tr>
 

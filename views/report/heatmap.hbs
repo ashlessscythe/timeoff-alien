@@ -9,43 +9,43 @@
 {{> show_flash_messages }}
 
 <ol class="breadcrumb">
-  <li><a href="/reports/">All reports</a></li>
+  <li><a class="dropdown-item" href="/reports/">All reports</a></li>
   <li class="active">Absences Heat Map</li>
 </ol>
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default heatmap-config-panel">
-      <div class="panel-heading" role="button" data-toggle="collapse" href="#heatmapConfigPanel" aria-expanded="false"
+    <div class="card heatmap-config-panel">
+      <div class="card-header" role="button" data-bs-toggle="collapse" data-bs-target="#heatmapConfigPanel" aria-expanded="false"
         aria-controls="heatmapConfigPanel">
-        <h4 class="panel-title">
+        <h4 class="card-title mb-0">
           <i class="fa fa-chevron-down collapsed"></i> Heatmap Color Configuration
           <small class="text-muted">Adjust absence count thresholds for each color band</small>
         </h4>
       </div>
-      <div class="panel-collapse collapse" id="heatmapConfigPanel">
-        <div class="panel-body">
+      <div class="collapse" id="heatmapConfigPanel">
+        <div class="card-body">
           <form class="form-inline heatmap-config-form" onsubmit="return false;">
             <div class="form-group">
-              <label for="heatmap-threshold-low" class="control-label">Low (green) up to</label>
+              <label for="heatmap-threshold-low" class="form-label">Low (green) up to</label>
               <input type="number" min="1" class="form-control input-sm" id="heatmap-threshold-low" value="2">
             </div>
             <span>&nbsp;absences</span>
 
             <div class="form-group" style="margin-left:15px;">
-              <label for="heatmap-threshold-medium" class="control-label">Medium (darker green) up to</label>
+              <label for="heatmap-threshold-medium" class="form-label">Medium (darker green) up to</label>
               <input type="number" min="1" class="form-control input-sm" id="heatmap-threshold-medium" value="4">
             </div>
             <span>&nbsp;absences</span>
 
             <div class="form-group" style="margin-left:15px;">
-              <label for="heatmap-threshold-high" class="control-label">High (orange) up to</label>
+              <label for="heatmap-threshold-high" class="form-label">High (orange) up to</label>
               <input type="number" min="1" class="form-control input-sm" id="heatmap-threshold-high" value="6">
             </div>
             <span>&nbsp;absences</span>
 
             <div class="form-group" style="margin-left:15px;">
-              <label for="heatmap-threshold-very-high" class="control-label">Very high (dark orange) up to</label>
+              <label for="heatmap-threshold-very-high" class="form-label">Very high (dark orange) up to</label>
               <input type="number" min="1" class="form-control input-sm" id="heatmap-threshold-very-high" value="9">
             </div>
             <span>&nbsp;absences, above this is red</span>
@@ -452,7 +452,7 @@
 
     // Collapsible icon handling for config panel (mirrors team_view.hbs pattern)
     const configPanel = document.getElementById('heatmapConfigPanel');
-    const configIcon = document.querySelector('.heatmap-config-panel .panel-heading .fa');
+    const configIcon = document.querySelector('.heatmap-config-panel .card-header .fa');
 
     if (configPanel && typeof $ !== 'undefined') {
       $(configPanel).on('show.bs.collapse', function () {

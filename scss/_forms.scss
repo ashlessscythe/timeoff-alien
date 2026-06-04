@@ -1,0 +1,39 @@
+// Form and modal refinements
+
+.form-modern {
+  .form-group {
+    margin-bottom: var(--space-5);
+  }
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+}
+
+.modal-body {
+  padding: var(--space-5);
+}
+
+.modal-footer {
+  padding: var(--space-4) var(--space-5);
+  gap: var(--space-2);
+}
+
+// Legacy form-horizontal support
+.form-horizontal {
+  .control-label,
+  .form-label {
+    text-align: right;
+    padding-top: calc(0.375rem + 1px);
+  }
+}
+
+@media (max-width: 767px) {
+  .form-horizontal {
+    .control-label,
+    .form-label {
+      text-align: left;
+    }
+  }
+}

@@ -1,68 +1,65 @@
 {{> header }}
 
-{{#if show_public_banner}}
-<div class="alert" role="alert" style="background-color: {{public_message_bg}}; color: {{public_message_font}}">
-  {{{public_banner_message}}}
-</div>
-{{/if}}
-
-<h1>Login</h1>
-
-{{> show_flash_messages }}
-
-<div class="alert alert-warning">
-  <small><i class="fa fa-shield"></i> Security Notice: Unauthorized access attempts are prohibited and monitored. All
-    activities are logged.</small>
-</div>
-
-{{#if login.default}}
-<form class="form-horizontal" action="/login" method="post">
-
-  <div class="row">&nbsp;</div>
-  <div class="form-group">
-    <label for="email_inp" class="col-md-2 control-label col-md-offset-2">Employee email:</label>
-    <div class="col-md-5">
-      <input class="form-control" id="email_inp" type="text" name="username" required>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label for="pass_inp" class="col-md-2 control-label col-md-offset-2">Password</label>
-    <div class="col-md-5">
-      <input class="form-control" id="pass_inp" type="password" name="password" required>
-    </div>
-  </div>
-
-  {{#if turnstile_site_key}}
-  <div class="form-group">
-    <div class="col-md-offset-4 col-md-5">
-      <div class="cf-turnstile" data-sitekey="{{turnstile_site_key}}"></div>
-    </div>
+<div class="auth-page">
+  {{#if show_public_banner}}
+  <div class="alert mb-4" role="alert" style="background-color: {{public_message_bg}}; color: {{public_message_font}}">
+    {{{public_banner_message}}}
   </div>
   {{/if}}
 
-  <div class="form-group">
-    <div class="col-md-offset-4 col-md-1">
-      <button type="submit" class="btn btn-success single-click" id="submit_login">Login</button>
-    </div>
-    <div class="col-md-4">
-      <p class="pull-right"><a href="/forgot-password/">Forgot password?</a>{{#if allow_create_new_accounts }} | <a
-          href="/register/">Register new company</a>{{/if}}</p>
+  <div class="page-header">
+    <div>
+      <h1 class="page-header__title">Login</h1>
+      <p class="page-header__subtitle">Sign in to manage your time off</p>
     </div>
   </div>
 
-</form>
-{{/if}}
+  {{> show_flash_messages }}
 
-{{#if login.google}}
-<form action="/auth/google" method="GET">
-  <button type="submit" class="btn btn-default btn-login-google">
-    <span class="provider-logo google"></span> Login with Google
-  </button>
-</form>
-{{/if}}
+  <div class="info-callout mb-4">
+    <i class="fa fa-shield" aria-hidden="true"></i>
+    <span>Unauthorized access attempts are prohibited and monitored. All activities are logged.</span>
+  </div>
 
-<div class="row">&nbsp;</div>
+  <div class="auth-card">
+    {{#if login.default}}
+    <form class="form-modern" action="/login" method="post">
+      <div class="mb-3">
+        <label for="email_inp" class="form-label">Employee email</label>
+        <input class="form-control" id="email_inp" type="text" name="username" required autocomplete="username">
+      </div>
 
+      <div class="mb-3">
+        <label for="pass_inp" class="form-label">Password</label>
+        <input class="form-control" id="pass_inp" type="password" name="password" required autocomplete="current-password">
+      </div>
+
+      {{#if turnstile_site_key}}
+      <div class="mb-3">
+        <div class="cf-turnstile" data-sitekey="{{turnstile_site_key}}"></div>
+      </div>
+      {{/if}}
+
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <button type="submit" class="btn btn-primary single-click" id="submit_login">Login</button>
+        <p class="mb-0 text-muted">
+          <a href="/forgot-password/">Forgot password?</a>{{#if allow_create_new_accounts }} · <a
+            href="/register/">Register new company</a>{{/if}}
+        </p>
+      </div>
+    </form>
+    {{/if}}
+
+    {{#if login.google}}
+    <div class="mt-4 pt-4 border-top">
+      <form action="/auth/google" method="GET">
+        <button type="submit" class="btn btn-outline-secondary btn-login-google w-100">
+          <span class="provider-logo google"></span> Login with Google
+        </button>
+      </form>
+    </div>
+    {{/if}}
+  </div>
+</div>
 
 {{> footer }}

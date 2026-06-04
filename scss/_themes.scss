@@ -1,0 +1,53 @@
+// Light + Dark themes only
+
+body.theme-light,
+body.theme-day {
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --background-color: #ffffff;
+  --text-color: #0f172a;
+  --hover-bg-color: #f1f5f9;
+  --hover-text-color: #0f172a;
+  --accent-color: #2563eb;
+  --divider-color: #e2e8f0;
+  --calendar-cell-bg: #f9fafb;
+  --leave-cell-bg: #10b981;
+  --current-day-bg: #fbbf24;
+  --secondary-background-color: #f8fafc;
+  --leave-cell-color: #ffffff;
+  --button-bg: #2563eb;
+  --button-text: #ffffff;
+  --button-hover-bg: #1d4ed8;
+  --link-hover-color: #1d4ed8;
+}
+
+body.theme-dark,
+body.theme-night {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+  --color-accent: #3b82f6;
+  --color-accent-hover: #60a5fa;
+  --background-color: #0f172a;
+  --text-color: #f1f5f9;
+  --hover-bg-color: #1e293b;
+  --hover-text-color: #ffffff;
+  --accent-color: #3b82f6;
+  --divider-color: #334155;
+  --calendar-cell-bg: #1e293b;
+  --current-day-bg: #6366f1;
+  --secondary-background-color: #1e293b;
+  --leave-cell-bg: #22c55e;
+  --leave-cell-color: #0f172a;
+  --button-bg: #3b82f6;
+  --button-text: #ffffff;
+  --button-hover-bg: #2563eb;
+  --link-hover-color: #60a5fa;
+}

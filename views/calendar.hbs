@@ -1,170 +1,141 @@
 {{> header }}
 
-<h1>Employee calendar</h1>
-
-<div class="row">
-  <div class="col-md-6 lead">{{logged_user.name}} {{logged_user.lastname}}'s {{__ "calendar_for"}} {{current_year}}
-  </div>
-  <div class="col-md-6">
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">Employee calendar</h1>
+    <p class="page-header__subtitle">{{logged_user.name}} {{logged_user.lastname}}'s {{__ "calendar_for"}} {{current_year}}</p>
   </div>
 </div>
 
 {{> show_flash_messages }}
 
-<div class="row">&nbsp;</div>
-
-<div class="row main-row_header hidden-xs">
+<div class="row main-row_header d-none d-md-block">
   <div class="col-md-12">Statistics</div>
 </div>
 
-<div class="row">
+<div class="row g-4 mb-4">
 
   <div class="col-md-3 top-leave-type-statistics">
-    <dl>
+    <div class="stat-card">
       {{#with current_user }}
-      <!-- Big numbers layout -->
       <div class="allowance-breakdown">
         <div class="big-number-container">
           <span class="big-number{{#if (lt ../user_allowance.vacation_remaining 0)}} negative{{/if}}"
-            data-tom-days-available-in-allowance
-            style="font-size: 70px !important; color: {{#if (lt ../user_allowance.vacation_remaining 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">
+            data-tom-days-available-in-allowance>
             {{#with (get_days_and_hours_parts ../user_allowance.vacation_remaining)}}
-            {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless
-            this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span
-              style="font-size: 35px !important; vertical-align: super;">{{this.hours}}h</span>{{/if}}
+            {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span class="hours-part">{{this.hours}}h</span>{{/if}}
             {{/with}}
           </span>
-          <span class="slash"
-            style="font-size: 60px !important; color: #61686b !important; font-weight: 200 !important; line-height: 0.8 !important; opacity: 0.7 !important; margin: 0 !important; padding: 0 !important; display: inline-block !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;">/</span>
-          <span class="big-number{{#if (lt ../user_allowance.total_personal_available 0)}} negative{{/if}}"
-            style="font-size: 70px !important; color: {{#if (lt ../user_allowance.total_personal_available 0)}}#d9534f{{else}}#61686b{{/if}} !important; font-weight: 100 !important; line-height: 0.8 !important; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; margin: 0 !important; padding: 0 !important; display: inline-block !important;">
+          <span class="slash">/</span>
+          <span class="big-number{{#if (lt ../user_allowance.total_personal_available 0)}} negative{{/if}}">
             {{#with (get_days_and_hours_parts ../user_allowance.total_personal_available)}}
-            {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless
-            this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span
-              style="font-size: 35px !important; vertical-align: super;">{{this.hours}}h</span>{{/if}}
+            {{#if this.isNegative}}-{{/if}}{{#if this.days}}{{this.days}}d{{else}}{{#unless this.hasHours}}0d{{/unless}}{{/if}}{{#if this.hasHours}}<span class="hours-part">{{this.hours}}h</span>{{/if}}
             {{/with}}
           </span>
         </div>
-        <div class="small-labels" style="display: flex; justify-content: center; gap: 40px; margin-top: 8px;">
-          <span class="label-vac"
-            style="font-size: 18px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; background: #f8f9fa; padding: 4px 12px; border-radius: 4px; border: 1px solid #e9ecef;">vac</span>
-          <span class="label-per"
-            style="font-size: 18px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; background: #f8f9fa; padding: 4px 12px; border-radius: 4px; border: 1px solid #e9ecef;">per</span>
+        <div class="small-labels">
+          <span class="label-vac">vac</span>
+          <span class="label-per">per</span>
         </div>
       </div>
 
       {{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
-      <dd class="text-danger small">
+      <p class="text-danger small mb-2">
         You're overbooked!
-        <a href="#" class="text-danger" data-toggle="tooltip" data-placement="right"
+        <a href="#" class="text-danger" data-bs-toggle="tooltip" data-bs-placement="right"
           title="Cancel some requests so your balance is not negative" aria-label="Overbooked help" role="button"
           tabindex="0">
           <i class="fa fa-info-circle" aria-hidden="true"></i>
         </a>
-      </dd>
+      </p>
       {{/if}}
-      <dd>out of <span data-tom-total-days-in-allowance>{{format_days_and_hours
-          ../user_allowance.total_number_of_days_in_allowance }}</span>
-        in total allowance</dd>
+      <p class="text-muted mb-1">out of <span data-tom-total-days-in-allowance>{{format_days_and_hours
+          ../user_allowance.total_number_of_days_in_allowance }}</span> in total allowance</p>
       {{#if ../pending_requests_count}}
-      <dd class="text-info small">{{ ../pending_requests_count }} request{{#if (gt ../pending_requests_count
-        1)}}s{{/if}}
-        pending</dd>
+      <p class="text-info small mb-0">{{ ../pending_requests_count }} request{{#if (gt ../pending_requests_count
+        1)}}s{{/if}} pending</p>
       {{/if}}
       {{/with}}
-    </dl>
+    </div>
   </div>
 
-  <div class="col-md-3 secondary-leave-type-statistics hidden-xs">
-    {{> user_details/allowance_breakdown user_allowance = user_allowance }}
+  <div class="col-md-3 secondary-leave-type-statistics d-none d-md-block">
+    <div class="stat-card">
+      {{> user_details/allowance_breakdown user_allowance = user_allowance }}
+    </div>
   </div>
 
-  <div class="col-md-3 secondary-leave-type-statistics hidden-xs">
-    <dl>
-      <dt>Used so far</dt>
-
-      {{# if leave_type_statistics }}
-      {{# each leave_type_statistics }}
-      <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{format_days_and_hours this.days_taken}}{{# if
-          this.limit}} out of
-          {{format_days_and_hours this.limit}}{{/if}}</span></dd>
-      {{/each}}
-      {{else}}
-
-      <dd class="text-muted">No approved requests so far.</dd>
-      {{/if}}
-    </dl>
+  <div class="col-md-3 secondary-leave-type-statistics d-none d-md-block">
+    <div class="stat-card">
+      <dl class="mb-0">
+        <dt>Used so far</dt>
+        {{# if leave_type_statistics }}
+        {{# each leave_type_statistics }}
+        <dd><em>{{this.leave_type.name}}:</em> <span class="float-end">{{format_days_and_hours this.days_taken}}{{# if
+            this.limit}} out of {{format_days_and_hours this.limit}}{{/if}}</span></dd>
+        {{/each}}
+        {{else}}
+        <dd class="text-muted">No approved requests so far.</dd>
+        {{/if}}
+      </dl>
+    </div>
   </div>
 
-  <div class="col-md-3 secondary-leave-type-statistics hidden-xs">
-    <dl>
-      <dt>Details</dt>
-      {{~# each supervisors ~}}
-      <dd>
-        <em>{{# if @first }} Supervisor: {{ else }} &nbsp; {{/ if }}</em>
-        <span class="pull-right"><a href="mailto:{{this.email}}">{{ this.full_name }}</a></span>
-      </dd>
-      {{~/ each ~}}
-      <dd><em>Department:</em> <span class="pull-right"><a
-            href="/calendar/teamview/?department={{ current_user.department.id }}">{{ current_user.department.name
-            }}</a></span></dd>
-      <dd><em>Allowance in {{current_year}}:</em><span class="pull-right"> {{
-          user_allowance.total_number_of_days_in_allowance }} days</span>
-      <dd>
-    </dl>
+  <div class="col-md-3 secondary-leave-type-statistics d-none d-md-block">
+    <div class="stat-card">
+      <dl class="mb-0">
+        <dt>Details</dt>
+        {{~# each supervisors ~}}
+        <dd>
+          <em>{{# if @first }} Supervisor: {{ else }} &nbsp; {{/ if }}</em>
+          <span class="float-end"><a href="mailto:{{this.email}}">{{ this.full_name }}</a></span>
+        </dd>
+        {{~/ each ~}}
+        <dd><em>Department:</em> <span class="float-end"><a
+              href="/calendar/teamview/?department={{ current_user.department.id }}">{{ current_user.department.name }}</a></span></dd>
+        <dd><em>Allowance in {{current_year}}:</em><span class="float-end">{{ user_allowance.total_number_of_days_in_allowance }} days</span></dd>
+      </dl>
+    </div>
   </div>
 
 </div>
-
-<div class="row">
-</div>
-
 
 <div class="row main-row_header">
-  <div class="col-md-12">Calendar <a href="/calendar/feeds/" data-toggle="tooltip" data-placement="right"
-      title="Export absences  to external calendars"><span class="fa fa-rss"></span></a></div>
+  <div class="col-md-12">Calendar <a href="/calendar/feeds/" data-bs-toggle="tooltip" data-bs-placement="right"
+      title="Export absences to external calendars"><span class="fa fa-rss"></span></a></div>
 </div>
 
-<div class="row">
-  <div class="col-xs-2">
+<div class="row align-items-center mb-3">
+  <div class="col-2">
     {{#if show_full_year}}
-    <a class="btn btn-default"
+    <a class="btn btn-outline-secondary btn-sm"
       href="/calendar/?year={{previous_year}}{{#if show_full_year}}&show_full_year=1{{/if}}"><span aria-hidden="true"
-        class="fa fa-chevron-left"></span> {{previous_year}} </a>
+        class="fa fa-chevron-left"></span> {{previous_year}}</a>
     {{/if}}
   </div>
-  <div class="col-xs-8 calendar-section-caption">
-
+  <div class="col-8 calendar-section-caption">
     <strong>{{#if show_full_year}}January - December {{current_year}}{{else}}Upcoming Months{{/if}}</strong>
-    &nbsp;
-
     {{# unless show_full_year}}
-    <a class="btn btn-default" href="/calendar/?show_full_year=1">More... &nbsp;<span class="fa fa-plus"></span></a>
+    <a class="btn btn-outline-secondary btn-sm ms-2" href="/calendar/?show_full_year=1">More <span class="fa fa-plus"></span></a>
     {{else}}
-    <a class="btn btn-default" href="/calendar/">Less... &nbsp;<span class="fa fa-minus"></span></a>
+    <a class="btn btn-outline-secondary btn-sm ms-2" href="/calendar/">Less <span class="fa fa-minus"></span></a>
     {{/unless}}
-
-
   </div>
-  <div class="col-xs-2">
+  <div class="col-2 text-end">
     {{#if show_full_year}}
-    <a class="btn btn-default pull-right"
+    <a class="btn btn-outline-secondary btn-sm"
       href="/calendar/?year={{next_year}}{{#if show_full_year}}&show_full_year=1{{/if}}">{{next_year}} <span
         aria-hidden="true" class="fa fa-chevron-right"></span></a>
     {{/if}}
   </div>
 </div>
 
-<div class="row">&nbsp;</div>
-
-<div class="row clearfix">
-
+<div class="row clearfix g-3">
   {{# each calendar}}
   <div class="col-md-3 month_container">
     <table class="calendar_month month_{{ this.month }}">
       <thead>
-        <td colspan="14">{{#if ../show_full_year}}{{this.month}}{{else}}{{as_date_formatted this.moment 'MMMM,
-          YYYY'}}{{/if}}</td>
+        <td colspan="14">{{#if ../show_full_year}}{{this.month}}{{else}}{{as_date_formatted this.moment 'MMMM, YYYY'}}{{/if}}</td>
         </tr>
         <tr>
           {{#if_equal ../company.first_day_of_week 0}}
@@ -194,37 +165,20 @@
           {{/each}}
         </tr>
         {{/each}}
-
       </tbody>
     </table>
   </div>
   {{/each}}
-
 </div>
 
 {{# unless show_full_year}}
-
 <div class="row main-row_header">
-  <p class="col-md-12">All my absences in {{current_year}}</p>
+  <p class="col-md-12 mb-0">All my absences in {{current_year}}</p>
 </div>
-
 {{> user_requests leaves=current_user.my_leaves }}
-
 {{/unless}}
 
 {{> modal_leave_reject }}
 {{> modal_leave_approve }}
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Same delegated wiring as team view: leave-summary popovers inject approve/reject
-    // buttons that target these modals (see views/leave/popup_leave_details.hbs).
-    $(document).on('click', 'button[data-target="#approveModal"], button[data-target="#rejectModal"]', function () {
-      const leaveId = $(this).data('leave-id')
-      const modalId = $(this).data('target')
-      $(modalId).find('input[name="request"]').val(leaveId)
-    })
-  })
-</script>
 
 {{> footer }}

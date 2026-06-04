@@ -6,9 +6,9 @@
     {{> user_details/breadcrumb employee=employee }}
 
     <div class="form-group">
-      <label for="" class="control-label">Schedule</label>
+      <label for="" class="form-label">Schedule</label>
 
-      <p class="help-block">
+      <p class="form-text">
         {{#if user_specific_schedule}}
         Current employee has <strong data-vpp="declare-user-specific-schedule">custom</strong> schedule.
         {{else}}
@@ -23,9 +23,9 @@
 
     </div>
     <div class="form-group">
-      <div class="pull-right">
+      <div class="float-end">
         {{#if user_specific_schedule}}
-        <button type="submit" name="revoke_user_specific_schedule" class="btn btn-default">Move employee to company wide
+        <button type="submit" name="revoke_user_specific_schedule" class="btn btn-outline-secondary">Move employee to company wide
           schedule</button>
         <button type="submit" name="save_user_specific_schedule" class="btn btn-success">Save employee specific
           schedule</button>

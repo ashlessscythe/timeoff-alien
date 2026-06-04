@@ -3,50 +3,50 @@
   <div class="col-md-7">
 
     <ol class="breadcrumb">
-      <li><a href="/settings/departments/" data-vpp-all-departments-link="1">All departments</a></li>
+      <li><a class="dropdown-item" href="/settings/departments/" data-vpp-all-departments-link="1">All departments</a></li>
       <li class="active">{{ department.name }}</li>
     </ol>
 
     <div class="form-group">
-      <label for="name" class="control-label">Name</label>
+      <label for="name" class="form-label">Name</label>
       <input class="form-control" id="name" name="name" required value="{{department.name}}">
     </div>
 
 
     <div class="form-group">
-      <label for="manager_id" class="control-label">Manager</label>
+      <label for="manager_id" class="form-label">Manager</label>
       <select class="form-control" name="manager_id" id="manager_id">
         {{#each company.users}}
         <option value="{{this.id}}" {{#if_equal ../department.manager_id this.id }} selected="selected" {{/if_equal}}>
           {{this.full_name}}</option>
         {{/each}}
       </select>
-      <span class="help-block">Head of {{department.name}} department. Main manager. <a
+      <span class="form-text">Head of {{department.name}} department. Main manager. <a
           href="/users/edit/{{department.manager_id}}/">More details <i class="fa fa-angle-double-right"></i></a></span>
     </div>
 
     <div class="form-group">
-      <label class="control-label">Secondary supervisors (BETA)</label>
+      <label class="form-label">Secondary supervisors (BETA)</label>
       <ul class="list-group no-bottom-space">
         {{# each department.supervisors }}
 
         <li class="list-group-item" style="min-height: 40px; padding: 10px 15px;">
           <span><a href='/users/edit/{{ this.id }}/'>{{ this.full_name }}</a></span>
-          <button type="submit" name="remove_supervisor_id" value="{{this.id}}" class="pull-right btn btn-link btn-xs" style="margin-top: -5px;">
+          <button type="submit" name="remove_supervisor_id" value="{{this.id}}" class="float-end btn btn-link btn-xs" style="margin-top: -5px;">
             <i class="fa fa-trash"></i> Remove
           </button>
         </li>
         {{/ each }}
 
         <li class="list-group-item" style="min-height: 40px; padding: 10px 15px;">
-          <a class="pull-right btn btn-link btn-xs" data-vpp-add-new-secondary-supervisor="1" data-toggle="modal"
-            data-target="#add_secondary_supervisers_modal" data-department_id="{{department.id}}"
+          <a class="float-end btn btn-link btn-xs" data-vpp-add-new-secondary-supervisor="1" data-bs-toggle="modal"
+            data-bs-target="#add_secondary_supervisers_modal" data-department_id="{{department.id}}"
             data-department_name="{{department.name}}">
             <i class="fa fa-plus"></i> Add new secondary supervisor
           </a>
         </li>
       </ul>
-      <span class="help-block">List of users who also could decide on leave requests from {{department.name}}
+      <span class="form-text">List of users who also could decide on leave requests from {{department.name}}
         department's employees.</span>
     </div>
 
@@ -72,28 +72,28 @@
     </div>
 
     <div class="form-group">
-      <label for="use_bank_holidays_inp" class="control-label">
+      <label for="use_bank_holidays_inp" class="form-label">
         <input class="" id="use_bank_holidays_inp" name="include_public_holidays" type="checkbox" {{# if
           department.include_public_holidays}} checked="checked" {{/if}}>
         Include public holidays
       </label>
-      <span class="help-block">Determine if employees from {{department.name}} have <a href="/settings/general" />bank
+      <span class="form-text">Determine if employees from {{department.name}} have <a href="/settings/general" />bank
         holidays</a> in addition to their allowance</span>
     </div>
 
     <div class="form-group">
-      <label for="is_accrued_allowance_inp" class="control-label">
+      <label for="is_accrued_allowance_inp" class="form-label">
         <input class="" id="is_accrued_allowance_inp" name="is_accrued_allowance" type="checkbox" {{# if
           department.is_accrued_allowance}} checked="checked" {{/if}}>
         Accrued allowance
       </label>
-      <span class="help-block">If enabled, holiday allowance starts to build up - or accrue - from the first day of
+      <span class="form-text">If enabled, holiday allowance starts to build up - or accrue - from the first day of
         employment. It accrues in proportion to the annual entitlement. E.g. an employee in the ninth month of
         employment would have built up 9/12ths (or three-quarters) of annual entitlement.</span>
     </div>
 
     <div class="form-group">
-      <label class="control-label">Allowed Leave Increments</label>
+      <label class="form-label">Allowed Leave Increments</label>
       <div class="checkbox">
         <label>
           <input type="checkbox" name="allowed_increments[]" value="full_day" {{#if (includes
@@ -122,12 +122,12 @@
           Quarter Hour (15 minutes)
         </label>
       </div>
-      <span class="help-block">Select which leave increment types are allowed for this department. Employees will only
+      <span class="form-text">Select which leave increment types are allowed for this department. Employees will only
         be able to request leave using the selected increment types.</span>
     </div>
 
     <div class="form-group">
-      <label class="control-label">Available leave types</label>
+      <label class="form-label">Available leave types</label>
       {{#each company.leave_types}}
       <div class="checkbox">
         <label>
@@ -136,15 +136,15 @@
         </label>
       </div>
       {{/each}}
-      <span class="help-block">Employees in {{department.name}} can only book the selected leave types. When all types are selected, new company leave types are included automatically. Uncheck types this department should not use.</span>
+      <span class="form-text">Employees in {{department.name}} can only book the selected leave types. When all types are selected, new company leave types are included automatically. Uncheck types this department should not use.</span>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-12">
-      <button id="save_changes_btn" type="submit" class="btn btn-success pull-right single-click">Save changes to
+      <button id="save_changes_btn" type="submit" class="btn btn-success float-end single-click">Save changes to
         department</button>
-      <a class="btn btn-link pull-right" href="/settings/departments/">Cancel</a>
+      <a class="btn btn-link float-end" href="/settings/departments/">Cancel</a>
     </div>
   </div>
 

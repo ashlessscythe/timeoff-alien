@@ -12,8 +12,8 @@
   style="background-color: {{day.leave_color_value_morning}};" {{/unless}} {{/if}}>
   <span {{#unless day.is_bank_holiday}} {{#unless day.is_weekend}} {{# with day.leave_obj }} {{#if this }}
     class="leave-details-summary-trigger" data-leave-id="{{this.id}}" {{/if}} {{/with}} {{/unless}} {{/unless}} {{#if
-    day.is_current_day}} data-toggle="tooltip" data-placement="top" title="Today" {{/if}} {{#if day.is_bank_holiday}}
-    data-toggle="tooltip" data-placement="top" title="Bank holiday: {{day.bank_holiday_name}}"
+    day.is_current_day}} data-bs-toggle="tooltip" data-bs-placement="top" title="Today" {{/if}} {{#if day.is_bank_holiday}}
+    data-bs-toggle="tooltip" data-bs-placement="top" title="Bank holiday: {{day.bank_holiday_name}}"
     {{/if}}>{{day.val}}</span>
 </td>
 <td class="calendar_cell half_2nd day_{{ day.val }}

@@ -3,16 +3,16 @@
   {{> user_details/breadcrumb employee=employee }}
 
   <div class="row">
-    <div class="col-xs-2">
-      <a class="btn btn-default" href="/users/edit/{{current_user.id}}/calendar/?year={{previous_year}}"><span
+    <div class="col-2">
+      <a class="btn btn-outline-secondary" href="/users/edit/{{current_user.id}}/calendar/?year={{previous_year}}"><span
           aria-hidden="true" class="fa fa-chevron-left"></span> {{previous_year}} </a>
     </div>
-    <div class="col-xs-8 calendar-section-caption">
+    <div class="col-8 calendar-section-caption">
       <h3>{{current_year}}</h3>
     </div>
-    <div class="col-xs-2">
+    <div class="col-2">
       {{#if show_full_year}}
-      <a class="btn btn-default pull-right"
+      <a class="btn btn-outline-secondary float-end"
         href="/users/edit/{{current_user.id}}/calendar/?year={{next_year}}{{#if show_full_year}}&show_full_year=1{{/if}}">{{next_year}}
         <span aria-hidden="true" class="fa fa-chevron-right"></span></a>
       {{/if}}
@@ -62,7 +62,7 @@
         {{#if (lt ../user_allowance.number_of_days_available_in_allowance 0)}}
         <dd class="text-danger small">
           You're overbooked!
-          <a href="#" class="text-danger" data-toggle="tooltip" data-placement="right"
+          <a href="#" class="text-danger" data-bs-toggle="tooltip" data-bs-placement="right"
             title="Cancel some requests so your balance is not negative" aria-label="Overbooked help" role="button"
             tabindex="0">
             <i class="fa fa-info-circle" aria-hidden="true"></i>
@@ -80,17 +80,17 @@
       </dl>
     </div>
 
-    <div class="col-md-4 secondary-leave-type-statistics hidden-xs">
+    <div class="col-md-4 secondary-leave-type-statistics d-none d-md-block">
       {{> user_details/allowance_breakdown user_allowance = user_allowance }}
     </div>
 
-    <div class="col-md-4 secondary-leave-type-statistics hidden-xs">
+    <div class="col-md-4 secondary-leave-type-statistics d-none d-md-block">
       <dl>
         <dt>Used</dt>
 
         {{# if leave_type_statistics }}
         {{# each leave_type_statistics }}
-        <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{format_days_and_hours this.days_taken}}{{# if
+        <dd><em>{{this.leave_type.name}}:</em> <span class="float-end">{{format_days_and_hours this.days_taken}}{{# if
             this.limit}} out of
             {{format_days_and_hours this.limit}}{{/if}}</span></dd>
         {{/each}}

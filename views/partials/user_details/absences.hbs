@@ -15,38 +15,38 @@
     {{> user_details/breadcrumb employee=employee }}
 
     <div class="row">
-      <div class="col-xs-2">
-        <a class="btn btn-default" href="/users/edit/{{employee.id}}/absences/?year={{previous_year}}"><span
+      <div class="col-2">
+        <a class="btn btn-outline-secondary" href="/users/edit/{{employee.id}}/absences/?year={{previous_year}}"><span
             aria-hidden="true" class="fa fa-chevron-left"></span> {{previous_year}} </a>
       </div>
-      <div class="col-xs-8 calendar-section-caption">
+      <div class="col-8 calendar-section-caption">
         <h3>{{current_year}}</h3>
       </div>
-      <div class="col-xs-2">
-        <a class="btn btn-default pull-right"
+      <div class="col-2">
+        <a class="btn btn-outline-secondary float-end"
           href="/users/edit/{{employee.id}}/absences/?year={{next_year}}">{{next_year}} <span aria-hidden="true"
             class="fa fa-chevron-right"></span></a>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="control-label">Overview</label>
+      <label class="form-label">Overview</label>
       <div class="progress bigger">
         <div class="progress-bar progress-bar-success" style="width: {{ leave_statistics.used_so_far_percent }}%"
-          data-content="{{# with employee }}{{this.full_name }}{{/with}} in {{current_year}} used {{ leave_statistics.used_so_far }} days from allowance"
-          data-placement="top" data-toggle="popover" data-trigger="focus hover">
+          data-bs-content="{{# with employee }}{{this.full_name }}{{/with}} in {{current_year}} used {{ leave_statistics.used_so_far }} days from allowance"
+          data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover">
           {{ leave_statistics.used_so_far }} days used so far
         </div>
         <div class="progress-bar progress-bar-warning" style="width: {{ leave_statistics.remaining_percent }}%"
-          data-content="{{# with employee }}{{this.full_name }}{{/with}} in current year has {{ leave_statistics.remaining }} remaining days in allowance"
-          data-placement="top" data-toggle="popover" data-trigger="focus hover">
+          data-bs-content="{{# with employee }}{{this.full_name }}{{/with}} in current year has {{ leave_statistics.remaining }} remaining days in allowance"
+          data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover">
           {{ leave_statistics.remaining }} days remaining in {{current_year}}
         </div>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="control-label">Days available for {{ employee.name }} to take in {{current_year}}</label>
+      <label class="form-label">Days available for {{ employee.name }} to take in {{current_year}}</label>
       <p>
         <span{{#if (lt user_allowance.number_of_days_available_in_allowance 0)}} class="user-allowance-negative"
           {{/if}}>{{ format_days_and_hours user_allowance.number_of_days_available_in_allowance }}</span> out of {{
@@ -57,9 +57,9 @@
     </div>
 
     <div class="form-group">
-      <label class="control-label">Is Accrued Allowance?</label>
+      <label class="form-label">Is Accrued Allowance?</label>
       <p>{{# if user_allowance.is_accrued_allowance }}Yes{{else}}No{{/if}}</p>
-      <span class="help-block">
+      <span class="form-text">
         The way of available allowance calculation is defined on department level. <a
           href="/settings/departments/edit/{{employee.department_id}}">More details <i
             class="fa fa-angle-double-right"></i></a>
@@ -72,7 +72,7 @@
           <dt>Absences used this year grouped by leave types</dt>
           {{# if leave_type_statistics }}
           {{# each leave_type_statistics }}
-          <dd><em>{{this.leave_type.name}}:</em> <span class="pull-right">{{format_days_and_hours this.days_taken}}{{#
+          <dd><em>{{this.leave_type.name}}:</em> <span class="float-end">{{format_days_and_hours this.days_taken}}{{#
               if this.limit}} out of
               {{format_days_and_hours this.limit}}{{/if}}</span></dd>
           {{/each}}
@@ -82,39 +82,39 @@
         </dl>
       </div>
 
-      <div class="col-md-5 col-md-offset-2">
+      <div class="col-md-5 offset-md-2">
         {{> user_details/allowance_breakdown user_allowance = user_allowance }}
       </div>
     </div>
 
     <div class="form-group">
-      <label for="carried_over_allowance_inp" class="control-label">Allowance carried over from previous year</label>
+      <label for="carried_over_allowance_inp" class="form-label">Allowance carried over from previous year</label>
       <div class="input-group col-md-4">
         <input class="form-control" readonly id="carried_over_allowance_inp" type="number" step="0.125"
           name="carried_over_allowance"
           value="{{#if carried_over_allowance }}{{carried_over_allowance}}{{else}}0{{/if}}"
           aria-describedby="carried_over_allowance_help">
-        <span class="input-group-addon">working days</span>
+        <span class="input-group-text">working days</span>
       </div>
-      <div id="carried_over_allowance_help" class="help-block">
+      <div id="carried_over_allowance_help" class="form-text">
         <div>Allowance adjustment based on unused holidays from previous year.</div>
         <div>It is calculated at the beginning of current year.</div>
       </div>
     </div>
 
     <div class="form-group">
-      <label for="adjustment_inp" class="control-label">Allowance adjustment in {{current_year}}</label>
+      <label for="adjustment_inp" class="form-label">Allowance adjustment in {{current_year}}</label>
       <div class="row">
         <div class="col-md-4">
           <div class="input-group">
             <input class="form-control" id="adjustment_inp" type="number" step="0.125" name="adjustment"
               value="{{#if employee_adjustment }}{{employee_adjustment}}{{else}}0{{/if}}"
               aria-describedby="adjustment_help">
-            <span class="input-group-addon">working days</span>
+            <span class="input-group-text">working days</span>
           </div>
-          <div id="adjustment_help" class="help-block">
+          <div id="adjustment_help" class="form-text">
             <div>Tune allowance for this user in {{current_year}}.</div>
-            <div>Can be negative as well.</div>
+            <div>Can be negative as card card-body bg-light.</div>
             <div>If no value is set for this year, the last adjustment from previous years will be used</div>
           </div>
         </div>
@@ -166,7 +166,7 @@
     </div>
 
     <div class="form-group">
-      <label for="personal_adjustment_inp" class="control-label">Personal days adjustment in {{current_year}}</label>
+      <label for="personal_adjustment_inp" class="form-label">Personal days adjustment in {{current_year}}</label>
       <div class="row">
         <div class="col-md-4">
           <div class="input-group">
@@ -174,12 +174,12 @@
               name="personal_adjustment"
               value="{{#if employee_personal_adjustment }}{{employee_personal_adjustment}}{{else}}0{{/if}}"
               aria-describedby="personal_adjustment_help">
-            <span class="input-group-addon">working days</span>
+            <span class="input-group-text">working days</span>
           </div>
-          <div id="personal_adjustment_help" class="help-block">
+          <div id="personal_adjustment_help" class="form-text">
             <div>Adjust personal days allowance for this user in {{current_year}}.</div>
             <div>This is a subset of the total allowance adjustment above.</div>
-            <div>Can be negative as well.</div>
+            <div>Can be negative as card card-body bg-light.</div>
             <div>If no value is set for this year, the last adjustment from previous years will be used</div>
           </div>
         </div>
@@ -232,7 +232,7 @@
 
     <div class="form-group">
       <div class="col-md-12">
-        <button id="save_changes_btn" type="submit" class="btn btn-success pull-right single-click">Save
+        <button id="save_changes_btn" type="submit" class="btn btn-success float-end single-click">Save
           changes</button>
       </div>
     </div>

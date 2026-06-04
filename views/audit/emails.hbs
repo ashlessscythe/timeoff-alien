@@ -24,7 +24,7 @@
             <td>
               <form action="/audit/email/" method="GET">
                 <div class="form-group input-group">
-                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                  <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                   <input type="text" name="start_date" class="form-control" id="start_date" placeholder="Start Date"
                     data-provide="datepicker" data-date-autoclose="1"
                     data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
@@ -32,7 +32,7 @@
                     value="{{#if filter.start_date }}{{as_date filter.start_date }}{{/if}}">
                 </div>
                 <div class="form-group input-group">
-                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                  <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                   <input type="text" name="end_date" class="form-control" id="end_date" placeholder="End Date"
                     data-provide="datepicker" data-date-autoclose="1"
                     data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
@@ -51,7 +51,7 @@
 
                 <button type="submit" class="btn btn-info single-click">Filter</button>
                 {{# if show_reset_button }}
-                <a href="/audit/email/" class="btn btn-default">Reset</a>
+                <a href="/audit/email/" class="btn btn-outline-secondary">Reset</a>
                 {{/if}}
               </form>
             </td>
@@ -76,7 +76,7 @@
               <a href="/audit/email/?user_id={{ this.user_id}}">{{# with this.user }}{{this.full_name}}{{/with}}</a>
             </td>
             <td>
-              <a class="collapsed" data-toggle="collapse" data-parent="#email_list" href="#collapse_{{ this.id }}">
+              <a class="collapsed" data-bs-toggle="collapse" data-bs-parent="#email_list" href="#collapse_{{ this.id }}">
                 {{ this.subject }}
               </a>
             </td>

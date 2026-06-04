@@ -12,7 +12,7 @@
 </div>
 
 <div class="row">
-  <div class="col-md-8 col-md-offset-1">
+  <div class="col-md-8 offset-md-1">
     <p>TimeOff.Management supports sharing <strong>{{ company.name }}'s</strong> data to other software via REST API.</p>
     <p>This page allows you to {{# if company.integration_api_enabled }}disable{{else}}enable{{/if}} access.</p>
   </div>
@@ -26,8 +26,8 @@
   <div class="col-md-12">
     <form class="form-horizontal" action="" method="post">
       <div class="form-group">
-        <div class="col-md-9 col-md-offset-3">
-        <label for="integration_api_enabled" class="control-label">
+        <div class="col-md-9 offset-md-3">
+        <label for="integration_api_enabled" class="form-label">
           <input
             id="integration_api_enabled"
             type="checkbox"
@@ -40,16 +40,16 @@
       </div>
       <hr/>
       <div class="form-group">
-        <label for="token" class="col-md-3 control-label">API access key</label>
+        <label for="token" class="col-md-3 form-label">API access key</label>
         <div class="col-md-5">
           <input class="form-control" readonly value="{{company.integration_api_token}}" aria-describedby="token_help" type="text" id="token-value">
         </div>
-        <span id="token_help" class="help-block">Token that allows access to {{company.name}}'s data. <span class="danger">Keep it secret.</span></span>
+        <span id="token_help" class="form-text">Token that allows access to {{company.name}}'s data. <span class="danger">Keep it secret.</span></span>
       </div>
       <div class="form-group">
-        <div class="col-md-offset-3 col-md-5">
-          <div class="pull-right">
-            <button type="submit" class="btn btn-default single-click" id="regenerate_token_btn" name="regenerate_token" value=1>Regenerate token</button>
+        <div class="offset-md-3 col-md-5">
+          <div class="float-end">
+            <button type="submit" class="btn btn-outline-secondary single-click" id="regenerate_token_btn" name="regenerate_token" value=1>Regenerate token</button>
             <button type="submit" class="btn btn-success single-click" id="save_settings_btn">Save integration API configuration</button>
           </div>
         </div>

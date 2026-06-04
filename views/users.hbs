@@ -1,52 +1,49 @@
 {{> header }}
 
-<h1>Staff</h1>
-
-{{> show_flash_messages }}
-
-<div class="row">
-  <div class="col-md-3 lead">{{company.name}}'s staff</div>
-  <div class="col-md-3 col-md-offset-6">
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">Staff</h1>
+    <p class="page-header__subtitle">{{company.name}}'s employees</p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="btn btn-outline-secondary" id="toggle-deactivated-users"
+      data-bs-content="Toggle visibility of deactivated users" data-bs-placement="top" data-bs-toggle="tooltip"
+      data-bs-trigger="hover">
+      <i class="fa fa-eye-slash"></i> Hide deactivated
+    </button>
     {{#if logged_user.admin}}
-    <div class="btn-group pull-right">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
         Add new employee
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
       </button>
-      <ul class="dropdown-menu">
-        <li><a href="/users/import/" id="import_users_btn">Import employees</a></li>
-        <li><a href="/users/add/" id="add_new_department">Add single employee</a></li>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="/users/import/" id="import_users_btn">Import employees</a></li>
+        <li><a class="dropdown-item" href="/users/add/" id="add_new_department">Add single employee</a></li>
       </ul>
     </div>
     {{/if}}
-    <div class="btn-group pull-right" style="margin-right: 10px;">
-      <button type="button" class="btn btn-default" id="toggle-deactivated-users"
-        data-content="Toggle visibility of deactivated users" data-placement="top" data-toggle="tooltip"
-        data-trigger="hover">
-        <i class="fa fa-eye-slash"></i> Hide deactivated
-      </button>
-    </div>
-    <form action="/users/" method="GET">
+    <form action="/users/" method="GET" class="d-inline">
       <input type="hidden" name="department" value="{{department_id}}">
       <input type="hidden" name="as-csv" value="1">
-      <button class="btn btn-link pull-right single-click" type="submit"
-        data-content="Download current page as .CSV file" data-placement="top" data-toggle="popover"
-        data-trigger="focus hover"><i class="fa fa-download"></i> .csv</button>
+      <button class="btn btn-outline-secondary single-click" type="submit"
+        data-bs-content="Download current page as .CSV file" data-bs-placement="top" data-bs-toggle="popover"
+        data-bs-trigger="focus hover"><i class="fa fa-download"></i> .csv</button>
     </form>
   </div>
 </div>
 
-<div class="row">&nbsp;</div>
+{{> show_flash_messages }}
 
-<div class="col-md-3 list-group all-departments">
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="list-group all-departments">
   <a href="/users/" class="list-group-item{{#unless department_id }} selected-item{{/unless}}">All departments</a>
   {{#each company.departments}}
   <a class="list-group-item {{#if_equal ../department_id this.id}} selected-item{{/if_equal}}"
     href="/users/?department={{this.id}}">{{this.name}}</a>
   {{/each}}
-</div>
+    </div>
+  </div>
 
 <div class="col-md-9">
   <table class="table table-hover" id="users-table">
