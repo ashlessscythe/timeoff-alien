@@ -1,31 +1,22 @@
 <td class="calendar_cell half_1st day_{{ day.val }}
     {{#if day.is_bank_holiday}}bank_holiday_cell{{/if}}
     {{#if day.is_weekend}}weekend_cell{{/if}}
-    {{#if day.is_leave_morning }}
-        {{#if day.is_new_leave}}
-            leave_cell_pended
-        {{else}}
-            leave_cell
-        {{/if}}
+    {{#if day.is_leave_morning}}
+        {{#if day.is_new_leave}}day-leave-pending{{else}}has-leave{{/if}}
     {{/if}}
-    {{#if day.is_current_day }}current_day_cell{{/if}}" {{#if day.is_leave_morning }} {{#unless day.is_new_leave}}
-  style="background-color: {{day.leave_color_value_morning}};" {{/unless}} {{/if}}>
-  <span {{#unless day.is_bank_holiday}} {{#unless day.is_weekend}} {{# with day.leave_obj }} {{#if this }}
-    class="leave-details-summary-trigger" data-leave-id="{{this.id}}" {{/if}} {{/with}} {{/unless}} {{/unless}} {{#if
-    day.is_current_day}} data-bs-toggle="tooltip" data-bs-placement="top" title="Today" {{/if}} {{#if day.is_bank_holiday}}
-    data-bs-toggle="tooltip" data-bs-placement="top" title="Bank holiday: {{day.bank_holiday_name}}"
-    {{/if}}>{{day.val}}</span>
+    {{#if day.is_current_day}}current_day_cell{{/if}}"
+  {{#if day.is_leave_morning}}{{#unless day.is_new_leave}} style="--day-leave-color: {{day.leave_color_value_morning}};"{{/unless}}{{/if}}>
+  <span class="calendar-day-num{{#unless day.is_bank_holiday}}{{#unless day.is_weekend}}{{#with day.leave_obj}}{{#if this}} leave-details-summary-trigger{{/if}}{{/with}}{{/unless}}{{/unless}}"
+    {{#with day.leave_obj}}{{#if this}} data-leave-id="{{this.id}}"{{/if}}{{/with}}
+    {{#if day.is_current_day}} data-bs-toggle="tooltip" data-bs-placement="top" title="Today"{{/if}}
+    {{#if day.is_bank_holiday}} data-bs-toggle="tooltip" data-bs-placement="top" title="Bank holiday: {{day.bank_holiday_name}}"{{/if}}>{{day.val}}</span>
 </td>
 <td class="calendar_cell half_2nd day_{{ day.val }}
     {{#if day.is_bank_holiday}}bank_holiday_cell{{/if}}
     {{#if day.is_weekend}}weekend_cell{{/if}}
-    {{#if day.is_leave_afternoon }}
-        {{#if day.is_new_leave}}
-            leave_cell_pended
-        {{else}}
-            leave_cell
-        {{/if}}
+    {{#if day.is_leave_afternoon}}
+        {{#if day.is_new_leave}}day-leave-pending{{else}}has-leave{{/if}}
     {{/if}}
-    {{#if day.is_current_day }}current_day_cell{{/if}}" {{#if day.is_leave_afternoon }} {{#unless day.is_new_leave}}
-  style="background-color: {{day.leave_color_value_afternoon}};" {{/unless}} {{/if}}>
+    {{#if day.is_current_day}}current_day_cell{{/if}}"
+  {{#if day.is_leave_afternoon}}{{#unless day.is_new_leave}} style="--day-leave-color: {{day.leave_color_value_afternoon}};"{{/unless}}{{/if}}>
 </td>

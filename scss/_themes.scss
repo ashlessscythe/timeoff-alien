@@ -24,6 +24,18 @@ body.theme-day {
   --button-text: #ffffff;
   --button-hover-bg: #1d4ed8;
   --link-hover-color: #1d4ed8;
+
+  // Bootstrap 5 color mode sync
+  --bs-body-color: #0f172a;
+  --bs-body-bg: #ffffff;
+  --bs-emphasis-color: #0f172a;
+  --bs-secondary-color: #64748b;
+  --bs-secondary-bg: #f8fafc;
+  --bs-tertiary-color: #64748b;
+  --bs-tertiary-bg: #f1f5f9;
+  --bs-border-color: #e2e8f0;
+  --bs-link-color: #2563eb;
+  --bs-link-hover-color: #1d4ed8;
 }
 
 body.theme-dark,
@@ -50,4 +62,17 @@ body.theme-night {
   --button-text: #ffffff;
   --button-hover-bg: #2563eb;
   --link-hover-color: #60a5fa;
+
+  // Bootstrap 5 color mode sync
+  --bs-body-color: #f1f5f9;
+  --bs-body-bg: #0f172a;
+  --bs-emphasis-color: #f8fafc;
+  --bs-secondary-color: #94a3b8;
+  --bs-secondary-bg: #1e293b;
+  --bs-tertiary-color: #94a3b8;
+  --bs-tertiary-bg: #1e293b;
+  --bs-border-color: #334155;
+  --bs-link-color: #60a5fa;
+  --bs-link-hover-color: #93c5fd;
+  color-scheme: dark;
 }

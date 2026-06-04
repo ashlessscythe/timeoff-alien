@@ -1,86 +1,177 @@
 @use 'tokens' as *;
 
 
+// Each calendar day = two half-width cells (morning | afternoon)
+$calendar-half-width: 15px;
+$calendar-day-width: $calendar-half-width * 2;
+$calendar-cell-height: 30px;
+
 .calendar_month {
   width: 100%;
+  min-width: $calendar-day-width * 7;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
 
-  td {
-    background-color: var(--calendar-cell-bg);
-    text-align: center;
-    padding: 5px 0;
-    border-radius: var(--radius-sm);
-  }
-
-  thead {
+  thead td {
     text-align: center;
     font-weight: 600;
-    font-size: var(--font-size-sm);
+    font-size: 0.6875rem;
     color: var(--color-text-muted);
+    padding: 4px 0;
+    background: transparent;
   }
 }
 
 div.month_container {
-  height: 250px;
+  height: auto;
+  min-height: 220px;
+  overflow-x: auto;
 }
 
 .team-view-table {
   width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
 
   td {
-    padding: 5px 0;
+    padding: 4px 0;
+    vertical-align: middle;
+  }
+
+  // Day columns (two halves per day); leave name column uses .left-column-cell
+  td.calendar_cell {
+    width: $calendar-half-width !important;
+    min-width: $calendar-half-width !important;
+    max-width: none !important;
   }
 }
 
 td.team-view-header {
   height: 43px;
   text-align: center;
+  font-weight: 600;
+  color: var(--color-text-muted);
 }
 
 td.calendar_cell {
-  width: 15px !important;
-  min-width: 15px !important;
-  max-width: 15px !important;
+  width: $calendar-half-width !important;
+  min-width: $calendar-half-width !important;
+  max-width: $calendar-half-width !important;
   position: relative;
-  text-align: center;
-  padding: 5px 0;
+  padding: 0 !important;
+  height: $calendar-cell-height;
+  vertical-align: middle;
+  border: none !important;
+  background-color: var(--calendar-cell-bg);
+  overflow: visible;
+  line-height: 1;
 
-  span {
-    position: relative;
-    left: 9px;
-    top: -1px;
-    display: block;
+  // Subtle column separators between days
+  &.half_1st {
+    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--divider-color) 35%, transparent);
+  }
+
+  &.half_2nd {
+    box-shadow: inset -1px 0 0 color-mix(in srgb, var(--divider-color) 35%, transparent);
+  }
+
+  // Day number spans both half cells (rendered in half_1st only)
+  &.half_1st .calendar-day-num {
+    position: absolute;
+    left: $calendar-half-width;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: $calendar-day-width;
+    min-width: $calendar-day-width;
+    z-index: 3;
+    font-size: 0.625rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--text-color);
     text-align: center;
-    z-index: 10;
+    white-space: nowrap;
+    overflow: visible;
+    pointer-events: auto;
+    cursor: default;
+  }
+
+  &.half_1st .calendar-day-num.leave-details-summary-trigger {
+    cursor: pointer;
+  }
+
+  // Approved leave on this half
+  &.has-leave {
+    background-color: var(--day-leave-color, var(--leave-cell-bg)) !important;
+
+    .calendar-day-num {
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  // Pending leave
+  &.day-leave-pending {
+    background-color: #fbbf24 !important;
+
+    .calendar-day-num {
+      color: var(--text-color);
+      text-shadow: none;
+    }
+  }
+
+  // Rounded outer edges only — inner edge stays square so halves connect on full days
+  &.half_1st.has-leave,
+  &.half_1st.day-leave-pending {
+    border-radius: 4px 0 0 4px;
+  }
+
+  &.half_2nd.has-leave,
+  &.half_2nd.day-leave-pending {
+    border-radius: 0 4px 4px 0;
+  }
+
+  &.weekend_cell {
+    background: var(--secondary-background-color);
+  }
+
+  &.bank_holiday_cell {
+    background: var(--accent-color);
+
+    .calendar-day-num {
+      color: #fff;
+    }
+  }
+
+  // Today: ring around the full day (both halves), preserve leave fill underneath
+  &.current_day_cell {
+    z-index: 2;
+
+    &.half_1st {
+      box-shadow:
+        inset 2px 0 0 var(--accent-color),
+        inset 0 2px 0 var(--accent-color),
+        inset 0 -2px 0 var(--accent-color),
+        inset 1px 0 0 color-mix(in srgb, var(--divider-color) 35%, transparent);
+    }
+
+    &.half_2nd {
+      box-shadow:
+        inset -2px 0 0 var(--accent-color),
+        inset 0 2px 0 var(--accent-color),
+        inset 0 -2px 0 var(--accent-color),
+        inset -1px 0 0 color-mix(in srgb, var(--divider-color) 35%, transparent);
+    }
   }
 }
 
-td.current_day_cell {
-  background: var(--current-day-bg);
-  color: var(--text-color);
-  font-weight: 600;
-  box-shadow: inset 0 0 0 2px var(--accent-color);
-}
-
-td.weekend_cell {
-  background: var(--secondary-background-color);
-}
-
-td.bank_holiday_cell {
-  background: var(--accent-color);
-  color: #fff;
-}
-
-td.leave_cell {
-  background: var(--leave-cell-bg);
-  color: var(--leave-cell-color);
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-}
-
+// Legacy class names — avoid double backgrounds
+td.leave_cell,
 td.leave_cell_pended {
-  background: #ffcba4;
-  color: var(--text-color);
-  font-weight: 600;
+  border-radius: 0;
 }
 
 .calendar-section-caption {

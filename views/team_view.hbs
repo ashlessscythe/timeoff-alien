@@ -252,6 +252,7 @@
   }
 
   .scrollable-content {
+    overflow-x: auto;
     overflow-y: auto;
     height: calc(100vh - 350px);
     position: relative;
@@ -397,10 +398,6 @@
     text-overflow: ellipsis;
   }
 
-  .team-view-table td:not(.left-column-cell) {
-    width: 30px;
-  }
-
   /* Sort controls styling */
   .sort-controls {
     display: flex;
@@ -479,53 +476,8 @@
     border-top: 1px solid var(--divider-color);
   }
 
-  /* Ensure calendar cells don't create a new stacking context */
-  .calendar_cell {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Ensure popup is above calendar cells */
-  .leave-details-popup {
-    z-index: 1050;
-  }
-
-  /* Ensure modals are above popups */
   .modal {
     z-index: 1060;
-  }
-
-  /* Fix calendar cell number visibility */
-  td.calendar_cell {
-    width: 15px !important;
-    min-width: 15px !important;
-    max-width: 15px !important;
-    position: relative;
-    text-align: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
-
-  td.calendar_cell span {
-    position: relative;
-    left: 0;
-    top: 0;
-    display: block;
-    text-align: center;
-    z-index: 10;
-    width: 100%;
-    pointer-events: auto;
-  }
-
-  /* Hide any tooltips when popup is visible */
-  .tooltip {
-    display: none !important;
-  }
-
-  /* Ensure leave cell colors are visible */
-  td.leave_cell,
-  td.leave_cell_pended {
-    opacity: 1 !important;
   }
 </style>
 

@@ -45,9 +45,24 @@ a {
   color: var(--text-color);
 }
 
+// List groups (department sidebar, etc.)
+.list-group {
+  --bs-list-group-color: var(--text-color);
+  --bs-list-group-bg: var(--background-color);
+  --bs-list-group-border-color: var(--divider-color);
+  --bs-list-group-action-hover-color: var(--text-color);
+  --bs-list-group-action-hover-bg: var(--hover-bg-color);
+  --bs-list-group-action-active-color: var(--accent-color);
+  --bs-list-group-action-active-bg: var(--hover-bg-color);
+}
+
 // Tables
 .table {
   color: var(--text-color);
+  --bs-table-color: var(--text-color);
+  --bs-table-striped-color: var(--text-color);
+  --bs-table-active-color: var(--text-color);
+  --bs-table-hover-color: var(--text-color);
   --bs-table-bg: transparent;
   --bs-table-hover-bg: var(--hover-bg-color);
   --bs-table-border-color: var(--divider-color);
@@ -60,6 +75,11 @@ a {
     letter-spacing: 0.03em;
     color: var(--color-text-muted);
     border-bottom-width: 2px;
+  }
+
+  > tbody > tr > td {
+    color: var(--text-color);
+    vertical-align: middle;
   }
 }
 
