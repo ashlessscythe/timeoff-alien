@@ -162,29 +162,18 @@ app.use(async function(req, res, next) {
 
   try {
     let userIds = []
-    if (req.user.admin) {
-      const activeUsers = await prisma.users.findMany({
-        where: {
-          company_id: req.user.company_id,
-          OR: [{ end_date: null }, { end_date: { gte: new Date() } }]
-        },
-        select: { id: true }
-      })
-      userIds = activeUsers.map(user => user.id)
-    } else {
-      const supervisedUsers =
-        Array.isArray(req.user.supervised_users) &&
-        req.user.supervised_users.length
-          ? req.user.supervised_users
-          : [req.user]
 
+    if (req.user.is_admin() || req.user.is_manager()) {
+      await req.user.ensure_supervised_users()
       userIds = Array.from(
         new Set(
-          supervisedUsers
+          (req.user.supervised_users || [])
             .map(user => user && user.id)
             .filter(id => typeof id === 'number')
         )
       )
+    } else {
+      userIds = [req.user.id]
     }
 
     if (userIds.length === 0) {

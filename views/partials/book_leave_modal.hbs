@@ -18,6 +18,7 @@
         </div>
         <div class="modal-body">
 
+          {{#if (or logged_user.admin logged_user.manager)}}
           {{# if_equal logged_user.supervised_users.length 1 }}{{else}}
           <div class="form-group">
             <label for="employee" class="control-label">For employee:</label>
@@ -30,6 +31,7 @@
             </select>
           </div>
           {{/if_equal}}
+          {{/if}}
 
           <div class="form-group">
             <label for="leave_type" class="control-label">Leave type:</label>
