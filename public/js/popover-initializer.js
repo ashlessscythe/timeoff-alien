@@ -1,35 +1,32 @@
 $(document).ready(function() {
   console.log('Popover initializer loaded')
 
-  // Simple in-memory cache to avoid refetching the same user summary repeatedly
-  // (popover content can be triggered many times while moving the mouse around).
   const userSummaryCache = {}
+  const USER_TRIGGER = '.user-details-summary-trigger:not(.leave-details-summary-trigger)'
 
-  // User details popover - explicitly exclude leave-details-summary-trigger
-  $(
-    '.user-details-summary-trigger:not(.leave-details-summary-trigger)'
-  ).popover({
-    title: 'Employee summary',
-    html: true,
-    trigger: 'hover',
-    placement: 'auto',
-    delay: { show: 1000, hide: 10 },
-    content: function() {
-      console.log('User details popover triggered')
-      var divId = 'tmp-id-' + $.now()
-      return detailsInPopup(
-        $(this).attr('data-user-id'),
-        divId,
-        '/users/summary/'
-      )
+  function readUserId($element) {
+    const fromSelf =
+      $element.attr('data-user-id') ||
+      $element.data('userId') ||
+      $element.data('user-id')
+    if (fromSelf) return String(fromSelf)
+
+    const $row = $element.closest('[data-vpp-user-list-row]')
+    if ($row.length) {
+      const fromRow =
+        $row.attr('data-vpp-user-list-row') || $row.data('vppUserListRow')
+      if (fromRow) return String(fromRow)
     }
-  })
+
+    return null
+  }
 
   function detailsInPopup(id, divId, url) {
-    console.log('Fetching details for ID:', id)
+    if (!id) {
+      return '<div class="text-danger">Could not load employee summary.</div>'
+    }
 
     if (userSummaryCache[id]) {
-      // Render cached HTML on next tick so the container exists
       setTimeout(function() {
         $('#' + divId).html(userSummaryCache[id])
       }, 0)
@@ -39,17 +36,39 @@ $(document).ready(function() {
     $.ajax({
       url: url + id + '/',
       success: function(response) {
-        console.log('Received response for ID:', id)
         userSummaryCache[id] = response
         $('#' + divId).html(response)
       },
-      error: function(xhr, status, error) {
-        console.error('Error fetching details:', error)
+      error: function(_xhr, _status, error) {
+        console.error('Error fetching user summary:', error)
+        $('#' + divId).html(
+          '<div class="text-danger">Failed to load employee summary.</div>'
+        )
       }
     })
 
     return '<div id="' + divId + '">Loading...</div>'
   }
+
+  // Bind per element so user id is captured in closure (BS5 popover content callbacks
+  // do not receive the trigger element as `this`).
+  $(USER_TRIGGER).each(function() {
+    const $element = $(this)
+    const userId = readUserId($element)
+
+    $element.popover({
+      title: 'Employee summary',
+      html: true,
+      trigger: 'hover',
+      placement: 'auto',
+      delay: { show: 1000, hide: 10 },
+      sanitize: false,
+      content: function() {
+        const divId = 'tmp-id-' + $.now()
+        return detailsInPopup(userId, divId, '/users/summary/')
+      }
+    })
+  })
 
   // Add secondary supervisors modal
   $('#add_secondary_supervisers_modal').on('show.bs.modal', function(event) {
@@ -65,7 +84,6 @@ $(document).ready(function() {
 
     modal.find('.modal-title strong').text(department_name)
 
-    // Make modal window to be no higher than window and its content scrollable
     $('.modal .modal-body').css('overflow-y', 'auto')
     $('.modal .modal-body').css('max-height', $(window).height() * 0.7)
 

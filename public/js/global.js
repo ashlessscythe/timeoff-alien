@@ -252,35 +252,6 @@ $(document).ready(function() {
 })
 
 $(document).ready(function() {
-  $('.user-details-summary-trigger').popover({
-    title: 'Employee summary',
-    html: true,
-    trigger: 'hover',
-    // Open inside the main Bootstrap container so it stays within the padded content area
-    placement: 'right',
-    delay: { show: 200, hide: 50 },
-    container: '.container',
-    // Constrain the popover to the same container width so it does not slip under the outer margin
-    viewport: { selector: '.container', padding: 8 },
-    content: function() {
-      const divId = 'tmp-id-' + $.now()
-      return detailsInPopup($(this).attr('data-user-id'), divId)
-    }
-  })
-
-  function detailsInPopup(user_id, divId) {
-    $.ajax({
-      url: '/users/summary/' + user_id + '/',
-      success: function(response) {
-        $('#' + divId).html(response)
-      }
-    })
-
-    return '<div id="' + divId + '">Loading...</div>'
-  }
-})
-
-$(document).ready(function() {
   const fetchNotifications = () => {
     if (typeof $.ajax === 'function') {
       $.ajax({
