@@ -60,6 +60,7 @@ $(document).ready(function() {
       html: true,
       trigger: 'hover',
       placement: 'auto',
+      container: 'body',
       delay: { show: 1000, hide: 10 },
       content: function() {
         const divId = 'tmp-id-' + $.now()
