@@ -151,6 +151,21 @@ const {
   getEffectiveAllowedLeaveTypeIds,
   parseExplicitLeaveTypeIds
 } = require('./lib/route/leaveTypeRules')
+const { sortLeaveTypes } = require('./lib/util/leaveTypeSort')
+
+function attachLeaveTypesForBookingModal(user, leaveTypeRows) {
+  if (!user || !user.company) return
+
+  if (
+    user._company_with_leave_types_loaded &&
+    Array.isArray(user.company.leave_types) &&
+    user.company.leave_types.length > 0
+  ) {
+    return
+  }
+
+  user.company.leave_types = sortLeaveTypes(leaveTypeRows || [], user.company)
+}
 
 app.use(async function(req, res, next) {
   if (!req.user) {
@@ -179,6 +194,17 @@ app.use(async function(req, res, next) {
     if (userIds.length === 0) {
       res.locals.allowed_increments_by_user = {}
       res.locals.allowed_leave_type_ids_by_user = {}
+      const leaveTypesOnly = await prisma.leave_types.findMany({
+        where: { company_id: req.user.company_id },
+        select: {
+          id: true,
+          name: true,
+          manager_only: true,
+          allow_non_default_increments: true,
+          sort_order: true
+        }
+      })
+      attachLeaveTypesForBookingModal(req.user, leaveTypesOnly)
       return next()
     }
 
@@ -199,9 +225,17 @@ app.use(async function(req, res, next) {
       }),
       prisma.leave_types.findMany({
         where: { company_id: req.user.company_id },
-        select: { id: true, allow_non_default_increments: true }
+        select: {
+          id: true,
+          name: true,
+          manager_only: true,
+          allow_non_default_increments: true,
+          sort_order: true
+        }
       })
     ])
+
+    attachLeaveTypesForBookingModal(req.user, leaveTypes)
 
     const allCompanyLeaveTypeIds = leaveTypes.map(leaveType => leaveType.id)
 

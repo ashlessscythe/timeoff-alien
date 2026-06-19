@@ -1,4 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import moment from 'moment'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -23,6 +24,11 @@ let primaryDepartmentId
 let baselineNextYearCutoff
 /** @type {string | null} */
 let baselineLimitedDepartments
+
+/** Cutoff must stay in the future for "before cutoff" booking to be blocked. */
+function futureNextYearCutoffDate() {
+  return moment.utc().add(90, 'days').startOf('day').toDate()
+}
 
 beforeAll(async () => {
   adminAgent = createAgent(app)
@@ -59,7 +65,7 @@ describe('next year PTO cutoff + limited_departments', () => {
     await prisma.companies.update({
       where: { id: admin.company_id },
       data: {
-        next_year_cutoff_date: new Date('2026-06-01T00:00:00.000Z'),
+        next_year_cutoff_date: futureNextYearCutoffDate(),
         limited_departments: JSON.stringify([admin.department_id])
       }
     })
@@ -107,7 +113,7 @@ describe('next year PTO cutoff + limited_departments', () => {
     await prisma.companies.update({
       where: { id: admin.company_id },
       data: {
-        next_year_cutoff_date: new Date('2026-06-01T00:00:00.000Z'),
+        next_year_cutoff_date: futureNextYearCutoffDate(),
         limited_departments: JSON.stringify([admin.department_id])
       }
     })

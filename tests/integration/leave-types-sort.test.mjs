@@ -6,6 +6,7 @@ import {
   buildLeavetypesFormBody
 } from '../support/http.mjs'
 import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
+import { parseBookLeaveModalLeaveTypeOptions } from '../support/bookLeaveModal.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -18,22 +19,6 @@ let companyId
 let primaryDepartmentId
 /** @type {number[]} */
 let baselineLeaveTypeIds
-
-function parseLeaveTypeOptionNames(html) {
-  const options = []
-  const re = /<select[^>]*id="leave_type"[^>]*>([\s\S]*?)<\/select>/i
-  const match = html.match(re)
-  if (!match) return options
-  const inner = match[1]
-  const optionRe = /<option[^>]*value=(?:")?(\d+)(?:")?[^>]*>([^<]*)</gi
-  let m
-  while ((m = optionRe.exec(inner)) !== null) {
-    if (m[1] && !m[0].includes('disabled')) {
-      options.push({ id: Number(m[1]), name: m[2].trim() })
-    }
-  }
-  return options
-}
 
 async function createNamedLeaveTypes(prismaClient, compId, names) {
   const ts = new Date()
@@ -121,7 +106,7 @@ describe('leave type sort', () => {
     const cal = await agent.get('/calendar/').redirects(5)
     expect(cal.status).toBe(200)
 
-    const names = parseLeaveTypeOptionNames(cal.text)
+    const names = parseBookLeaveModalLeaveTypeOptions(cal.text)
       .map(o => o.name)
       .filter(n => n.includes(String(suffix)))
 
@@ -145,7 +130,7 @@ describe('leave type sort', () => {
     })
 
     const cal = await agent.get('/calendar/').redirects(5)
-    const names = parseLeaveTypeOptionNames(cal.text)
+    const names = parseBookLeaveModalLeaveTypeOptions(cal.text)
       .map(o => o.name)
       .filter(n => n.includes(String(suffix)))
 
@@ -180,7 +165,7 @@ describe('leave type sort', () => {
     expect(pinned.sort_order).toBe(1)
 
     const cal = await agent.get('/calendar/').redirects(5)
-    const names = parseLeaveTypeOptionNames(cal.text)
+    const names = parseBookLeaveModalLeaveTypeOptions(cal.text)
       .map(o => o.name)
       .filter(n => n.includes(String(suffix)))
 

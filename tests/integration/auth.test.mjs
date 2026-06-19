@@ -1,5 +1,4 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
-import request from 'supertest'
 import app from '../support/loadEnvAndApp.mjs'
 import {
   createAgent,
@@ -13,8 +12,25 @@ import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const prisma = require('../../lib/prisma/client.js')
+const { User } = require('../../lib/model/sessionUser.js')
 
 const RESET_PASSWORD = 'VitestResetPw!99ab'
+
+async function waitForPasswordResetComplete(email, timeoutMs = 15000) {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const row = await prisma.users.findFirst({ where: { email } })
+    if (row && !row.reset_password_token) {
+      return row
+    }
+    await new Promise(resolve => setTimeout(resolve, 200))
+  }
+
+  const row = await prisma.users.findFirst({ where: { email } })
+  throw new Error(
+    `password reset did not complete (reset_password_token=${row?.reset_password_token})`
+  )
+}
 
 /** @type {import('supertest').TestAgent} */
 let agent
@@ -64,17 +80,16 @@ describe('auth flows', () => {
     await logout(agent)
 
     const guest = createAgent(app)
-    const forgot = await guest
+    await guest
       .post('/forgot-password/')
       .type('form')
       .send({ email: adminEmail })
       .redirects(5)
-    expect(forgot.status).toBeLessThan(400)
 
     const row = await prisma.users.findFirst({ where: { email: adminEmail } })
     expect(row.reset_password_token).toBeTruthy()
 
-    const reset = await guest
+    await guest
       .post('/reset-password/')
       .type('form')
       .send({
@@ -83,22 +98,33 @@ describe('auth flows', () => {
         confirm_password: RESET_PASSWORD
       })
       .redirects(5)
-    expect(reset.status).toBeLessThan(400)
+
+    const afterReset = await waitForPasswordResetComplete(adminEmail)
+    expect(User.verify_password(RESET_PASSWORD, afterReset.password)).toBe(true)
+    expect(User.verify_password(TEST_PASSWORD, afterReset.password)).toBe(false)
 
     const fresh = createAgent(app)
-    await fresh
+    const newLogin = await fresh
       .post('/login')
       .type('form')
       .send({ username: adminEmail, password: RESET_PASSWORD })
-      .redirects(5)
-    const cal = await fresh.get('/calendar/').redirects(5)
+      .redirects(0)
+    expect(newLogin.status).toBe(302)
+    expect(newLogin.headers.location).toBe('/')
+
+    const cal = await fresh.get('/calendar/').redirects(0)
     expect(cal.status).toBe(200)
 
-    const oldLogin = await request(app)
+    const oldLoginAgent = createAgent(app)
+    const oldLogin = await oldLoginAgent
       .post('/login')
       .type('form')
       .send({ username: adminEmail, password: TEST_PASSWORD })
       .redirects(0)
     expect(oldLogin.headers.location || '').toMatch(/login/i)
+
+    const blocked = await oldLoginAgent.get('/calendar/').redirects(0)
+    expect(blocked.status).toBe(303)
+    expect(blocked.headers.location).toBe('/')
   })
 })
