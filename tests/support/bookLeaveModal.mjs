@@ -25,3 +25,39 @@ export function expectBookLeaveModalIncludesLeaveTypes(html, expectedNames) {
   }
   expect(names.length).toBeGreaterThan(0)
 }
+
+/** Whether the book-leave modal renders the "For employee" `<select>`. */
+export function bookLeaveModalHasEmployeeDropdown(html) {
+  return /<select[^>]*id="employee"[^>]*name="user"[^>]*>/i.test(html)
+}
+
+/** Parse `<option>` entries from the book-leave modal employee `<select>`. */
+export function parseBookLeaveModalEmployeeOptions(html) {
+  const options = []
+  const selectMatch = html.match(
+    /<select[^>]*id="employee"[^>]*name="user"[^>]*>([\s\S]*?)<\/select>/i
+  )
+  if (!selectMatch) return options
+
+  const optionRe =
+    /<option[^>]*data-user-id="(\d+)"[^>]*>([^<]*)<\/option>/gi
+  let match
+  while ((match = optionRe.exec(selectMatch[1])) !== null) {
+    options.push({ id: Number(match[1]), name: match[2].trim() })
+  }
+  return options
+}
+
+export function expectBookLeaveModalEmployeeDropdownAbsent(html) {
+  expect(bookLeaveModalHasEmployeeDropdown(html)).toBe(false)
+}
+
+export function expectBookLeaveModalEmployeeNames(html, expectedNames) {
+  const names = parseBookLeaveModalEmployeeOptions(html).map(option => option.name)
+  expect(names).toEqual(expectedNames)
+}
+
+export function expectBookLeaveModalLeaveTypeOrder(html, expectedNames) {
+  const names = parseBookLeaveModalLeaveTypeOptions(html).map(option => option.name)
+  expect(names).toEqual(expectedNames)
+}
