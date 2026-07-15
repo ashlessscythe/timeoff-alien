@@ -1,0 +1,133 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main, public, develop]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Build assets
+        run: npm run build
+
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: timeoff
+          POSTGRES_PASSWORD: timeoff
+          POSTGRES_DB: timeoff_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U timeoff -d timeoff_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://timeoff:timeoff@localhost:5432/timeoff_test
+      SESSION_SECRET: ci-session-secret
+      OPTION_ALLOW_NEW_REGISTRATIONS: 'true'
+      TURNSTILE_SITE_KEY: ''
+      TURNSTILE_SECRET_KEY: ''
+      SEND_EMAIL: 'false'
+      BACKUP_ENCRYPTION_KEY: ci-backup-encryption-key-at-least-32-chars
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Write .env.test
+        run: |
+          {
+            echo 'DATABASE_URL=postgresql://timeoff:timeoff@localhost:5432/timeoff_test'
+            echo 'SESSION_SECRET=ci-session-secret'
+            echo 'OPTION_ALLOW_NEW_REGISTRATIONS=true'
+            echo 'TURNSTILE_SITE_KEY='
+            echo 'TURNSTILE_SECRET_KEY='
+            echo 'SEND_EMAIL=false'
+            echo 'BACKUP_ENCRYPTION_KEY=ci-backup-encryption-key-at-least-32-chars'
+          } > .env.test
+
+      - name: Run integration tests
+        run: npm run test:integration
