@@ -21,20 +21,40 @@ const { spawnSync } = require('child_process')
 
 const root = path.join(__dirname, '..')
 
-function resolveBin(name) {
-  const ext = process.platform === 'win32' ? '.cmd' : ''
-  const local = path.join(root, 'node_modules', '.bin', name + ext)
-  if (fs.existsSync(local)) return local
-  return name + ext
+/**
+ * Map npm script names to package bin entries. We invoke these with
+ * process.execPath (node) and never via cmd.exe /.cmd shims, so paths
+ * with spaces (e.g. OneDrive - Aptiv) work on Windows.
+ */
+const PACKAGE_BINS = {
+  sass: { pkg: 'sass', bin: 'sass.js' },
+  cleancss: { pkg: 'clean-css-cli', bin: path.join('bin', 'cleancss') },
+  terser: { pkg: 'terser', bin: path.join('bin', 'terser') }
+}
+
+function resolvePackageBin(binName) {
+  const mapped = PACKAGE_BINS[binName]
+  if (!mapped) {
+    throw new Error(`No package bin mapping for "${binName}"`)
+  }
+  const script = path.join(root, 'node_modules', mapped.pkg, mapped.bin)
+  if (!fs.existsSync(script)) {
+    throw new Error(
+      `Missing ${binName} entrypoint at ${script}. Run npm ci / npm install first.`
+    )
+  }
+  return script
 }
 
 function run(binName, args, opts = {}) {
-  const bin = resolveBin(binName)
-  const result = spawnSync(bin, args, {
+  const script = resolvePackageBin(binName)
+  // Pass absolute script path to node — no shell — so spaces in cwd/path are safe.
+  const result = spawnSync(process.execPath, [script, ...args], {
     cwd: root,
     env: process.env,
     stdio: 'inherit',
-    shell: process.platform === 'win32',
+    shell: false,
+    windowsHide: true,
     ...opts
   })
   if (result.error) {
@@ -82,8 +102,8 @@ function emptyDir(dir) {
 function compileSass() {
   ensureDir(path.join(root, 'build', 'css'))
   run('sass', [
-    path.join('scss', 'main.scss'),
-    path.join('build', 'css', 'style.css')
+    path.join(root, 'scss', 'main.scss'),
+    path.join(root, 'build', 'css', 'style.css')
   ])
 }
 
@@ -91,8 +111,8 @@ function minifyCss() {
   ensureDir(path.join(root, 'build', 'css'))
   run('cleancss', [
     '-o',
-    path.join('build', 'css', 'style.min.css'),
-    path.join('build', 'css', 'style.css')
+    path.join(root, 'build', 'css', 'style.min.css'),
+    path.join(root, 'build', 'css', 'style.css')
   ])
 }
 
