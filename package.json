@@ -4,7 +4,7 @@
   "private": false,
   "description": "Simple yet powerful absence management software for small and medium size business",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=22.22.2"
   },
   "optionalDependencies": {
     "mysql2": "^3.9.1",
@@ -97,15 +97,14 @@
     "test:formidable": "node scripts/test-formidable-migration.js",
     "start:dev": "node bin/wwww",
     "carry-over-allowance": "node bin/calculate_carry_over_allowance_for_all_users.js",
-    "compile-sass": "npx sass scss/main.scss build/css/style.css",
-    "minify-css": "cleancss -o build/css/style.min.css build/css/style.css",
-    "minify-js": "if [ -s public/js/global.js ]; then terser public/js/global.js -c -m -o build/js/global.min.js; else echo '// This file is intentionally left empty' > build/js/global.min.js; fi",
-    "copy-static": "mkdir -p build/img build/fonts build/css build/js && cp -R public/img/* build/img/ 2>/dev/null || : && cp -R public/fonts/* build/fonts/ 2>/dev/null || : && cp -R public/css/*.css build/css/ 2>/dev/null || : && cp -R public/js/*.js build/js/ 2>/dev/null || :",
-    "sync-to-public": "rm -rf public/* && cp -R build/* public/ && rm -rf build",
+    "compile-sass": "node scripts/build-assets.js sass",
+    "minify-css": "node scripts/build-assets.js minify-css",
+    "minify-js": "node scripts/build-assets.js minify-js",
+    "copy-static": "node scripts/build-assets.js copy-static",
+    "sync-to-public": "node scripts/build-assets.js sync-to-public",
     "preinstall": "npx npm-force-resolutions",
-    "prebuild": "npm run compile-sass && npm run minify-css && npm run minify-js && npm run copy-static && npm run sync-to-public",
-    "build": "NODE_ENV=production npm run prebuild",
-    "start": "npx prisma generate && npx prisma migrate deploy && NODE_ENV=production node bin/wwww",
+    "build": "node scripts/build-assets.js",
+    "start": "npx prisma generate && npx prisma migrate deploy && node scripts/start-prod.js",
     "dev": "node bin/wwww"
   },
   "prisma": {
