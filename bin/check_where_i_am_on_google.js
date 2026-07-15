@@ -16,10 +16,9 @@ console.log('-----------------------------------')
 const webdriver = require('selenium-webdriver')
 const _ = require('underscore')
 const google_url = 'https://www.google.com/search?q=' + search_query + '&start='
-let driver
 
 // Instantiate new driver object
-driver = new webdriver.Builder()
+const driver = new webdriver.Builder()
   .withCapabilities(webdriver.Capabilities.chrome())
   .build()
 
