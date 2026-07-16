@@ -99,7 +99,12 @@ function emptyDir(dir) {
   }
 }
 
+function log(msg) {
+  console.log(`[build] ${msg}`)
+}
+
 function compileSass() {
+  log('Compiling Sass → build/css/style.css')
   ensureDir(path.join(root, 'build', 'css'))
   run('sass', [
     path.join(root, 'scss', 'main.scss'),
@@ -108,6 +113,7 @@ function compileSass() {
 }
 
 function minifyCss() {
+  log('Minifying CSS → build/css/style.min.css')
   ensureDir(path.join(root, 'build', 'css'))
   run('cleancss', [
     '-o',
@@ -130,13 +136,16 @@ function minifyJs() {
   }
 
   if (hasContent) {
+    log('Minifying JS → build/js/global.min.js')
     run('terser', [src, '-c', '-m', '-o', dest])
   } else {
+    log('No public/js/global.js content; writing empty build/js/global.min.js')
     fs.writeFileSync(dest, '// This file is intentionally left empty\n', 'utf8')
   }
 }
 
 function copyStatic() {
+  log('Copying static assets (img, fonts, css, js) → build/')
   const build = path.join(root, 'build')
   ensureDir(path.join(build, 'img'))
   ensureDir(path.join(build, 'fonts'))
@@ -164,6 +173,7 @@ function copyStatic() {
 }
 
 function syncToPublic() {
+  log('Syncing build/ → public/ and removing build/')
   const build = path.join(root, 'build')
   const pub = path.join(root, 'public')
   if (!fs.existsSync(build)) {
@@ -176,6 +186,7 @@ function syncToPublic() {
 
 function fullBuild() {
   process.env.NODE_ENV = 'production'
+  log('Starting production asset build')
   // Copy vendor/static assets first, then overwrite generated CSS/JS so
   // stale public/*.min.* files do not clobber freshly built outputs.
   copyStatic()
@@ -183,6 +194,7 @@ function fullBuild() {
   minifyCss()
   minifyJs()
   syncToPublic()
+  log('Done')
 }
 
 const step = process.argv[2] || 'all'
