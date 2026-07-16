@@ -25,6 +25,28 @@
 
 ## 🛠️ Installation
 
+### Node.js prerequisites
+
+Local installs (and asset builds) expect **Node.js 22.22.2+** (see [`.node-version`](./.node-version); matches current dependency engines such as `express-handlebars`).
+
+```bash
+# fnm
+fnm install
+fnm use
+
+# nvm
+nvm install
+nvm use
+```
+
+**Windows (PowerShell) + fnm**: Node may not activate until fnm is hooked into your shell. Add this to your PowerShell profile (`$PROFILE`), then open a new terminal in the project folder:
+
+```powershell
+fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
+```
+
+Confirm with `node -v` (should report **v22.22.2** or newer). Use `npm run build` to compile assets — that command is cross-platform on Windows, macOS, and Linux.
+
 ### 🏠 Self hosting
 
 1. Clone and prepare the repository:

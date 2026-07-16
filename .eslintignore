@@ -1,0 +1,7 @@
+# Dependencies and generated output
+node_modules/
+coverage/
+build/
+
+# Browser/vendor assets and minified bundles (not Node source)
+public/
