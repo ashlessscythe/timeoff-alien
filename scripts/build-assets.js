@@ -24,7 +24,7 @@ const root = path.join(__dirname, '..')
 /**
  * Map npm script names to package bin entries. We invoke these with
  * process.execPath (node) and never via cmd.exe /.cmd shims, so paths
- * with spaces (e.g. OneDrive - Aptiv) work on Windows.
+ * with spaces (e.g. OneDrive - Contoso) work on Windows.
  */
 const PACKAGE_BINS = {
   sass: { pkg: 'sass', bin: 'sass.js' },
