@@ -53,7 +53,6 @@ const handlebars = require('express-handlebars').create({
       get_start_leave_day: true,
       get_end_leave_day: true,
       ldap_auth_enabled: true,
-      get_reset_password_token: true,
       pending_email: true,
       email_change_expires: true
     },
@@ -63,8 +62,7 @@ const handlebars = require('express-handlebars').create({
       get_leave_type_name: true,
       get_start_leave_day: true,
       get_end_leave_day: true,
-      ldap_auth_enabled: true,
-      get_reset_password_token: true
+      ldap_auth_enabled: true
     }
   }
 })

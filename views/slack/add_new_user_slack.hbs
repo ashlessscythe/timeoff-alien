@@ -4,8 +4,6 @@ Hello *{{new_user.name}}*
 
 Follow link below to set new password:
 
-{{# with new_user ~}}
-http://{{get_application_domain}}/reset-password/?t={{this.get_reset_password_token}} 
-{{/ with }}
+{{concatenate (get_application_domain) '/reset-password/?t=' token}}
 
 Thanks
