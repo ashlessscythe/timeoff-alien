@@ -160,7 +160,7 @@ describe('delegation booking authorization', () => {
     expect(lastMgrLeave).toBeTruthy()
   })
 
-  it('manager can book leave for a supervised employee using the managed-users index', async () => {
+  it('manager can book leave for a supervised employee using the managed user id', async () => {
     const admin = await prisma.users.findUnique({ where: { id: adminId } })
 
     const mgrEmail = `mgr_pos_${Date.now()}@example.com`
@@ -194,8 +194,7 @@ describe('delegation booking authorization', () => {
     const mgrSession = await loadSessionUserById(prisma, mgr.id)
     await mgrSession.reload_with_session_details()
     const managed = await mgrSession.promise_users_I_can_manage()
-    const idx = managed.findIndex(u => u.id === emp.id)
-    expect(idx).toBeGreaterThanOrEqual(0)
+    expect(managed.some(u => u.id === emp.id)).toBe(true)
 
     const before = await prisma.leaves.count({ where: { user_id: emp.id } })
     await bookLeave(mgrAgent, {
@@ -203,7 +202,7 @@ describe('delegation booking authorization', () => {
       fromDate: '2026-11-12',
       toDate: '2026-11-12',
       reason: 'mgr-books-emp',
-      user: idx
+      user: emp.id
     })
     expect(await prisma.leaves.count({ where: { user_id: emp.id } })).toBe(before + 1)
     const row = await prisma.leaves.findFirst({

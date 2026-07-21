@@ -172,6 +172,17 @@ app.use(async function(req, res, next) {
     return next()
   }
 
+  // Booking-modal maps are only needed when rendering HTML that includes the
+  // leave form. Skipping this on POST/PUT/etc. avoids loading every managed
+  // user on leave submit (was dominating /calendar/bookleave/ latency).
+  const method = (req.method || 'GET').toUpperCase()
+  if (method !== 'GET' && method !== 'HEAD') {
+    res.locals.allowed_increments_by_user = {}
+    res.locals.allowed_non_default_increments_by_leave_type = {}
+    res.locals.allowed_leave_type_ids_by_user = {}
+    return next()
+  }
+
   try {
     let userIds = []
 
