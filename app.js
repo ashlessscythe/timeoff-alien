@@ -183,6 +183,15 @@ app.use(async function(req, res, next) {
     return next()
   }
 
+  // Redirect-only routes never render the book-leave modal.
+  const path = (req.path || '').replace(/\/+$/, '') || '/'
+  if (path === '/' || path === '/logout') {
+    res.locals.allowed_increments_by_user = {}
+    res.locals.allowed_non_default_increments_by_leave_type = {}
+    res.locals.allowed_leave_type_ids_by_user = {}
+    return next()
+  }
+
   try {
     let userIds = []
 

@@ -112,7 +112,7 @@ describe('auth flows', () => {
       .send({ username: adminEmail, password: RESET_PASSWORD })
       .redirects(0)
     expect(newLogin.status).toBe(302)
-    expect(newLogin.headers.location).toBe('/')
+    expect(newLogin.headers.location).toBe('/calendar/')
 
     const cal = await fresh.get('/calendar/').redirects(0)
     expect(cal.status).toBe(200)
