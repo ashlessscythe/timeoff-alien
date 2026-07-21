@@ -16,7 +16,7 @@
 </div>
 
 {{#if login.default}}
-<form class="form-horizontal" action="/login" method="post">
+<form class="form-horizontal" action="/login" method="post" id="login_form">
 
   <div class="row">&nbsp;</div>
   <div class="form-group">
@@ -52,6 +52,15 @@
   </div>
 
 </form>
+
+<script>
+  document.getElementById('login_form').addEventListener('submit', function() {
+    const submitButton = document.getElementById('submit_login');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Logging in...';
+    submitButton.setAttribute('aria-busy', 'true');
+  });
+</script>
 {{/if}}
 
 {{#if login.google}}
