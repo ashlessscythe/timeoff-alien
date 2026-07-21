@@ -27,7 +27,7 @@
 
 ### Node.js prerequisites
 
-Local installs (and asset builds) expect **Node.js 22.22.2+** (see [`.node-version`](./.node-version); matches current dependency engines such as `express-handlebars`).
+Local installs (and asset builds) expect **Node.js 24.18.0+** (see [`.node-version`](./.node-version); Active LTS).
 
 ```bash
 # fnm
@@ -45,7 +45,7 @@ nvm use
 fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
 ```
 
-Confirm with `node -v` (should report **v22.22.2** or newer). Use `npm run build` to compile assets — that command is cross-platform on Windows, macOS, and Linux.
+Confirm with `node -v` (should report **v24.18.0** or newer). Use `npm run build` to compile assets — that command is cross-platform on Windows, macOS, and Linux.
 
 ### 🏠 Self hosting
 

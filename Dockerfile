@@ -1,5 +1,5 @@
 # Build stage
-FROM node:22.22.2-slim AS builder
+FROM node:24.18.0-slim AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Production stage
-FROM node:22.22.2-slim
+FROM node:24.18.0-slim
 
 WORKDIR /app
 
