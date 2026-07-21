@@ -80,11 +80,13 @@ describe('auth flows', () => {
     await logout(agent)
 
     const guest = createAgent(app)
-    await guest
+    const forgotPasswordResponse = await guest
       .post('/forgot-password/')
       .type('form')
       .send({ email: adminEmail })
       .redirects(5)
+
+    expect(forgotPasswordResponse.text).toContain('Check your email')
 
     const row = await prisma.users.findFirst({ where: { email: adminEmail } })
     expect(row.reset_password_token).toBeTruthy()
