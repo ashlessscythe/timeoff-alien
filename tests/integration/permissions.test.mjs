@@ -27,7 +27,12 @@ const ADMIN_ONLY_GETS = [
 
 const MANAGER_OR_ADMIN_GETS = ['/reports/', '/users/']
 
-const AUTHENTICATED_GETS = ['/calendar/', '/requests/', '/me/']
+const AUTHENTICATED_GETS = [
+  '/calendar/',
+  '/calendar/teamview/',
+  '/requests/',
+  '/me/'
+]
 
 async function expectGetForbidden(agent, path) {
   const res = await agent.get(path).redirects(0)
@@ -168,6 +173,48 @@ describe('role-based access', () => {
       })
       expect(createdAdmin).toBeTruthy()
       await deleteCompanyAndChildren(prisma, createdAdmin.company_id)
+    })
+  })
+
+  describe('team view visibility', () => {
+    afterEach(async () => {
+      await prisma.companies.update({
+        where: { id: companyId },
+        data: { is_team_view_hidden: false }
+      })
+    })
+
+    it('allows employees when team view is not hidden', async () => {
+      const { agent } = await loginAsNewAgent(app, employeeEmail, TEST_PASSWORD)
+      await expectGetOk(agent, '/calendar/teamview/')
+    })
+
+    it('blocks employees when team view is hidden; managers and admins still access', async () => {
+      await prisma.companies.update({
+        where: { id: companyId },
+        data: { is_team_view_hidden: true }
+      })
+
+      const { agent: employeeAgent } = await loginAsNewAgent(
+        app,
+        employeeEmail,
+        TEST_PASSWORD
+      )
+      // Team view uses redirect_with_session('/') (302), not the 303 role-gate.
+      const blocked = await employeeAgent
+        .get('/calendar/teamview/')
+        .redirects(0)
+      expect(blocked.status).toBe(302)
+      expect(blocked.headers.location).toBe('/')
+
+      const { agent: managerAgent } = await loginAsNewAgent(
+        app,
+        managerEmail,
+        TEST_PASSWORD
+      )
+      await expectGetOk(managerAgent, '/calendar/teamview/')
+
+      await expectGetOk(adminAgent, '/calendar/teamview/')
     })
   })
 
