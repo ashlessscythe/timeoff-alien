@@ -19,14 +19,16 @@
     "underscore": ">=1.12.1",
     "minimatch@3": {
       ".": "3.1.5",
-      "brace-expansion": "1.1.16"
+      "brace-expansion": "1.1.18"
     },
     "minimatch@9": ">=9.0.5",
     "minimatch@10": ">=10.2.1",
     "brace-expansion@2": ">=2.0.2",
-    "brace-expansion@5": ">=5.0.7",
+    "brace-expansion@5": ">=5.0.9",
     "immutable": ">=5.1.8",
-    "js-yaml": "4.3.0"
+    "js-yaml": "4.3.0",
+    "postcss": ">=8.5.23",
+    "undici": "^6.28.0"
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
