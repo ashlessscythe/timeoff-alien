@@ -313,7 +313,8 @@ app.use(function(_req, res, next) {
     '/js/popover-initializer.js', // popups
     isProduction ? '/js/global.min.js' : '/js/global.js',
     '/js/book-leave-modal.js',
-    '/js/edit-leave-modal.js'
+    '/js/edit-leave-modal.js',
+    '/js/leave-request-confirm.js'
   ]
   res.locals.custom_css = ['/css/bootstrap-datepicker3.standalone.css']
   if (isProduction) {

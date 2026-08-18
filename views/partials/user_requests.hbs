@@ -34,38 +34,40 @@
             <td>{{ this.leave_type.name }}{{#if this.is_pended_revoke_leave}}<br>(pended revoke){{/if}}</td>
             <td>{{ format_days_and_hours this.get_deducted_days_number 'compact' }}</td>
             <td class="user-request-table-approver">{{#with this.approver}}{{this.full_name}}{{/with}}</td>
-            <td>
-              {{#can_edit_pending_leave this ../logged_user}}
-              <button type="button" class="pull-right btn btn-default btn-xs edit-leave-btn"
-                data-leave-id="{{this.id}}" title="Edit pending leave request"><i class="fa fa-pencil"></i> Edit</button>
-              {{/can_edit_pending_leave}}
-              {{#if this.is_approved_leave}}
-              {{#unless this.is_pended_revoke_leave}}
-              {{#if_equal ../logged_user.supervised_users.length 1}}
-              {{#unless this.leave_type.manager_only}}
-              <form method="post" action="/requests/revoke/">
-                <input type="hidden" value="{{this.id}}" name="request">
-                <button type="submit" class="pull-right btn btn-default btn-xs revoke-btn single-click"
-                  title="Revoke leave request. Subject of approval."><i class="fa fa-trash"></i> Revoke</button>
-              </form>
-              {{/unless}}
-              {{else}}
-              <form method="post" action="/requests/revoke/">
-                <input type="hidden" value="{{this.id}}" name="request">
-                <button type="submit" class="pull-right btn btn-default btn-xs revoke-btn single-click"
-                  title="Revoke leave request. Subject of approval."><i class="fa fa-trash"></i> Revoke</button>
-              </form>
-              {{/if_equal}}
-              {{/unless}}
-              {{else}}
-              {{#if_equal this.user_id ../logged_user.id }}
-              <form method="post" action='/requests/cancel/'>
-                <input type="hidden" value="{{this.id}}" name="request">
-                <button type="submit" class="pull-right btn btn-default btn-xs revoke-btn single-click"
-                  title="Cancel leave request" value="cancel"><i class="fa fa-trash"></i> Cancel</button>
-              </form>
-              {{/if_equal}}
-              {{/if}}
+            <td class="leave-request-actions-cell">
+              <div class="leave-request-actions">
+                {{#can_edit_pending_leave this ../logged_user}}
+                <button type="button" class="btn btn-default btn-xs edit-leave-btn"
+                  data-leave-id="{{this.id}}" title="Edit pending leave request"><i class="fa fa-pencil"></i> Edit</button>
+                {{/can_edit_pending_leave}}
+                {{#if this.is_approved_leave}}
+                {{#unless this.is_pended_revoke_leave}}
+                {{#if_equal ../logged_user.supervised_users.length 1}}
+                {{#unless this.leave_type.manager_only}}
+                <form method="post" action="/requests/revoke/" class="leave-revoke-form">
+                  <input type="hidden" value="{{this.id}}" name="request">
+                  <button type="submit" class="btn btn-default btn-xs leave-revoke-btn"
+                    title="Revoke leave request. Subject of approval."><i class="fa fa-trash"></i> Revoke</button>
+                </form>
+                {{/unless}}
+                {{else}}
+                <form method="post" action="/requests/revoke/" class="leave-revoke-form">
+                  <input type="hidden" value="{{this.id}}" name="request">
+                  <button type="submit" class="btn btn-default btn-xs leave-revoke-btn"
+                    title="Revoke leave request. Subject of approval."><i class="fa fa-trash"></i> Revoke</button>
+                </form>
+                {{/if_equal}}
+                {{/unless}}
+                {{else}}
+                {{#if_equal this.user_id ../logged_user.id }}
+                <form method="post" action='/requests/cancel/' class="leave-cancel-form">
+                  <input type="hidden" value="{{this.id}}" name="request">
+                  <button type="submit" class="btn btn-default btn-xs leave-cancel-btn"
+                    title="Cancel leave request" value="cancel"><i class="fa fa-trash"></i> Cancel</button>
+                </form>
+                {{/if_equal}}
+                {{/if}}
+              </div>
             </td>
             <td>{{this.comment.comment}}</td>
             <td><span class="pull-right leave-request-row-status">{{#if this.is_new_leave }}Pending{{else}}{{#if

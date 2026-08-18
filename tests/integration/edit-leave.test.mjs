@@ -639,6 +639,15 @@ describe('edit pending leave', () => {
     expect(summary.text).toContain('Edited on')
     expect(summary.text).toContain('edit-leave-btn')
   })
+
+  it('calendar page spaces request actions and includes confirm modals', async () => {
+    const page = await adminAgent.get('/calendar/').redirects(5)
+    expect(page.status).toBe(200)
+    expect(page.text).toContain('leave-request-actions')
+    expect(page.text).toContain('confirm_edit_leave_modal')
+    expect(page.text).toContain('confirm_leave_action_modal')
+    expect(page.text).toContain('leave-request-confirm.js')
+  })
 })
 
 function momentUtc(date) {

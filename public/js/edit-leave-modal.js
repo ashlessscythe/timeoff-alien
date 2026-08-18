@@ -271,6 +271,16 @@ document.addEventListener('DOMContentLoaded', function () {
     return nextStart >= originalStart && nextEnd <= originalEnd
   }
 
+  function formatDateRange(snapshot) {
+    if (!snapshot || !snapshot.from_date) {
+      return ''
+    }
+    if (!snapshot.to_date || snapshot.to_date === snapshot.from_date) {
+      return snapshot.from_date
+    }
+    return snapshot.from_date + ' – ' + snapshot.to_date
+  }
+
   function pendingLeaveEditShrinkMessage() {
     return (
       'Edits can only shorten a pending request. ' +
@@ -311,8 +321,12 @@ document.addEventListener('DOMContentLoaded', function () {
           from_date: data.from_date,
           to_date: data.to_date,
           deducted_days: data.deducted_days,
+          increment_type: data.increment_type,
+          increment_value: data.increment_value,
           reason: data.reason || ''
         }
+
+        form.removeAttribute('data-confirmed')
 
         if (window.jQuery && editModal) {
           window.jQuery(editModal).modal('show')
@@ -363,56 +377,78 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (reviewBtn) {
     reviewBtn.addEventListener('click', function () {
-      calculateTimes()
-
-      if (!form.checkValidity()) {
-        form.classList.add('was-validated')
-        return
-      }
-
-      var after = buildSnapshot()
-      var shrinkOnly = isEditedRangeShrinkOnly(
-        originalSnapshot.from_date,
-        originalSnapshot.to_date,
-        after.from_date,
-        after.to_date
-      )
-      if (!shrinkOnly) {
-        alert(pendingLeaveEditShrinkMessage())
-        return
-      }
-
-      document.getElementById('confirm_edit_before_type').textContent =
-        originalSnapshot.type_name
-      document.getElementById('confirm_edit_before_dates').textContent =
-        formatDateRange(originalSnapshot)
-      document.getElementById('confirm_edit_before_deducted').textContent =
-        String(originalSnapshot.deducted_days)
-
-      document.getElementById('confirm_edit_after_type').textContent =
-        after.type_name
-      document.getElementById('confirm_edit_after_dates').textContent =
-        formatDateRange(after)
-      document.getElementById('confirm_edit_after_deducted').textContent =
-        'Recalculated on save'
-
-      var noChangesEl = document.getElementById('confirm_edit_no_changes')
-      var substantiveChanged =
-        after.type_name !== originalSnapshot.type_name ||
-        after.from_date !== originalSnapshot.from_date ||
-        after.to_date !== originalSnapshot.to_date ||
-        after.increment_type !== (originalSnapshot.increment_type || 'day')
-
-      if (noChangesEl) {
-        noChangesEl.style.display = substantiveChanged ? 'none' : 'block'
-      }
-
-      if (window.jQuery) {
-        window.jQuery(editModal).modal('hide')
-        window.jQuery(confirmModal).modal('show')
-      }
+      showEditConfirmation()
     })
   }
+
+  function showEditConfirmation() {
+    calculateTimes()
+
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated')
+      return false
+    }
+
+    if (!originalSnapshot) {
+      return false
+    }
+
+    var after = buildSnapshot()
+    var shrinkOnly = isEditedRangeShrinkOnly(
+      originalSnapshot.from_date,
+      originalSnapshot.to_date,
+      after.from_date,
+      after.to_date
+    )
+    if (!shrinkOnly) {
+      alert(pendingLeaveEditShrinkMessage())
+      return false
+    }
+
+    document.getElementById('confirm_edit_before_type').textContent =
+      originalSnapshot.type_name
+    document.getElementById('confirm_edit_before_dates').textContent =
+      formatDateRange(originalSnapshot)
+    document.getElementById('confirm_edit_before_deducted').textContent =
+      String(originalSnapshot.deducted_days)
+
+    document.getElementById('confirm_edit_after_type').textContent =
+      after.type_name
+    document.getElementById('confirm_edit_after_dates').textContent =
+      formatDateRange(after)
+    document.getElementById('confirm_edit_after_deducted').textContent =
+      'Recalculated on save'
+
+    var noChangesEl = document.getElementById('confirm_edit_no_changes')
+    var substantiveChanged =
+      after.type_name !== originalSnapshot.type_name ||
+      after.from_date !== originalSnapshot.from_date ||
+      after.to_date !== originalSnapshot.to_date ||
+      after.increment_type !== (originalSnapshot.increment_type || 'day')
+
+    if (noChangesEl) {
+      noChangesEl.style.display = substantiveChanged ? 'none' : 'block'
+    }
+
+    if (confirmSubmitBtn) {
+      confirmSubmitBtn.disabled = false
+      confirmSubmitBtn.textContent = 'Confirm and save'
+    }
+
+    if (window.jQuery) {
+      window.jQuery(editModal).modal('hide')
+      window.jQuery(confirmModal).modal('show')
+    }
+    return true
+  }
+
+  form.addEventListener('submit', function (event) {
+    if (form.getAttribute('data-confirmed') === '1') {
+      return
+    }
+    event.preventDefault()
+    showEditConfirmation()
+  })
 
   if (confirmBackBtn) {
     confirmBackBtn.addEventListener('click', function () {
@@ -430,6 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       confirmSubmitBtn.disabled = true
       confirmSubmitBtn.textContent = 'Saving...'
+      form.setAttribute('data-confirmed', '1')
       form.submit()
     })
   }
