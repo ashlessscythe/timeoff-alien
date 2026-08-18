@@ -25,6 +25,14 @@ function uniqueSuffix() {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
 }
 
+/** Date-only ISO (UTC), N days from today — avoids payroll "past week" blocks for employees. */
+function addDaysIso(n) {
+  const d = new Date()
+  d.setUTCHours(12, 0, 0, 0)
+  d.setUTCDate(d.getUTCDate() + n)
+  return d.toISOString().slice(0, 10)
+}
+
 beforeAll(async () => {
   adminAgent = createAgent(app)
   const { email } = await registerCompanyAndAdmin(adminAgent)
@@ -93,8 +101,8 @@ describe('department leave type visibility', () => {
 
     await bookLeave(empAgent, {
       leaveTypeId: sick.id,
-      fromDate: '2026-08-12',
-      toDate: '2026-08-12'
+      fromDate: addDaysIso(14),
+      toDate: addDaysIso(14)
     })
 
     const after = await prisma.leaves.count({ where: { user_id: emp.id } })
@@ -102,8 +110,8 @@ describe('department leave type visibility', () => {
 
     await bookLeave(empAgent, {
       leaveTypeId: holiday.id,
-      fromDate: '2026-08-13',
-      toDate: '2026-08-13'
+      fromDate: addDaysIso(15),
+      toDate: addDaysIso(15)
     })
     const afterHoliday = await prisma.leaves.count({ where: { user_id: emp.id } })
     expect(afterHoliday).toBe(before + 1)
@@ -138,8 +146,8 @@ describe('department leave type visibility', () => {
 
     await bookLeave(empAgent, {
       leaveTypeId: sick.id,
-      fromDate: '2026-08-14',
-      toDate: '2026-08-14'
+      fromDate: addDaysIso(16),
+      toDate: addDaysIso(16)
     })
 
     const after = await prisma.leaves.count({ where: { user_id: emp.id } })
@@ -197,8 +205,8 @@ describe('department leave type visibility', () => {
 
     await bookLeave(mgrAgent, {
       leaveTypeId: sick.id,
-      fromDate: '2026-08-15',
-      toDate: '2026-08-15',
+      fromDate: addDaysIso(17),
+      toDate: addDaysIso(17),
       user: String(empIndex)
     })
 
@@ -207,8 +215,8 @@ describe('department leave type visibility', () => {
 
     await bookLeave(mgrAgent, {
       leaveTypeId: holiday.id,
-      fromDate: '2026-08-16',
-      toDate: '2026-08-16',
+      fromDate: addDaysIso(18),
+      toDate: addDaysIso(18),
       user: String(empIndex)
     })
     const afterAllowed = await prisma.leaves.count({ where: { user_id: emp.id } })

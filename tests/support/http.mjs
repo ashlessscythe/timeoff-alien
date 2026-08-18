@@ -187,6 +187,39 @@ export async function bookLeave(agent, opts) {
     .redirects(5)
 }
 
+export async function editLeave(agent, opts) {
+  const {
+    leaveId,
+    leaveTypeId,
+    fromDate,
+    toDate,
+    fromDatePart = '1',
+    toDatePart = '1',
+    incrementType = 'day',
+    incrementValue,
+    reason = 'Vitest edit',
+    redirectBackTo
+  } = opts
+  const body = {
+    request: String(leaveId),
+    leave_type: String(leaveTypeId),
+    from_date: fromDate,
+    to_date: toDate || fromDate,
+    from_date_part: String(fromDatePart),
+    to_date_part: String(toDatePart),
+    reason,
+    increment_type: incrementType
+  }
+  if (incrementValue) body.increment_value = String(incrementValue)
+  if (redirectBackTo) body.redirect_back_to = redirectBackTo
+
+  return agent
+    .post('/calendar/editleave/')
+    .type('form')
+    .send(body)
+    .redirects(5)
+}
+
 /**
  * Build POST body for /settings/leavetypes including all existing rows + optional __new row.
  * @param {import('@prisma/client').PrismaClient} prisma

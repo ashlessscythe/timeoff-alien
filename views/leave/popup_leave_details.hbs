@@ -5,6 +5,18 @@
 <div>
   <strong>Employee:</strong> {{leave.employeeFullName}}.
 </div>
+{{#if leave.wasEdited}}
+<div>
+  <strong>Edited on:</strong> {{leave.editedTimeStamp}}.
+</div>
+{{/if}}
+{{#if leave.canEdit}}
+<div class="leave-actions mt-3">
+  <button type="button" class="btn btn-primary btn-sm edit-leave-btn" data-leave-id="{{leave.id}}">
+    Edit
+  </button>
+</div>
+{{/if}}
 {{else}}
 <div>
   <strong>Dates:</strong> {{leave.startDate}} <i class="fa fa-long-arrow-right"></i> {{leave.endDate}}.
@@ -24,9 +36,22 @@
 <div>
   <strong>Requested on:</strong> {{leave.createdTimeStamp}}.
 </div>
+{{#if leave.wasEdited}}
+<div>
+  <strong>Edited on:</strong> {{leave.editedTimeStamp}}.
+</div>
+{{/if}}
 {{#if leave.commentsString }}
 <div>
   <strong>Comments:</strong> {{leave.commentsString}}.
+</div>
+{{/if}}
+
+{{#if leave.canEdit}}
+<div class="leave-actions mt-3">
+  <button type="button" class="btn btn-primary btn-sm edit-leave-btn" data-leave-id="{{leave.id}}">
+    Edit
+  </button>
 </div>
 {{/if}}
 

@@ -1,0 +1,6 @@
+:memo: *Pending leave request edited — approval still required*
+
+{{#with requester}}{{this.full_name}}{{/with}} updated a pending leave request:
+{{> email/leave_request_detail leave=leave }}
+{{#if leave.edited_at}}Edited on {{as_date_from_timestamp leave.edited_at}} (originally requested {{as_date_from_timestamp leave.created_at}}).{{/if}}
+Review pending requests: {{concatenate (get_application_domain) '/requests/'}}
