@@ -28,6 +28,14 @@ const TEST_YEAR = '2026'
 const POOL = 10
 const PERSONAL_POOL = 2
 
+/** Date-only ISO (UTC), N days from today — avoids payroll "past week" blocks for employees. */
+function addDaysIso(n) {
+  const d = new Date()
+  d.setUTCHours(12, 0, 0, 0)
+  d.setUTCDate(d.getUTCDate() + n)
+  return d.toISOString().slice(0, 10)
+}
+
 /** @type {import('supertest').TestAgent} */
 let adminAgent
 let adminId
@@ -148,14 +156,14 @@ describe('balance consistency across app surfaces', () => {
 
     await bookLeave(adminAgent, {
       leaveTypeId: holiday.id,
-      fromDate: '2026-08-10',
-      toDate: '2026-08-11',
+      fromDate: addDaysIso(14),
+      toDate: addDaysIso(15),
       reason: 'vac2'
     })
     await bookLeave(adminAgent, {
       leaveTypeId: personal.id,
-      fromDate: '2026-08-12',
-      toDate: '2026-08-12',
+      fromDate: addDaysIso(16),
+      toDate: addDaysIso(16),
       reason: 'per1'
     })
 
@@ -215,8 +223,8 @@ describe('balance consistency across app surfaces', () => {
     const { agent: empAgent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
     await bookLeave(empAgent, {
       leaveTypeId: personal.id,
-      fromDate: '2026-08-13',
-      toDate: '2026-08-13',
+      fromDate: addDaysIso(20),
+      toDate: addDaysIso(20),
       reason: 'pending personal'
     })
 
