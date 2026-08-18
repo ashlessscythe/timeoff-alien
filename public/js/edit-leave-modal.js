@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return parsed
   }
 
-  function editedRangeSharesOriginalDate(originalFrom, originalTo, nextFrom, nextTo) {
+  function isEditedRangeShrinkOnly(originalFrom, originalTo, nextFrom, nextTo) {
     var originalStart = parseDateOnly(originalFrom)
     var originalEnd = parseDateOnly(originalTo)
     var nextStart = parseDateOnly(nextFrom)
@@ -268,7 +268,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!originalStart || !originalEnd || !nextStart || !nextEnd) {
       return false
     }
-    return originalEnd >= nextStart && nextEnd >= originalStart
+    return nextStart >= originalStart && nextEnd <= originalEnd
+  }
+
+  function pendingLeaveEditShrinkMessage() {
+    return (
+      'Edits can only shorten a pending request. ' +
+      'To add days or book different dates, cancel this request and create a new one.'
+    )
   }
 
   function openEditModal(leaveId) {
@@ -364,16 +371,14 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       var after = buildSnapshot()
-      var dateWindowOk = editedRangeSharesOriginalDate(
+      var shrinkOnly = isEditedRangeShrinkOnly(
         originalSnapshot.from_date,
         originalSnapshot.to_date,
         after.from_date,
         after.to_date
       )
-      if (!dateWindowOk) {
-        alert(
-          'Edited dates must include at least one date from the original request. Different days should be a new request: cancel this one and create another.'
-        )
+      if (!shrinkOnly) {
+        alert(pendingLeaveEditShrinkMessage())
         return
       }
 

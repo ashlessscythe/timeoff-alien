@@ -124,7 +124,7 @@ describe('edit pending leave', () => {
     const createdAt = leave.created_at
 
     const newFrom = addDaysIso(15)
-    const newTo = addDaysIso(18)
+    const newTo = addDaysIso(15)
     const res = await editLeave(agent, {
       leaveId: leave.id,
       leaveTypeId: holidayTypeId,
@@ -155,10 +155,11 @@ describe('edit pending leave', () => {
     const { agent: empAgent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
 
     const fromDate = addDaysIso(10)
+    const toDate = addDaysIso(12)
     await bookLeave(empAgent, {
       leaveTypeId: holidayTypeId,
       fromDate,
-      toDate: fromDate
+      toDate
     })
 
     const leave = await prisma.leaves.findFirst({
@@ -169,16 +170,16 @@ describe('edit pending leave', () => {
     const res = await editLeave(adminAgent, {
       leaveId: leave.id,
       leaveTypeId: holidayTypeId,
-      fromDate,
-      toDate: addDaysIso(11),
+      fromDate: addDaysIso(11),
+      toDate,
       reason: 'admin edit'
     })
     expect(res.status).toBeLessThan(400)
 
     const updated = await prisma.leaves.findUnique({ where: { id: leave.id } })
     expect(updated.edited_at).toBeTruthy()
-    expect(momentUtc(updated.date_start)).toBe(fromDate)
-    expect(momentUtc(updated.date_end)).toBe(addDaysIso(11))
+    expect(momentUtc(updated.date_start)).toBe(addDaysIso(11))
+    expect(momentUtc(updated.date_end)).toBe(toDate)
   })
 
   it('manager cannot edit report pending leave', async () => {
@@ -261,11 +262,12 @@ describe('edit pending leave', () => {
     })
 
     const fromDate = addDaysIso(30)
+    const toDate = addDaysIso(31)
     await bookLeave(agent, {
       leaveTypeId: holidayTypeId,
       fromDate,
-      toDate: fromDate,
-      reason: 'one day pending'
+      toDate,
+      reason: 'two day pending'
     })
 
     const leave = await prisma.leaves.findFirst({
@@ -281,13 +283,14 @@ describe('edit pending leave', () => {
       reason: 'too many days'
     })
     expect(res.status).toBeLessThan(500)
+    expect(res.text).toMatch(/only shorten/i)
 
     const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
     expect(unchanged.edited_at).toBeNull()
-    expect(momentUtc(unchanged.date_end)).toBe(fromDate)
+    expect(momentUtc(unchanged.date_end)).toBe(toDate)
   })
 
-  it('rejects growing a pending request when remaining balance is already 0', async () => {
+  it('rejects extending a pending request when remaining balance is already 0', async () => {
     const empEmail = `edit_zero_bal_${Date.now()}@example.com`
     await addEmployee(adminAgent, {
       email: empEmail,
@@ -327,11 +330,90 @@ describe('edit pending leave', () => {
       reason: 'grow by one'
     })
     expect(res.status).toBeLessThan(500)
-    expect(res.text).toMatch(/remaining vacation allowance/i)
+    expect(res.text).toMatch(/only shorten/i)
 
     const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
     expect(unchanged.edited_at).toBeNull()
     expect(momentUtc(unchanged.date_end)).toBe(monday)
+  })
+
+  it('rejects extending the end date beyond the original span', async () => {
+    const empEmail = `edit_extend_end_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: primaryDepartmentId,
+      name: 'Extend',
+      lastname: 'End'
+    })
+    const emp = await prisma.users.findFirst({ where: { email: empEmail } })
+    const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+
+    const fromDate = addDaysIso(14)
+    const toDate = addDaysIso(16)
+    await bookLeave(agent, {
+      leaveTypeId: holidayTypeId,
+      fromDate,
+      toDate
+    })
+
+    const leave = await prisma.leaves.findFirst({
+      where: { user_id: emp.id },
+      orderBy: { id: 'desc' }
+    })
+
+    const res = await editLeave(agent, {
+      leaveId: leave.id,
+      leaveTypeId: holidayTypeId,
+      fromDate,
+      toDate: addDaysIso(17)
+    })
+    expect(res.status).toBeLessThan(500)
+    expect(res.text).toMatch(/only shorten/i)
+
+    const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
+    expect(unchanged.edited_at).toBeNull()
+    expect(momentUtc(unchanged.date_end)).toBe(toDate)
+  })
+
+  it('allows shrinking to a later subset within the original span', async () => {
+    const empEmail = `edit_shrink_later_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: primaryDepartmentId,
+      name: 'Later',
+      lastname: 'Subset'
+    })
+    const emp = await prisma.users.findFirst({ where: { email: empEmail } })
+    const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+
+    const fromDate = addDaysIso(14)
+    const toDate = addDaysIso(18)
+    await bookLeave(agent, {
+      leaveTypeId: holidayTypeId,
+      fromDate,
+      toDate,
+      reason: 'wide block'
+    })
+
+    const leave = await prisma.leaves.findFirst({
+      where: { user_id: emp.id },
+      orderBy: { id: 'desc' }
+    })
+
+    const newFrom = addDaysIso(17)
+    const res = await editLeave(agent, {
+      leaveId: leave.id,
+      leaveTypeId: holidayTypeId,
+      fromDate: newFrom,
+      toDate,
+      reason: 'keep only last days'
+    })
+    expect(res.status).toBeLessThan(400)
+
+    const updated = await prisma.leaves.findUnique({ where: { id: leave.id } })
+    expect(updated.edited_at).toBeTruthy()
+    expect(momentUtc(updated.date_start)).toBe(newFrom)
+    expect(momentUtc(updated.date_end)).toBe(toDate)
   })
 
   it('rejects editing to a completely different date period', async () => {
@@ -366,6 +448,7 @@ describe('edit pending leave', () => {
       reason: 'jump months'
     })
     expect(res.status).toBeLessThan(500)
+    expect(res.text).toMatch(/only shorten/i)
 
     const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
     expect(unchanged.edited_at).toBeNull()
@@ -373,7 +456,7 @@ describe('edit pending leave', () => {
     expect(momentUtc(unchanged.date_end)).toBe(addDaysIso(16))
   })
 
-  it('rejects an adjacent range that shares no original date', async () => {
+  it('rejects an adjacent range outside the original span', async () => {
     const empEmail = `edit_adj_${Date.now()}@example.com`
     await addEmployee(adminAgent, {
       email: empEmail,
@@ -403,8 +486,7 @@ describe('edit pending leave', () => {
       toDate: addDaysIso(18)
     })
     expect(res.status).toBeLessThan(500)
-    expect(res.text).toMatch(/at least one date from the original request/i)
-    expect(res.text).toMatch(/Different days should be a new request/i)
+    expect(res.text).toMatch(/only shorten/i)
 
     const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
     expect(unchanged.edited_at).toBeNull()
@@ -489,10 +571,11 @@ describe('edit pending leave', () => {
     const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
 
     const fromDate = addDaysIso(25)
+    const toDate = addDaysIso(26)
     await bookLeave(agent, {
       leaveTypeId: holidayTypeId,
       fromDate,
-      toDate: fromDate,
+      toDate,
       reason: 'before email'
     })
 
@@ -509,7 +592,7 @@ describe('edit pending leave', () => {
       leaveId: leave.id,
       leaveTypeId: sickLeaveTypeId,
       fromDate,
-      toDate: addDaysIso(26),
+      toDate,
       reason: 'type change'
     })
 
@@ -531,10 +614,11 @@ describe('edit pending leave', () => {
     const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
 
     const fromDate = addDaysIso(28)
+    const toDate = addDaysIso(29)
     await bookLeave(agent, {
       leaveTypeId: holidayTypeId,
       fromDate,
-      toDate: fromDate
+      toDate
     })
 
     const leave = await prisma.leaves.findFirst({
@@ -545,8 +629,9 @@ describe('edit pending leave', () => {
     await editLeave(agent, {
       leaveId: leave.id,
       leaveTypeId: holidayTypeId,
-      fromDate,
-      toDate: addDaysIso(29)
+      fromDate: toDate,
+      toDate,
+      reason: 'drop first day'
     })
 
     const summary = await agent.get(`/calendar/leave-summary/${leave.id}/`)
