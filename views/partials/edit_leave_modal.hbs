@@ -1,0 +1,103 @@
+<div class="modal fade" id="edit_leave_modal" tabindex="-1" role="dialog" aria-labelledby="editLeaveModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/calendar/editleave/" id="editLeaveForm" novalidate
+        data-next-year-cutoff-date="{{#if logged_user.company.next_year_cutoff_date}}{{logged_user.company.next_year_cutoff_date}}{{/if}}"
+        data-limited-departments="{{#if logged_user.company.limited_departments}}{{json logged_user.company.limited_departments}}{{/if}}"
+        data-logged-user-id="{{#if logged_user.id}}{{logged_user.id}}{{/if}}"
+        data-allowed-increments-by-user="{{#if allowed_increments_by_user}}{{json allowed_increments_by_user}}{{/if}}"
+        data-allowed-non-default-increments-by-leave-type="{{#if allowed_non_default_increments_by_leave_type}}{{json allowed_non_default_increments_by_leave_type}}{{/if}}"
+        data-allowed-leave-type-ids-by-user="{{#if allowed_leave_type_ids_by_user}}{{json allowed_leave_type_ids_by_user}}{{/if}}"
+        data-is-manager-or-admin="{{#if (or logged_user.admin logged_user.manager)}}true{{else}}false{{/if}}">
+        <input type="hidden" name="request" id="edit_leave_id" value="">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="editLeaveModalLabel">Edit absence</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="control-label">Employee:</label>
+            <p class="form-control-static" id="edit_employee_name">&mdash;</p>
+          </div>
+
+          <div class="form-group">
+            <label for="edit_leave_type" class="control-label">Leave type:</label>
+            <select class="form-control" id="edit_leave_type" name="leave_type" required>
+              {{#each logged_user.company.leave_types }}
+              <option value={{this.id}} data-manager-only="{{#if this.manager_only}}true{{else}}false{{/if}}">{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="edit_from" class="control-label">Date:</label>
+            <div class="row">
+              <div class="col-md-4">
+                <select class="form-control" id="edit_increment_type" name="increment_type" required>
+                  <option value="day">Full Day</option>
+                  <option value="halfday">Half Day</option>
+                  <option value="hr">Hours</option>
+                  <option value="min">Minutes</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select class="form-control" id="edit_increment_value" name="increment_value" required>
+                  <option value="1">All day</option>
+                </select>
+              </div>
+              <div class="col-md-12">
+                <small id="edit_non_default_increment_hint" style="display: none; color: #d9534f; opacity: 0.6;">
+                  This leave type only allows full or half day increments.
+                </small>
+              </div>
+              <div class="col-md-5">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                  <input type="text" class="form-control edit-leave-from-input" id="edit_from" data-provide="datepicker"
+                    data-date-autoclose="1"
+                    data-date-format="{{# with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
+                    data-date-week-start="{{logged_user.company.first_day_of_week}}"
+                    name="from_date" required aria-label="Date">
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="edit_from_date_part" name="from_date_part" value="1">
+            <input type="hidden" id="edit_to_date_part" name="to_date_part" value="1">
+            <input type="hidden" id="edit_time_start" name="time_start" value="">
+            <input type="hidden" id="edit_time_end" name="time_end" value="">
+            <input type="hidden" id="edit_to" name="to_date" value="">
+          </div>
+
+          <div class="form-group" id="edit_multi_day_group" style="display: none;">
+            <label for="edit_to_date_multi" class="control-label">To Date (for multi-day full day leaves):</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+              <input type="text" class="form-control edit-leave-to-input" id="edit_to_date_multi" data-provide="datepicker"
+                data-date-autoclose="1"
+                data-date-format="{{#with logged_user.company }}{{this.get_default_date_format_for_date_picker}}{{/with}}"
+                data-date-week-start="{{logged_user.company.first_day_of_week}}"
+                aria-label="To date">
+            </div>
+            <p class="help-block"><em>Leave blank for single day. Only used for multi-day full day requests.</em></p>
+          </div>
+
+          <div class="form-group">
+            <label for="edit_leave_reason" class="control-label">Comment (optional):</label>
+            <textarea class="form-control" id="edit_leave_reason" name="reason"></textarea>
+          </div>
+
+          <div id="edit_next_year_pto_warning" class="alert alert-danger" style="display: none; margin-top: 15px;">
+            <strong>Warning:</strong> <span id="edit_next_year_pto_warning_text"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-success" id="editLeaveReviewBtn">Review changes</button>
+          <input type="hidden" name="redirect_back_to" value="{{requested_path}}">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

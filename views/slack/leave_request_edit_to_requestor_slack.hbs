@@ -1,0 +1,5 @@
+:memo: *Your pending leave request was updated*
+
+{{> email/leave_request_detail leave=leave }}
+{{#if leave.edited_at}}Edited on {{as_date_from_timestamp leave.edited_at}} (originally requested {{as_date_from_timestamp leave.created_at}}).{{/if}}
+Still awaiting approval from {{#with approver}}{{this.full_name}}{{/with}}.

@@ -30,11 +30,15 @@
               <a class="leave-details-summary-trigger" data-leave-id="{{this.id}}" href="#">{{> leave_dates
                 leave=this}}</a>
             </td>
-            <td>{{as_date_from_timestamp this.createdAt}}</td>
+            <td>{{as_date_from_timestamp this.createdAt}}{{#if this.edited_at}}<br><small class="text-muted">Edited {{as_date_from_timestamp this.edited_at}}</small>{{/if}}</td>
             <td>{{ this.leave_type.name }}{{#if this.is_pended_revoke_leave}}<br>(pended revoke){{/if}}</td>
             <td>{{ format_days_and_hours this.get_deducted_days_number 'compact' }}</td>
             <td class="user-request-table-approver">{{#with this.approver}}{{this.full_name}}{{/with}}</td>
             <td>
+              {{#can_edit_pending_leave this ../logged_user}}
+              <button type="button" class="pull-right btn btn-default btn-xs edit-leave-btn"
+                data-leave-id="{{this.id}}" title="Edit pending leave request"><i class="fa fa-pencil"></i> Edit</button>
+              {{/can_edit_pending_leave}}
               {{#if this.is_approved_leave}}
               {{#unless this.is_pended_revoke_leave}}
               {{#if_equal ../logged_user.supervised_users.length 1}}

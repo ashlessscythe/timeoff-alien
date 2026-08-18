@@ -205,6 +205,7 @@ model leaves {
   time_end                        String?     @db.VarChar(8)  // New: End time for time-based leaves (e.g., "11:00:00")
   created_at                      DateTime    @db.Timestamptz(6)
   updated_at                      DateTime    @db.Timestamptz(6)
+  edited_at                       DateTime?   @db.Timestamptz(6)
   user_id                         Int
   approver_id                     Int?
   leave_type_id                   Int

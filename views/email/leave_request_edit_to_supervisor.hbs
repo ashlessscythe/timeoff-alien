@@ -1,0 +1,41 @@
+✏️ Leave Request Updated - Awaiting Approval
+=====
+<h2>Hello {{#with approver }}{{this.full_name}}{{/with}},</h2>
+
+<div class="info-box info-box-warning">
+  <h3 style="margin-top: 0; color: #d97706;">✏️ Pending Request Edited</h3>
+  <p><strong>{{#with requester}}{{this.full_name}}{{/with}}</strong> updated a pending leave request that still requires your approval.</p>
+  {{#if edited_by}}
+  {{#unless (eq edited_by.id requester.id)}}
+  <p><em>Edited by admin {{edited_by.full_name}} on behalf of the employee.</em></p>
+  {{/unless}}
+  {{/if}}
+</div>
+
+<div class="content-card">
+  <div class="content-card-header">
+    <h3 style="margin: 0; color: #1f2937;">📅 Updated Leave Request</h3>
+  </div>
+  <div class="content-card-body">
+    <p><strong>{{> email/leave_request_detail leave=leave }}</strong></p>
+    {{> email/leave_comments comments=comments }}
+    <p style="margin-top: 12px; color: #6b7280; font-size: 14px;">
+      Originally requested on {{as_date_from_timestamp leave.created_at}}.
+      {{#if leave.edited_at}}Last edited on {{as_date_from_timestamp leave.edited_at}}.{{/if}}
+    </p>
+  </div>
+</div>
+
+{{> email/requester_allowance requester=requester requesterAllowance=requesterAllowance}}
+
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1f2937;">⚡ Quick Actions</h3>
+  <p>Review and respond to this request:</p>
+  <div style="text-align: center; margin: 20px 0;">
+    <a href="{{concatenate (get_application_domain) '/requests/' }}" class="btn"
+      style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;">Review
+      Pending Requests</a>
+  </div>
+</div>
+
+<p style="margin-top: 20px;">Best regards,<br><strong>The TimeOff.Management Team</strong></p>

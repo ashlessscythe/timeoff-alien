@@ -1,0 +1,47 @@
+<div class="modal fade" id="confirm_edit_leave_modal" tabindex="-1" role="dialog"
+  aria-labelledby="confirmEditLeaveModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="confirmEditLeaveModalLabel">Confirm leave request changes</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please review your changes before saving. Pending days still count against your remaining balance until the
+          request is approved or canceled.</p>
+        <div class="row">
+          <div class="col-sm-6">
+            <h5>Before</h5>
+            <dl class="edit-leave-compare">
+              <dt>Type</dt>
+              <dd id="confirm_edit_before_type">&mdash;</dd>
+              <dt>Dates</dt>
+              <dd id="confirm_edit_before_dates">&mdash;</dd>
+              <dt>Deducted</dt>
+              <dd id="confirm_edit_before_deducted">&mdash;</dd>
+            </dl>
+          </div>
+          <div class="col-sm-6">
+            <h5>After</h5>
+            <dl class="edit-leave-compare">
+              <dt>Type</dt>
+              <dd id="confirm_edit_after_type">&mdash;</dd>
+              <dt>Dates</dt>
+              <dd id="confirm_edit_after_dates">&mdash;</dd>
+              <dt>Deducted</dt>
+              <dd id="confirm_edit_after_deducted">&mdash;</dd>
+            </dl>
+          </div>
+        </div>
+        <div class="alert alert-info" id="confirm_edit_no_changes" style="display: none;">
+          No substantive changes detected. You can still update the comment only.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-link" data-dismiss="modal" id="confirm_edit_back_btn">Back</button>
+        <button type="button" class="btn btn-success single-click" id="confirm_edit_submit_btn">Confirm and save</button>
+      </div>
+    </div>
+  </div>
+</div>
