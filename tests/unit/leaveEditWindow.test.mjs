@@ -3,14 +3,14 @@ import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const {
-  MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS,
-  isDateRangeWithinEditWindow
+  editedRangeSharesOriginalDate,
+  pendingLeaveEditWindowMessage
 } = require('../../lib/model/leave/editWindow.js')
 
-describe('isDateRangeWithinEditWindow', () => {
-  it('allows shrinking, growing, or shifting inside the original window', () => {
+describe('editedRangeSharesOriginalDate', () => {
+  it('allows shrink, grow, or shift that keeps at least one original day', () => {
     expect(
-      isDateRangeWithinEditWindow({
+      editedRangeSharesOriginalDate({
         originalStart: '2026-08-03',
         originalEnd: '2026-08-05',
         nextStart: '2026-08-04',
@@ -19,29 +19,36 @@ describe('isDateRangeWithinEditWindow', () => {
     ).toBe(true)
 
     expect(
-      isDateRangeWithinEditWindow({
+      editedRangeSharesOriginalDate({
         originalStart: '2026-08-03',
         originalEnd: '2026-08-05',
         nextStart: '2026-08-03',
         nextEnd: '2026-08-04'
       })
     ).toBe(true)
-  })
 
-  it('allows dates on the 14-day window edges', () => {
     expect(
-      isDateRangeWithinEditWindow({
+      editedRangeSharesOriginalDate({
         originalStart: '2026-08-03',
         originalEnd: '2026-08-05',
-        nextStart: '2026-07-20',
-        nextEnd: '2026-08-19'
+        nextStart: '2026-08-05',
+        nextEnd: '2026-08-20'
       })
     ).toBe(true)
   })
 
-  it('rejects a jump to a completely different period', () => {
+  it('rejects adjacent or distant ranges with no shared original day', () => {
     expect(
-      isDateRangeWithinEditWindow({
+      editedRangeSharesOriginalDate({
+        originalStart: '2026-08-03',
+        originalEnd: '2026-08-05',
+        nextStart: '2026-08-06',
+        nextEnd: '2026-08-08'
+      })
+    ).toBe(false)
+
+    expect(
+      editedRangeSharesOriginalDate({
         originalStart: '2026-08-03',
         originalEnd: '2026-08-05',
         nextStart: '2026-12-22',
@@ -50,7 +57,7 @@ describe('isDateRangeWithinEditWindow', () => {
     ).toBe(false)
 
     expect(
-      isDateRangeWithinEditWindow({
+      editedRangeSharesOriginalDate({
         originalStart: '2026-12-22',
         originalEnd: '2026-12-26',
         nextStart: '2026-08-03',
@@ -59,18 +66,12 @@ describe('isDateRangeWithinEditWindow', () => {
     ).toBe(false)
   })
 
-  it('rejects stretching the original range far beyond the window', () => {
-    expect(
-      isDateRangeWithinEditWindow({
-        originalStart: '2026-08-03',
-        originalEnd: '2026-08-05',
-        nextStart: '2026-08-03',
-        nextEnd: '2026-12-26'
-      })
-    ).toBe(false)
-  })
-
-  it('uses a 14 day default window', () => {
-    expect(MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS).toBe(14)
+  it('tells the user to create a new request for different days', () => {
+    expect(pendingLeaveEditWindowMessage()).toContain(
+      'at least one date from the original request'
+    )
+    expect(pendingLeaveEditWindowMessage()).toContain(
+      'Different days should be a new request'
+    )
   })
 })

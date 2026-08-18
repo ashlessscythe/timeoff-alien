@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function () {
   var warningText = document.getElementById('edit_next_year_pto_warning_text')
 
   var defaultStartTime = '09:00:00'
-  var MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS = 14
   var allowedIncrementsByUser = {}
   var allowedNonDefaultByLeaveType = {}
   var allowedLeaveTypeIdsByUser = {}
@@ -261,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return parsed
   }
 
-  function isDateRangeWithinEditWindow(originalFrom, originalTo, nextFrom, nextTo) {
+  function editedRangeSharesOriginalDate(originalFrom, originalTo, nextFrom, nextTo) {
     var originalStart = parseDateOnly(originalFrom)
     var originalEnd = parseDateOnly(originalTo)
     var nextStart = parseDateOnly(nextFrom)
@@ -269,11 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!originalStart || !originalEnd || !nextStart || !nextEnd) {
       return false
     }
-    var windowStart = new Date(originalStart)
-    windowStart.setDate(windowStart.getDate() - MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS)
-    var windowEnd = new Date(originalEnd)
-    windowEnd.setDate(windowEnd.getDate() + MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS)
-    return nextStart >= windowStart && nextEnd <= windowEnd
+    return originalEnd >= nextStart && nextEnd >= originalStart
   }
 
   function openEditModal(leaveId) {
@@ -369,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       var after = buildSnapshot()
-      var dateWindowOk = isDateRangeWithinEditWindow(
+      var dateWindowOk = editedRangeSharesOriginalDate(
         originalSnapshot.from_date,
         originalSnapshot.to_date,
         after.from_date,
@@ -377,9 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
       )
       if (!dateWindowOk) {
         alert(
-          'Edited dates must stay within ' +
-            MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS +
-            ' days of the original request. To book a different period, cancel this request and create a new one.'
+          'Edited dates must include at least one date from the original request. Different days should be a new request: cancel this one and create another.'
         )
         return
       }

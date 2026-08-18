@@ -32,6 +32,33 @@ function addDaysIso(n) {
   return d.toISOString().slice(0, 10)
 }
 
+function addCalendarDaysIso(iso, days) {
+  const d = new Date(`${iso}T12:00:00.000Z`)
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
+function nextUtcWeekdayIso(dayName, minAheadDays = 14) {
+  const UTC_DOW = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6
+  }
+  const target = UTC_DOW[dayName]
+  const d = new Date()
+  d.setUTCHours(12, 0, 0, 0)
+  d.setUTCDate(d.getUTCDate() + minAheadDays)
+  for (let i = 0; i < 21; i++) {
+    if (d.getUTCDay() === target) return d.toISOString().slice(0, 10)
+    d.setUTCDate(d.getUTCDate() + 1)
+  }
+  throw new Error(`nextUtcWeekdayIso: no ${dayName}`)
+}
+
 beforeAll(async () => {
   adminAgent = createAgent(app)
   const { email } = await registerCompanyAndAdmin(adminAgent)
@@ -96,8 +123,8 @@ describe('edit pending leave', () => {
     expect(leave.status).toBe(leaveConstants.status_new())
     const createdAt = leave.created_at
 
-    const newFrom = addDaysIso(20)
-    const newTo = addDaysIso(21)
+    const newFrom = addDaysIso(15)
+    const newTo = addDaysIso(18)
     const res = await editLeave(agent, {
       leaveId: leave.id,
       leaveTypeId: holidayTypeId,
@@ -139,19 +166,19 @@ describe('edit pending leave', () => {
       orderBy: { id: 'desc' }
     })
 
-    const newDate = addDaysIso(12)
     const res = await editLeave(adminAgent, {
       leaveId: leave.id,
       leaveTypeId: holidayTypeId,
-      fromDate: newDate,
-      toDate: newDate,
+      fromDate,
+      toDate: addDaysIso(11),
       reason: 'admin edit'
     })
     expect(res.status).toBeLessThan(400)
 
     const updated = await prisma.leaves.findUnique({ where: { id: leave.id } })
     expect(updated.edited_at).toBeTruthy()
-    expect(momentUtc(updated.date_start)).toBe(newDate)
+    expect(momentUtc(updated.date_start)).toBe(fromDate)
+    expect(momentUtc(updated.date_end)).toBe(addDaysIso(11))
   })
 
   it('manager cannot edit report pending leave', async () => {
@@ -260,6 +287,53 @@ describe('edit pending leave', () => {
     expect(momentUtc(unchanged.date_end)).toBe(fromDate)
   })
 
+  it('rejects growing a pending request when remaining balance is already 0', async () => {
+    const empEmail = `edit_zero_bal_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: primaryDepartmentId,
+      name: 'Zero',
+      lastname: 'Bal'
+    })
+    const emp = await prisma.users.findFirst({ where: { email: empEmail } })
+    const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+
+    await prisma.departments.update({
+      where: { id: primaryDepartmentId },
+      data: { allowance: 1, personal: 0, manager_id: adminId }
+    })
+
+    const monday = nextUtcWeekdayIso('Monday', 14)
+    const tuesday = addCalendarDaysIso(monday, 1)
+
+    await bookLeave(agent, {
+      leaveTypeId: holidayTypeId,
+      fromDate: monday,
+      toDate: monday,
+      reason: 'last remaining day'
+    })
+
+    const leave = await prisma.leaves.findFirst({
+      where: { user_id: emp.id },
+      orderBy: { id: 'desc' }
+    })
+    expect(leave).toBeTruthy()
+
+    const res = await editLeave(agent, {
+      leaveId: leave.id,
+      leaveTypeId: holidayTypeId,
+      fromDate: monday,
+      toDate: tuesday,
+      reason: 'grow by one'
+    })
+    expect(res.status).toBeLessThan(500)
+    expect(res.text).toMatch(/remaining vacation allowance/i)
+
+    const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
+    expect(unchanged.edited_at).toBeNull()
+    expect(momentUtc(unchanged.date_end)).toBe(monday)
+  })
+
   it('rejects editing to a completely different date period', async () => {
     const empEmail = `edit_far_${Date.now()}@example.com`
     await addEmployee(adminAgent, {
@@ -297,6 +371,44 @@ describe('edit pending leave', () => {
     expect(unchanged.edited_at).toBeNull()
     expect(momentUtc(unchanged.date_start)).toBe(fromDate)
     expect(momentUtc(unchanged.date_end)).toBe(addDaysIso(16))
+  })
+
+  it('rejects an adjacent range that shares no original date', async () => {
+    const empEmail = `edit_adj_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: primaryDepartmentId,
+      name: 'Adj',
+      lastname: 'Acent'
+    })
+    const emp = await prisma.users.findFirst({ where: { email: empEmail } })
+    const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+
+    const fromDate = addDaysIso(14)
+    await bookLeave(agent, {
+      leaveTypeId: holidayTypeId,
+      fromDate,
+      toDate: addDaysIso(16)
+    })
+
+    const leave = await prisma.leaves.findFirst({
+      where: { user_id: emp.id },
+      orderBy: { id: 'desc' }
+    })
+
+    const res = await editLeave(agent, {
+      leaveId: leave.id,
+      leaveTypeId: holidayTypeId,
+      fromDate: addDaysIso(17),
+      toDate: addDaysIso(18)
+    })
+    expect(res.status).toBeLessThan(500)
+    expect(res.text).toMatch(/at least one date from the original request/i)
+    expect(res.text).toMatch(/Different days should be a new request/i)
+
+    const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
+    expect(unchanged.edited_at).toBeNull()
+    expect(momentUtc(unchanged.date_start)).toBe(fromDate)
   })
 
   it('cannot edit approved leave', async () => {
@@ -396,7 +508,7 @@ describe('edit pending leave', () => {
     await editLeave(agent, {
       leaveId: leave.id,
       leaveTypeId: sickLeaveTypeId,
-      fromDate: addDaysIso(26),
+      fromDate,
       toDate: addDaysIso(26),
       reason: 'type change'
     })
@@ -433,7 +545,7 @@ describe('edit pending leave', () => {
     await editLeave(agent, {
       leaveId: leave.id,
       leaveTypeId: holidayTypeId,
-      fromDate: addDaysIso(29),
+      fromDate,
       toDate: addDaysIso(29)
     })
 
