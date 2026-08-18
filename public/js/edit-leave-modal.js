@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var warningText = document.getElementById('edit_next_year_pto_warning_text')
 
   var defaultStartTime = '09:00:00'
+  var MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS = 14
   var allowedIncrementsByUser = {}
   var allowedNonDefaultByLeaveType = {}
   var allowedLeaveTypeIdsByUser = {}
@@ -248,11 +249,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function formatDateRange(snapshot) {
-    if (snapshot.from_date === snapshot.to_date) {
-      return snapshot.from_date
+  function parseDateOnly(value) {
+    if (!value) {
+      return null
     }
-    return snapshot.from_date + ' → ' + snapshot.to_date
+    var parsed = new Date(value)
+    if (isNaN(parsed.getTime())) {
+      return null
+    }
+    parsed.setHours(0, 0, 0, 0)
+    return parsed
+  }
+
+  function isDateRangeWithinEditWindow(originalFrom, originalTo, nextFrom, nextTo) {
+    var originalStart = parseDateOnly(originalFrom)
+    var originalEnd = parseDateOnly(originalTo)
+    var nextStart = parseDateOnly(nextFrom)
+    var nextEnd = parseDateOnly(nextTo)
+    if (!originalStart || !originalEnd || !nextStart || !nextEnd) {
+      return false
+    }
+    var windowStart = new Date(originalStart)
+    windowStart.setDate(windowStart.getDate() - MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS)
+    var windowEnd = new Date(originalEnd)
+    windowEnd.setDate(windowEnd.getDate() + MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS)
+    return nextStart >= windowStart && nextEnd <= windowEnd
   }
 
   function openEditModal(leaveId) {
@@ -348,6 +369,21 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       var after = buildSnapshot()
+      var dateWindowOk = isDateRangeWithinEditWindow(
+        originalSnapshot.from_date,
+        originalSnapshot.to_date,
+        after.from_date,
+        after.to_date
+      )
+      if (!dateWindowOk) {
+        alert(
+          'Edited dates must stay within ' +
+            MAX_PENDING_LEAVE_EDIT_SHIFT_DAYS +
+            ' days of the original request. To book a different period, cancel this request and create a new one.'
+        )
+        return
+      }
+
       document.getElementById('confirm_edit_before_type').textContent =
         originalSnapshot.type_name
       document.getElementById('confirm_edit_before_dates').textContent =

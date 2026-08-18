@@ -228,6 +228,11 @@ describe('edit pending leave', () => {
     const emp = await prisma.users.findFirst({ where: { email: empEmail } })
     const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
 
+    await prisma.departments.update({
+      where: { id: primaryDepartmentId },
+      data: { allowance: 2, personal: 0, manager_id: adminId }
+    })
+
     const fromDate = addDaysIso(30)
     await bookLeave(agent, {
       leaveTypeId: holidayTypeId,
@@ -245,7 +250,7 @@ describe('edit pending leave', () => {
       leaveId: leave.id,
       leaveTypeId: holidayTypeId,
       fromDate,
-      toDate: addDaysIso(45),
+      toDate: addDaysIso(40),
       reason: 'too many days'
     })
     expect(res.status).toBeLessThan(500)
@@ -253,6 +258,45 @@ describe('edit pending leave', () => {
     const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
     expect(unchanged.edited_at).toBeNull()
     expect(momentUtc(unchanged.date_end)).toBe(fromDate)
+  })
+
+  it('rejects editing to a completely different date period', async () => {
+    const empEmail = `edit_far_${Date.now()}@example.com`
+    await addEmployee(adminAgent, {
+      email: empEmail,
+      departmentId: primaryDepartmentId,
+      name: 'Far',
+      lastname: 'Away'
+    })
+    const emp = await prisma.users.findFirst({ where: { email: empEmail } })
+    const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
+
+    const fromDate = addDaysIso(14)
+    await bookLeave(agent, {
+      leaveTypeId: holidayTypeId,
+      fromDate,
+      toDate: addDaysIso(16),
+      reason: 'original nearby'
+    })
+
+    const leave = await prisma.leaves.findFirst({
+      where: { user_id: emp.id },
+      orderBy: { id: 'desc' }
+    })
+
+    const res = await editLeave(agent, {
+      leaveId: leave.id,
+      leaveTypeId: holidayTypeId,
+      fromDate: addDaysIso(90),
+      toDate: addDaysIso(94),
+      reason: 'jump months'
+    })
+    expect(res.status).toBeLessThan(500)
+
+    const unchanged = await prisma.leaves.findUnique({ where: { id: leave.id } })
+    expect(unchanged.edited_at).toBeNull()
+    expect(momentUtc(unchanged.date_start)).toBe(fromDate)
+    expect(momentUtc(unchanged.date_end)).toBe(addDaysIso(16))
   })
 
   it('cannot edit approved leave', async () => {
