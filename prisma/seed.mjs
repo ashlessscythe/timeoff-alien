@@ -540,7 +540,7 @@ async function createUsers(company, departments, count) {
 
     const user = await prisma.users.create({
       data: {
-        email: `${faker.internet.userName()}@example.com`,
+        email: `${faker.internet.username()}@example.com`,
         password: hashifyPassword(password), // Hash the password
         name: faker.person.firstName(),
         lastname: faker.person.lastName(),
