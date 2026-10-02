@@ -17,6 +17,7 @@ import {
   parseUsersCsvRow
 } from '../support/balanceSurfaces.mjs'
 import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
+import { nextNWeekdaysIso } from '../support/dates.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -24,17 +25,8 @@ const prisma = require('../../lib/prisma/client.js')
 const leaveConstants = require('../../lib/model/leave_constants.js')
 const moment = require('moment')
 
-const TEST_YEAR = '2026'
 const POOL = 10
 const PERSONAL_POOL = 2
-
-/** Date-only ISO (UTC), N days from today — avoids payroll "past week" blocks for employees. */
-function addDaysIso(n) {
-  const d = new Date()
-  d.setUTCHours(12, 0, 0, 0)
-  d.setUTCDate(d.getUTCDate() + n)
-  return d.toISOString().slice(0, 10)
-}
 
 /** @type {import('supertest').TestAgent} */
 let adminAgent
@@ -154,23 +146,26 @@ describe('balance consistency across app surfaces', () => {
       data: { auto_approve: true }
     })
 
+    const [holidayFrom, holidayTo, personalDay] = nextNWeekdaysIso(3, 14)
+    const testYear = holidayFrom.slice(0, 4)
+
     await bookLeave(adminAgent, {
       leaveTypeId: holiday.id,
-      fromDate: addDaysIso(14),
-      toDate: addDaysIso(15),
+      fromDate: holidayFrom,
+      toDate: holidayTo,
       reason: 'vac2'
     })
     await bookLeave(adminAgent, {
       leaveTypeId: personal.id,
-      fromDate: addDaysIso(16),
-      toDate: addDaysIso(16),
+      fromDate: personalDay,
+      toDate: personalDay,
       reason: 'per1'
     })
 
     const snap = await collectBalanceSnapshots(adminAgent, {
       userId: admin.id,
       email: adminEmail,
-      year: TEST_YEAR
+      year: testYear
     })
 
     expect(snap.days_used_csv).toBe(3)
@@ -220,11 +215,14 @@ describe('balance consistency across app surfaces', () => {
       where: { company_id: admin.company_id, name: personalName }
     })
 
+    const [pendingDay] = nextNWeekdaysIso(1, 20)
+    const testYear = pendingDay.slice(0, 4)
+
     const { agent: empAgent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
     await bookLeave(empAgent, {
       leaveTypeId: personal.id,
-      fromDate: addDaysIso(20),
-      toDate: addDaysIso(20),
+      fromDate: pendingDay,
+      toDate: pendingDay,
       reason: 'pending personal'
     })
 
@@ -237,7 +235,7 @@ describe('balance consistency across app surfaces', () => {
     const snap = await collectBalanceSnapshots(adminAgent, {
       userId: empUser.id,
       email: empEmail,
-      year: TEST_YEAR,
+      year: testYear,
       selfCalendarAgent: empAgent
     })
 
@@ -262,13 +260,16 @@ describe('balance consistency across app surfaces', () => {
     await setupDepartmentAllowance(admin.department_id, admin.id)
     await setupWorkWeekSchedule(admin.company_id, admin.id)
 
+    const [adjDay] = nextNWeekdaysIso(1, 14)
+    const testYear = adjDay.slice(0, 4)
+
     await prisma.user_allowance_adjustment.upsert({
       where: {
-        user_id_year: { user_id: admin.id, year: Number(TEST_YEAR) }
+        user_id_year: { user_id: admin.id, year: Number(testYear) }
       },
       create: {
         user_id: admin.id,
-        year: Number(TEST_YEAR),
+        year: Number(testYear),
         adjustment: 2,
         personal_adjustment: 1,
         carried_over_allowance: 3,
@@ -290,8 +291,8 @@ describe('balance consistency across app surfaces', () => {
     })
     await bookLeave(adminAgent, {
       leaveTypeId: holiday.id,
-      fromDate: '2026-09-01',
-      toDate: '2026-09-01',
+      fromDate: adjDay,
+      toDate: adjDay,
       reason: 'adj test'
     })
 
@@ -303,7 +304,7 @@ describe('balance consistency across app surfaces', () => {
     expect(csv.carried_over_allowance).toBe(3)
 
     const abs = await adminAgent
-      .get(`/users/edit/${admin.id}/absences/?year=${TEST_YEAR}`)
+      .get(`/users/edit/${admin.id}/absences/?year=${testYear}`)
       .redirects(5)
     expect(abs.status).toBe(200)
 
