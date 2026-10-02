@@ -13,24 +13,25 @@
   },
   "overrides": {
     "diff": ">=8.0.3",
-    "axios": ">=1.18.1",
+    "axios": ">=1.20.0",
     "tar": ">=7.5.20",
     "follow-redirects": ">=1.15.6",
     "underscore": ">=1.12.1",
     "minimatch@3": {
       ".": "3.1.5",
-      "brace-expansion": "1.1.18"
+      "brace-expansion": "1.1.21"
     },
     "minimatch@9": ">=9.0.5",
     "minimatch@10": ">=10.2.1",
     "brace-expansion@2": ">=2.0.2",
-    "brace-expansion@5": ">=5.0.9",
+    "brace-expansion@5": "5.0.12",
     "immutable": ">=5.1.8",
-    "js-yaml": "4.3.1",
+    "js-yaml": ">=4.3.2",
     "nanoid": ">=3.3.17 <4",
     "postcss": ">=8.5.23",
     "qs": ">=6.16.0",
-    "undici": "^6.28.0"
+    "undici": ">=6.29.0",
+    "graceful-fs": "4.2.11"
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
@@ -43,7 +44,7 @@
     "connect-pg-simple": "^9.0.1",
     "connect-redis": "^6.0.0",
     "cookie-parser": "^1.4.4",
-    "csv": "~5.1.1",
+    "csv": "^6.6.4",
     "debug": ">=4.4.0",
     "express": "^4.16.4",
     "express-handlebars": "^8.0.1",
@@ -51,14 +52,14 @@
     "formidable": "^3.5.4",
     "html-to-text": "^5.1.1",
     "ical-generator": "^1.7.1",
-    "joi": "^17.13.3",
+    "joi": "^17.13.8",
     "ldapauth-fork": "^4.2.0",
-    "moment": "^2.24.0",
+    "moment": "^2.31.0",
     "moment-timezone": "^0.5.25",
-    "morgan": "^1.11.0",
-    "multer": "^2.0.1",
+    "morgan": "^1.12.1",
+    "multer": "^2.4.0",
     "nconf": "^0.12.1",
-    "nodemailer": "^9.0.1",
+    "nodemailer": "^10.0.13",
     "optimist": "^0.5.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^1.0.0",
@@ -76,8 +77,8 @@
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
     "@types/supertest": "^6.0.3",
-    "@vitest/coverage-v8": "^4.1.8",
-    "@vitest/ui": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/ui": "^4.1.11",
     "clean-css-cli": "^5.6.3",
     "dotenv": "^16.4.7",
     "eslint": "^8.51.0",
@@ -94,7 +95,7 @@
     "terser": "^5.34.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "scripts": {
     "prettier": "prettier --write \"**/*.js\"",
@@ -115,16 +116,12 @@
     "minify-js": "node scripts/build-assets.js minify-js",
     "copy-static": "node scripts/build-assets.js copy-static",
     "sync-to-public": "node scripts/build-assets.js sync-to-public",
-    "preinstall": "npx npm-force-resolutions",
     "build": "node scripts/build-assets.js",
     "start": "npx prisma generate && npx prisma migrate deploy && node scripts/start-prod.js",
     "dev": "node bin/wwww"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"
-  },
-  "resolutions": {
-    "graceful-fs": "4.2.11"
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true,

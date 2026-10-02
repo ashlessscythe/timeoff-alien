@@ -10,6 +10,7 @@ import {
   TEST_PASSWORD
 } from '../support/http.mjs'
 import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
+import { futureWeekdayIso } from '../support/dates.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -70,11 +71,12 @@ describe('delegation booking authorization', () => {
 
     const { agent } = await loginAsNewAgent(app, emp1Email, TEST_PASSWORD)
     const beforeEmp2 = await prisma.leaves.count({ where: { user_id: emp2.id } })
+    const day = futureWeekdayIso(14)
 
     await bookLeave(agent, {
       leaveTypeId: holiday.id,
-      fromDate: '2026-09-01',
-      toDate: '2026-09-01',
+      fromDate: day,
+      toDate: day,
       reason: 'forge-user-index',
       user: 9999
     })
@@ -139,11 +141,12 @@ describe('delegation booking authorization', () => {
     const beforeOutsider = await prisma.leaves.count({
       where: { user_id: outsider.id }
     })
+    const day = futureWeekdayIso(14)
 
     await bookLeave(mgrAgent, {
       leaveTypeId: holiday.id,
-      fromDate: '2026-09-02',
-      toDate: '2026-09-02',
+      fromDate: day,
+      toDate: day,
       reason: 'mgr-forge-outsider',
       user: 9999
     })
@@ -197,10 +200,11 @@ describe('delegation booking authorization', () => {
     expect(managed.some(u => u.id === emp.id)).toBe(true)
 
     const before = await prisma.leaves.count({ where: { user_id: emp.id } })
+    const day = futureWeekdayIso(21)
     await bookLeave(mgrAgent, {
       leaveTypeId: holiday.id,
-      fromDate: '2026-11-12',
-      toDate: '2026-11-12',
+      fromDate: day,
+      toDate: day,
       reason: 'mgr-books-emp',
       user: emp.id
     })

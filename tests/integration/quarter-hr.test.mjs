@@ -10,6 +10,7 @@ import {
   TEST_PASSWORD
 } from '../support/http.mjs'
 import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
+import { futureWeekdayIso } from '../support/dates.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -101,7 +102,8 @@ describe('quarter-hour booking', () => {
 
     const { agent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
 
-    const day = '2026-08-20'
+    const day = futureWeekdayIso(14)
+    const year = moment.utc(day, 'YYYY-MM-DD')
     await agent
       .post('/calendar/bookleave/')
       .type('form')
@@ -121,7 +123,6 @@ describe('quarter-hour booking', () => {
 
     const fresh = await loadSessionUserById(prisma, emp.id)
     await fresh.reload_with_session_details()
-    const year = moment.utc('2026', 'YYYY')
     await fresh.reload_with_leave_details({ year })
 
     const allowance = await UserAllowance.promise_allowance({

@@ -9,6 +9,7 @@ import {
   TEST_PASSWORD
 } from '../support/http.mjs'
 import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
+import { futureWeekdayIso, nextNWeekdaysIso } from '../support/dates.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -23,14 +24,6 @@ let primaryDepartmentId
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
-}
-
-/** Date-only ISO (UTC), N days from today — avoids payroll "past week" blocks for employees. */
-function addDaysIso(n) {
-  const d = new Date()
-  d.setUTCHours(12, 0, 0, 0)
-  d.setUTCDate(d.getUTCDate() + n)
-  return d.toISOString().slice(0, 10)
 }
 
 beforeAll(async () => {
@@ -98,11 +91,12 @@ describe('department leave type visibility', () => {
 
     const { agent: empAgent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
     const before = await prisma.leaves.count({ where: { user_id: emp.id } })
+    const [blockedDay, allowedDay] = nextNWeekdaysIso(2, 14)
 
     await bookLeave(empAgent, {
       leaveTypeId: sick.id,
-      fromDate: addDaysIso(14),
-      toDate: addDaysIso(14)
+      fromDate: blockedDay,
+      toDate: blockedDay
     })
 
     const after = await prisma.leaves.count({ where: { user_id: emp.id } })
@@ -110,8 +104,8 @@ describe('department leave type visibility', () => {
 
     await bookLeave(empAgent, {
       leaveTypeId: holiday.id,
-      fromDate: addDaysIso(15),
-      toDate: addDaysIso(15)
+      fromDate: allowedDay,
+      toDate: allowedDay
     })
     const afterHoliday = await prisma.leaves.count({ where: { user_id: emp.id } })
     expect(afterHoliday).toBe(before + 1)
@@ -143,11 +137,12 @@ describe('department leave type visibility', () => {
     const emp = await prisma.users.findFirst({ where: { email: empEmail } })
     const { agent: empAgent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
     const before = await prisma.leaves.count({ where: { user_id: emp.id } })
+    const day = futureWeekdayIso(16)
 
     await bookLeave(empAgent, {
       leaveTypeId: sick.id,
-      fromDate: addDaysIso(16),
-      toDate: addDaysIso(16)
+      fromDate: day,
+      toDate: day
     })
 
     const after = await prisma.leaves.count({ where: { user_id: emp.id } })
@@ -202,11 +197,12 @@ describe('department leave type visibility', () => {
     expect(empIndex).toBeGreaterThanOrEqual(0)
 
     const before = await prisma.leaves.count({ where: { user_id: emp.id } })
+    const [blockedDay, allowedDay] = nextNWeekdaysIso(2, 17)
 
     await bookLeave(mgrAgent, {
       leaveTypeId: sick.id,
-      fromDate: addDaysIso(17),
-      toDate: addDaysIso(17),
+      fromDate: blockedDay,
+      toDate: blockedDay,
       user: String(empIndex)
     })
 
@@ -215,8 +211,8 @@ describe('department leave type visibility', () => {
 
     await bookLeave(mgrAgent, {
       leaveTypeId: holiday.id,
-      fromDate: addDaysIso(18),
-      toDate: addDaysIso(18),
+      fromDate: allowedDay,
+      toDate: allowedDay,
       user: String(empIndex)
     })
     const afterAllowed = await prisma.leaves.count({ where: { user_id: emp.id } })

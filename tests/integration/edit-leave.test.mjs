@@ -11,6 +11,12 @@ import {
   TEST_PASSWORD
 } from '../support/http.mjs'
 import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
+import {
+  addCalendarDaysIso,
+  addDaysIso,
+  nextUtcWeekdayIso as nextUtcWeekdayFrom,
+  sameYearRangeIso
+} from '../support/dates.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -25,38 +31,8 @@ let primaryDepartmentId
 let holidayTypeId
 let sickLeaveTypeId
 
-function addDaysIso(n) {
-  const d = new Date()
-  d.setUTCHours(12, 0, 0, 0)
-  d.setUTCDate(d.getUTCDate() + n)
-  return d.toISOString().slice(0, 10)
-}
-
-function addCalendarDaysIso(iso, days) {
-  const d = new Date(`${iso}T12:00:00.000Z`)
-  d.setUTCDate(d.getUTCDate() + days)
-  return d.toISOString().slice(0, 10)
-}
-
 function nextUtcWeekdayIso(dayName, minAheadDays = 14) {
-  const UTC_DOW = {
-    Sunday: 0,
-    Monday: 1,
-    Tuesday: 2,
-    Wednesday: 3,
-    Thursday: 4,
-    Friday: 5,
-    Saturday: 6
-  }
-  const target = UTC_DOW[dayName]
-  const d = new Date()
-  d.setUTCHours(12, 0, 0, 0)
-  d.setUTCDate(d.getUTCDate() + minAheadDays)
-  for (let i = 0; i < 21; i++) {
-    if (d.getUTCDay() === target) return d.toISOString().slice(0, 10)
-    d.setUTCDate(d.getUTCDate() + 1)
-  }
-  throw new Error(`nextUtcWeekdayIso: no ${dayName}`)
+  return nextUtcWeekdayFrom(new Date(), dayName, minAheadDays)
 }
 
 beforeAll(async () => {
@@ -440,11 +416,12 @@ describe('edit pending leave', () => {
       orderBy: { id: 'desc' }
     })
 
+    const far = sameYearRangeIso({ minAheadDays: 45, spanDays: 4 })
     const res = await editLeave(agent, {
       leaveId: leave.id,
       leaveTypeId: holidayTypeId,
-      fromDate: addDaysIso(90),
-      toDate: addDaysIso(94),
+      fromDate: far.fromDate,
+      toDate: far.toDate,
       reason: 'jump months'
     })
     expect(res.status).toBeLessThan(500)

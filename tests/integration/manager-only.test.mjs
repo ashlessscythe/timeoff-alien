@@ -10,6 +10,7 @@ import {
   TEST_PASSWORD
 } from '../support/http.mjs'
 import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
+import { futureWeekdayIso } from '../support/dates.mjs'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
@@ -85,10 +86,11 @@ describe('manager_only leave type enforcement', () => {
 
     const { agent: empAgent } = await loginAsNewAgent(app, empEmail, TEST_PASSWORD)
     const before = await prisma.leaves.count({ where: { user_id: emp.id } })
+    const day = futureWeekdayIso(14)
     await bookLeave(empAgent, {
       leaveTypeId: lt.id,
-      fromDate: '2026-09-10',
-      toDate: '2026-09-10',
+      fromDate: day,
+      toDate: day,
       reason: 'should-block'
     })
     const after = await prisma.leaves.count({ where: { user_id: emp.id } })
@@ -128,10 +130,11 @@ describe('manager_only leave type enforcement', () => {
 
     const { agent: mgrAgent } = await loginAsNewAgent(app, mgrEmail, TEST_PASSWORD)
     const before = await prisma.leaves.count({ where: { user_id: mgr.id } })
+    const day = futureWeekdayIso(15)
     await bookLeave(mgrAgent, {
       leaveTypeId: lt.id,
-      fromDate: '2026-09-11',
-      toDate: '2026-09-11',
+      fromDate: day,
+      toDate: day,
       reason: 'should-allow'
     })
     const after = await prisma.leaves.count({ where: { user_id: mgr.id } })
