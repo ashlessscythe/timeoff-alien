@@ -145,17 +145,28 @@ function minifyJs() {
 }
 
 function copyStatic() {
-  log('Copying static assets (img, fonts, css, js) → build/')
+  log('Copying static assets (img, fonts, css, js, root files) → build/')
+  const pub = path.join(root, 'public')
   const build = path.join(root, 'build')
   ensureDir(path.join(build, 'img'))
   ensureDir(path.join(build, 'fonts'))
   ensureDir(path.join(build, 'css'))
   ensureDir(path.join(build, 'js'))
 
-  copyDirContents(path.join(root, 'public', 'img'), path.join(build, 'img'))
-  copyDirContents(path.join(root, 'public', 'fonts'), path.join(build, 'fonts'))
+  // Keep root-level public files (favicon.ico, favicon.svg, etc.) through
+  // syncToPublic(), which replaces public/ with build/ contents.
+  if (fs.existsSync(pub)) {
+    for (const entry of fs.readdirSync(pub, { withFileTypes: true })) {
+      if (entry.isFile()) {
+        copyFile(path.join(pub, entry.name), path.join(build, entry.name))
+      }
+    }
+  }
 
-  const cssDir = path.join(root, 'public', 'css')
+  copyDirContents(path.join(pub, 'img'), path.join(build, 'img'))
+  copyDirContents(path.join(pub, 'fonts'), path.join(build, 'fonts'))
+
+  const cssDir = path.join(pub, 'css')
   if (fs.existsSync(cssDir)) {
     for (const name of fs.readdirSync(cssDir)) {
       if (!name.endsWith('.css')) continue
@@ -163,7 +174,7 @@ function copyStatic() {
     }
   }
 
-  const jsDir = path.join(root, 'public', 'js')
+  const jsDir = path.join(pub, 'js')
   if (fs.existsSync(jsDir)) {
     for (const name of fs.readdirSync(jsDir)) {
       if (!name.endsWith('.js')) continue

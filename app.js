@@ -7,6 +7,7 @@ const bodyParser = require('body-parser')
 const moment = require('moment')
 const _handlebars = require('handlebars')
 const compression = require('compression')
+const favicon = require('serve-favicon')
 const {
   allowInsecurePrototypeAccess
 } = require('@handlebars/allow-prototype-access')
@@ -80,8 +81,7 @@ app.set('view engine', '.hbs')
 // and reuse it whenever an access to DB is needed
 app.set('db_model', require('./lib/model/db'))
 
-// uncomment after placing your favicon in /public
-// app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 
 // Use 'combined' format for production logging
 app.use(logger(app.get('env') === 'production' ? 'combined' : 'dev'))
