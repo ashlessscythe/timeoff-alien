@@ -11,6 +11,12 @@ import {
   TEST_PASSWORD
 } from '../support/http.mjs'
 import { resetCompanyToAdminBaseline } from '../support/dbCleanup.mjs'
+import {
+  addCalendarDaysIso,
+  addDaysIso,
+  nextUtcWeekdayIso,
+  sameYearRangeIso
+} from '../support/dates.mjs'
 import app from '../support/loadEnvAndApp.mjs'
 
 const require = createRequire(import.meta.url)
@@ -28,43 +34,6 @@ let primaryDepartmentId
 let baselineLeaveTypeIds
 let holidayType
 let sickLeaveType
-
-/** Date-only ISO (UTC), N days from today — avoids payroll "past week" blocks for employees. */
-function addDaysIso(n) {
-  const d = new Date()
-  d.setUTCHours(12, 0, 0, 0)
-  d.setUTCDate(d.getUTCDate() + n)
-  return d.toISOString().slice(0, 10)
-}
-
-const UTC_DOW = {
-  Sunday: 0,
-  Monday: 1,
-  Tuesday: 2,
-  Wednesday: 3,
-  Thursday: 4,
-  Friday: 5,
-  Saturday: 6
-}
-
-/** Next `dayName` on/after `from` + `minAheadDays` (UTC). */
-function nextUtcWeekdayIso(from, dayName, minAheadDays = 7) {
-  const target = UTC_DOW[dayName]
-  const d = new Date(from)
-  d.setUTCHours(12, 0, 0, 0)
-  d.setUTCDate(d.getUTCDate() + minAheadDays)
-  for (let i = 0; i < 21; i++) {
-    if (d.getUTCDay() === target) return d.toISOString().slice(0, 10)
-    d.setUTCDate(d.getUTCDate() + 1)
-  }
-  throw new Error(`nextUtcWeekdayIso: no ${dayName}`)
-}
-
-function addCalendarDaysIso(iso, days) {
-  const d = new Date(`${iso}T12:00:00.000Z`)
-  d.setUTCDate(d.getUTCDate() + days)
-  return d.toISOString().slice(0, 10)
-}
 
 beforeAll(async () => {
   adminAgent = createAgent(app)
@@ -315,10 +284,14 @@ describe('leave type behavior', () => {
     })
     expect(lt).toBeTruthy()
 
+    const { fromDate, toDate } = sameYearRangeIso({
+      minAheadDays: 14,
+      spanDays: 20
+    })
     const res = await bookLeave(adminAgent, {
       leaveTypeId: lt.id,
-      fromDate: addDaysIso(100),
-      toDate: addDaysIso(130),
+      fromDate,
+      toDate,
       reason: 'long no allowance'
     })
     expect(res.status).toBeLessThan(400)
