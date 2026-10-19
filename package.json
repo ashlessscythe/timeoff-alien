@@ -17,6 +17,7 @@
     "tar": ">=7.5.20",
     "follow-redirects": ">=1.15.6",
     "underscore": ">=1.12.1",
+    "handlebars": ">=4.7.10",
     "minimatch@3": {
       ".": "3.1.5",
       "brace-expansion": "1.1.21"
