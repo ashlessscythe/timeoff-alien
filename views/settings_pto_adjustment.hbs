@@ -9,7 +9,7 @@
 <div class="row">
   <div class="col-md-6">
     <ol class="breadcrumb">
-      <li><a href="/settings/general/">Settings</a></li>
+      <li><a class="dropdown-item" href="/settings/general/">Settings</a></li>
       <li class="active">Bulk PTO Adjustment</li>
     </ol>
   </div>
@@ -20,14 +20,14 @@
 </div>
 
 <div class="row">
-  <div class="col-md-9 col-md-offset-1">
-    <div class="panel panel-default">
-      <div class="panel-body">
+  <div class="col-md-9 offset-md-1">
+    <div class="card">
+      <div class="card-body">
         <p class="text-bigger">
           <strong>1.</strong> Download CSV template with example data:
           <a href="/settings/pto-adjustment/template/" id="pto_template_btn" class="btn btn-success"
-            data-content="The template file contains example rows based on current employees. Fill in the adjustment values and year, then upload using the form below."
-            data-placement="top" data-toggle="popover" data-trigger="focus hover">
+            data-bs-content="The template file contains example rows based on current employees. Fill in the adjustment values and year, then upload using the form below."
+            data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover">
             <i class="fa fa-download"></i> Download CSV template
           </a>
         </p>
@@ -43,10 +43,10 @@
 
         <div class="text-bigger">
           <strong>3.</strong> Upload CSV file for preview:
-          <form action="/settings/pto-adjustment/preview/" method="post" enctype="multipart/form-data" class="panel-body" id="pto_upload_form">
+          <form action="/settings/pto-adjustment/preview/" method="post" enctype="multipart/form-data" class="card-body" id="pto_upload_form">
             <div class="form-group">
               <input id="pto_input_file" type="file" name="pto_import" accept=".csv" required>
-              <p class="help-block">
+              <p class="form-text">
                 <em>CSV file will be validated and you'll see a preview with name matching results before applying changes.</em>
               </p>
             </div>
@@ -65,12 +65,12 @@
 <div class="row">&nbsp;</div>
 
 <div class="row">
-  <div class="col-md-9 col-md-offset-1">
-    <div class="panel panel-info">
-      <div class="panel-heading">
+  <div class="col-md-9 offset-md-1">
+    <div class="card border-info">
+      <div class="card-header">
         <i class="fa fa-info-circle"></i> How it works
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <ul>
           <li>The system will attempt to match employee names from your CSV to existing employees</li>
           <li>If a name doesn't match exactly, you'll see suggestions and can confirm the match</li>

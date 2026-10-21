@@ -11,64 +11,64 @@ It relies on following entries in context:
 <dl>
   <dt>Allowance breakdown
     <i class="fa fa-question-circle"
-      data-content="This is explanation how we get the total allowance. Hover on each number to get details what does one mean."
-      data-placement="top" data-toggle="popover" data-trigger="focus hover"></i>
+      data-bs-content="This is explanation how we get the total allowance. Hover on each number to get details what does one mean."
+      data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover"></i>
   </dt>
   <dd>
     <em>Regular Allowance</em>
-    <span class="pull-right" data-content="Non-personal allowance." data-placement="top" data-toggle="popover"
-      data-trigger="focus hover" id='nominalAllowancePart'>{{ format_days_and_hours
+    <span class="float-end" data-bs-content="Non-personal allowance." data-bs-placement="top" data-bs-toggle="popover"
+      data-bs-trigger="focus hover" id='nominalAllowancePart'>{{ format_days_and_hours
       user_allowance.number_of_regular_allowance }}</span>
   </dd>
   <dd>
     <em>Personal Allowance</em>
-    <span class="pull-right" data-content="Personal days by department plus any personal adjustment."
-      data-placement="top" data-toggle="popover" data-trigger="focus hover" id='nominalPersonalPart'>{{
+    <span class="float-end" data-bs-content="Personal days by department plus any personal adjustment."
+      data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover" id='nominalPersonalPart'>{{
       format_days_and_hours (sum user_allowance.nominal_personal user_allowance.personal_adjustment)
       }}</span>
   </dd>
   {{#if logged_user.admin }}
   <dd>
     <em>Carried over from {{#if previous_year}}{{previous_year}}{{else}}previous year{{/if}}</em>
-    <span class="pull-right"
-      data-content="Allowance carried over from previous year. Note: this amount is calculated on the very first day of the year."
-      data-placement="top" data-toggle="popover" data-trigger="focus hover" id="allowanceCarriedOverPart">{{
+    <span class="float-end"
+      data-bs-content="Allowance carried over from previous year. Note: this amount is calculated on the very first day of the year."
+      data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover" id="allowanceCarriedOverPart">{{
       format_days_and_hours user_allowance.carry_over }}</span>
   </dd>
   <dd>
     <em>Individual adjustment</em>
-    <span class="pull-right" data-content="Adjustment to allowance done by admin user." data-placement="top"
-      data-toggle="popover" data-trigger="focus hover">{{ format_days_and_hours user_allowance.manual_adjustment
+    <span class="float-end" data-bs-content="Adjustment to allowance done by admin user." data-bs-placement="top"
+      data-bs-toggle="popover" data-bs-trigger="focus hover">{{ format_days_and_hours user_allowance.manual_adjustment
       }}</span>
   </dd>
   <dd>
     <em>Personal days adjustment</em>
-    <span class="pull-right" data-content="Adjustment to personal days allowance done by admin user."
-      data-placement="top" data-toggle="popover" data-trigger="focus hover">{{ format_days_and_hours
+    <span class="float-end" data-bs-content="Adjustment to personal days allowance done by admin user."
+      data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover">{{ format_days_and_hours
       user_allowance.personal_adjustment }}</span>
   </dd>
   {{/if}}
   {{#if user_allowance.employement_range_adjustment}}
   <dd>
     <em>Start/end of employment</em>
-    <span class="pull-right"
-      data-content="Automatic adjustment to allowance based on employee's start and end day of employment."
-      data-placement="top" data-toggle="popover" data-trigger="focus hover">{{
+    <span class="float-end"
+      data-bs-content="Automatic adjustment to allowance based on employee's start and end day of employment."
+      data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover">{{
       format_days_and_hours user_allowance.employement_range_adjustment }}</span>
   </dd>
   {{/if}}
   <dd>
     <em>Used or requested so far</em>
-    <span class="pull-right" data-content="Total number of days already taken from allowance." data-placement="top"
-      data-toggle="popover" data-trigger="focus hover">{{#if_equal user_allowance.number_of_days_taken_from_allowance
+    <span class="float-end" data-bs-content="Total number of days already taken from allowance." data-bs-placement="top"
+      data-bs-toggle="popover" data-bs-trigger="focus hover">{{#if_equal user_allowance.number_of_days_taken_from_allowance
       0}}-{{else}}{{ format_days_and_hours user_allowance.number_of_days_taken_from_allowance}}{{/if_equal}}</span>
   </dd>
   {{# if user_allowance.is_accrued_allowance }}
   <dd>
     <em>Locked so far</em>
-    <span class="pull-right"
-      data-content="Number of unavailable days in allowance due to accrual nature of vacation entitlement."
-      data-placement="top" data-toggle="popover" data-trigger="focus hover">{{ format_days_and_hours
+    <span class="float-end"
+      data-bs-content="Number of unavailable days in allowance due to accrual nature of vacation entitlement."
+      data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover">{{ format_days_and_hours
       user_allowance.accrued_adjustment }}</span>
   </dd>
   {{/ if}}

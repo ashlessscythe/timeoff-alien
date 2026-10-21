@@ -5,7 +5,7 @@
 <div class="row">
   <div class="col-md-6 lead">Adding new employee account</div>
   <div class="col-md-6">
-    <a class="btn btn-default pull-right" href="/users/import/" id="import_users_btn">Import new employees <i
+    <a class="btn btn-outline-secondary float-end" href="/users/import/" id="import_users_btn">Import new employees <i
         class="fa fa-chevron-right"></i></a>
   </div>
 </div>
@@ -15,7 +15,7 @@
 <div class="row">
   <div class="col-md-6">
     <ol class="breadcrumb">
-      <li><a href="/users/">All Employees</a></li>
+      <li><a class="dropdown-item" href="/users/">All Employees</a></li>
       <li class="active">Add new employee</li>
     </ol>
   </div>
@@ -31,39 +31,39 @@
     <form class="form-horizontal" method="POST" action="/users/add/" id="add_new_user_form">
 
       <div class="form-group">
-        <label for="name_inp" class="col-md-3 control-label">First Name</label>
+        <label for="name_inp" class="col-md-3 form-label">First Name</label>
         <div class="col-md-3">
           <input class="form-control" id="name_inp" name="name" required value="{{employee.name}}">
         </div>
       </div>
 
       <div class="form-group">
-        <label for="lastname_inp" class="col-md-3 control-label">Last Name</label>
+        <label for="lastname_inp" class="col-md-3 form-label">Last Name</label>
         <div class="col-md-3">
           <input class="form-control" id="lastname_inp" name="lastname" required value="{{employee.lastname}}">
         </div>
       </div>
 
       <div class="form-group">
-        <label for="email_inp" class="col-md-3 control-label">Email Address</label>
+        <label for="email_inp" class="col-md-3 form-label">Email Address</label>
         <div class="col-md-3">
           <input class="form-control" id="email_inp" type="email" name="email_address" required
             value="{{employee.email}}" aria-describedby="email_help">
         </div>
-        <span id="email_help" class="help-block col-md-6">Email address used by employee</span>
+        <span id="email_help" class="form-text col-md-6">Email address used by employee</span>
       </div>
 
       <div class="form-group">
-        <label for="slack_username_inp" class="col-md-3 control-label">Slack Username</label>
+        <label for="slack_username_inp" class="col-md-3 form-label">Slack Username</label>
         <div class="col-md-3">
           <input class="form-control" id="slack_username_inp" name="slack_username" value="{{employee.slack_username}}"
             aria-describedby="slack_username_help">
         </div>
-        <span id="slack_username_help" class="help-block col-md-6">Slack Username used by employee</span>
+        <span id="slack_username_help" class="form-text col-md-6">Slack Username used by employee</span>
       </div>
 
       <div class="form-group">
-        <label for="select_inp" class="col-md-3 control-label">Department</label>
+        <label for="select_inp" class="col-md-3 form-label">Department</label>
         <div class="col-md-3">
           <select class="form-control" id="select_inp" name="department" aria-describedby="department_help">
             {{#each departments}}
@@ -71,12 +71,12 @@
             {{/each}}
           </select>
         </div>
-        <span id="department_help" class="help-block col-md-6">Department employee belongs to</span>
+        <span id="department_help" class="form-text col-md-6">Department employee belongs to</span>
       </div>
 
       <div class="form-group">
-        <div class="col-md-3 col-md-offset-3">
-          <label for="admin_inp" class="_col-md-2 control-label">
+        <div class="col-md-3 offset-md-3">
+          <label for="admin_inp" class="_col-md-2 form-label">
             <input class="" id="admin_inp" name="admin" type="checkbox" />
             Is administrator user
           </label>
@@ -84,8 +84,8 @@
       </div>
 
       <div class="form-group">
-        <div class="col-md-3 col-md-offset-3">
-          <label for="manager_inp" class="_col-md-2 control-label">
+        <div class="col-md-3 offset-md-3">
+          <label for="manager_inp" class="_col-md-2 form-label">
             <input class="" id="manager_inp" name="manager" type="checkbox" />
             Is manager user
           </label>
@@ -93,18 +93,18 @@
       </div>
 
       <div class="form-group">
-        <div class="col-md-3 col-md-offset-3">
-          <label for="auto_approve_inp" class="control-label">
+        <div class="col-md-3 offset-md-3">
+          <label for="auto_approve_inp" class="form-label">
             <input class="" id="auto_approve_inp" name="auto_approve" type="checkbox">
             Auto approve leave requests
           </label>
         </div>
-        <span class="help-block">Set the flag ON to streamline leave requests from this employee directly into
+        <span class="form-text">Set the flag ON to streamline leave requests from this employee directly into
           <strong>Approved</strong> state.</span>
       </div>
 
       <div class="form-group">
-        <label for="start_date_inp" class="col-md-3 control-label">Started on</label>
+        <label for="start_date_inp" class="col-md-3 form-label">Started on</label>
         <div class="col-md-3 date">
           <input class="form-control" id="start_date_inp" type="text" name="start_date" required data-date-autoclose="1"
             data-provide="datepicker"
@@ -112,11 +112,11 @@
             data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date booking_start}}"
             aria-describedby="start_date_help">
         </div>
-        <span id="start_date_help" class="help-block col-md-6">Date when employee started (inclusive)</span>
+        <span id="start_date_help" class="form-text col-md-6">Date when employee started (inclusive)</span>
       </div>
 
       <div class="form-group">
-        <label for="end_date_inp" class="col-md-3 control-label">Ended on</label>
+        <label for="end_date_inp" class="col-md-3 form-label">Ended on</label>
         <div class="col-md-3 date">
           <input class="form-control" id="end_date_inp" type="text" name="end_date" data-date-autoclose="1"
             data-provide="datepicker"
@@ -124,7 +124,7 @@
             data-date-week-start="{{logged_user.company.first_day_of_week}}" value="{{as_date employee.end_date}}"
             aria-describedby="end_date_help">
         </div>
-        <span id="end_date_help" class="help-block col-md-6">
+        <span id="end_date_help" class="form-text col-md-6">
           <div>Date when employee quits the {{ company.name }}.</div>
           <div>After this date the user is no longer able to access the application.</div>
           <div>This is a way of deactivating user accounts.</div>
@@ -132,12 +132,12 @@
       </div>
 
       <div class="form-group">
-        <label for="password_inp" class="col-md-3 control-label">Password</label>
+        <label for="password_inp" class="col-md-3 form-label">Password</label>
         <div class="col-md-3 date">
           <input class="form-control" id="password_inp" type="password" name="password_one" required value="" {{#if
             company.ldap_auth_enabled}} readonly {{/if}} aria-describedby="password_inp_help">
         </div>
-        <span id="password_inp_help" class="help-block col-md-6">
+        <span id="password_inp_help" class="form-text col-md-6">
           {{# if company.ldap_auth_enabled }}
           <a href="/settings/company/authentication/">LDAP authentication</a> is enabled, so that password does not
           matter.
@@ -148,7 +148,7 @@
       </div>
 
       <div class="form-group">
-        <label for="password_inp" class="col-md-3 control-label">Confirm password</label>
+        <label for="password_inp" class="col-md-3 form-label">Confirm password</label>
         <div class="col-md-3">
           <input class="form-control" id="confirm_password_inp" type="password" name="password_confirm" required
             value="" {{# if company.ldap_auth_enabled}}readonly{{/if}}>
@@ -156,8 +156,8 @@
       </div>
 
       <div class="form-group">
-        <div class="col-md-offset-3 col-md-3">
-          <button type="submit" id="add_new_user_btn" class="btn btn-success pull-right single-click">Add new
+        <div class="offset-md-3 col-md-3">
+          <button type="submit" id="add_new_user_btn" class="btn btn-success float-end single-click">Add new
             employee</button>
         </div>
       </div>

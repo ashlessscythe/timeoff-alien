@@ -5,7 +5,7 @@
 <div class="row">
   <div class="col-md-6 lead">Quick employees import</div>
   <div class="col-md-6">
-    <a class="btn btn-default pull-right" href="/users/add/" id="add_new_department">Add single employee <i
+    <a class="btn btn-outline-secondary float-end" href="/users/add/" id="add_new_department">Add single employee <i
         class="fa fa-chevron-right"></i></a>
   </div>
 
@@ -16,7 +16,7 @@
 <div class="row">
   <div class="col-md-6">
     <ol class="breadcrumb">
-      <li><a href="/users/">All Employees</a></li>
+      <li><a class="dropdown-item" href="/users/">All Employees</a></li>
       <li class="active">Import employees in a bulk</li>
     </ol>
   </div>
@@ -27,14 +27,14 @@
 </div>
 
 <div class="row">
-  <div class="col-md-9 col-md-offset-1">
+  <div class="col-md-9 offset-md-1">
 
     <form class="form-horizontal" method="POST" action="/users/import-sample/" id="users_import_sample_form">
       <p class="text-bigger">
         <strong>1.</strong> Download example of <strong>.CSV</strong> file based on employees currently available:
         <button type="submit" id="users_import_sample_btn" class="btn btn-success"
-          data-content="The sample file contains information about employees who are already in the system. Extend the file to have records about new employees and upload it using the form on left hand side."
-          data-placement="top" data-toggle="popover" data-trigger="focus hover"><i class="fa fa-download"></i> Download
+          data-bs-content="The sample file contains information about employees who are already in the system. Extend the file to have records about new employees and upload it using the form on left hand side."
+          data-bs-placement="top" data-bs-toggle="popover" data-bs-trigger="focus hover"><i class="fa fa-download"></i> Download
           <strong>.CSV</strong> sample file</button>
       </p>
     </form>
@@ -45,7 +45,7 @@
 
     <div class="text-bigger">
       <strong>3.</strong> Upload <strong>.CSV</strong> file:
-      <form action="/users/import/" method="post" enctype="multipart/form-data" class="panel-body">
+      <form action="/users/import/" method="post" enctype="multipart/form-data" class="card-body">
         <div class="form-group">
           <input id="users_input_inp" type="file" name="users_import">
         </div>

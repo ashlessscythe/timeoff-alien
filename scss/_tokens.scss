@@ -1,0 +1,67 @@
+// Design tokens — spacing, typography, radius, shadows
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.12);
+
+  --font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 0.9375rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+
+  --app-fixed-footer-height: 3.25rem;
+  --app-cookie-banner-height: 5.5rem;
+
+  // Semantic aliases (defaults, overridden by themes)
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+
+  // Legacy variable names (used throughout existing SCSS/templates)
+  --background-color: var(--color-bg);
+  --text-color: var(--color-text);
+  --hover-text-color: var(--color-text);
+  --hover-bg-color: #f1f5f9;
+  --accent-color: var(--color-accent);
+  --divider-color: var(--color-border);
+  --secondary-background-color: var(--color-surface);
+  --button-bg: var(--color-accent);
+  --button-text: #ffffff;
+  --button-hover-bg: var(--color-accent-hover);
+  --link-hover-color: var(--color-accent-hover);
+  --current-day-bg: #fbbf24;
+  --calendar-cell-bg: #f9fafb;
+  --leave-cell-bg: #10b981;
+  --leave-cell-color: #ffffff;
+}
+
+// SCSS variables for static references
+$primary-font-color: #64748b;
+$border-color: #e2e8f0;
+$link-color: #2563eb;
+$font-size-primary: 15px;
+$font-size-bigger: 16px;
+$selected-item-background: #f1f5f9;
+$danger-color: #dc3545;
+$secondary-background-color: #f8fafc;

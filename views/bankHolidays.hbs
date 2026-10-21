@@ -7,17 +7,17 @@
     Public holidays for {{company.name}}`s account in {{yearCurrent}}
     <br>First day of week: {{first_day_of_week}}
   </div>
-  <div class="col-md-3 col-md-offset-3">
-    <div class="btn-group pull-right">
-      <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+  <div class="col-md-3 offset-md-3">
+    <div class="btn-group float-end">
+      <button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
         <span aria-hidden="true" class="fa fa-plus"></span> Add new
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
+        
+        <span class="visually-hidden">Toggle Dropdown</span>
       </button>
       <ul class="dropdown-menu">
-        <li><a href="#" id="bankholiday-import-btn">Import default holidays for {{yearCurrent}}</a></li>
-        <li><a href="#" id="add_new_department" data-toggle="modal" data-target="#add_new_bank_holiday_modal">Add new
+        <li><a class="dropdown-item" href="#" id="bankholiday-import-btn">Import default holidays for {{yearCurrent}}</a></li>
+        <li><a class="dropdown-item" href="#" id="add_new_department" data-bs-toggle="modal" data-bs-target="#add_new_bank_holiday_modal">Add new
             bank holiday</a></li>
       </ul>
     </div>
@@ -29,15 +29,15 @@
 {{> show_flash_messages }}
 
 <div class="row">
-  <div class="col-xs-2">
-    <a class="btn btn-default" href="?year={{yearPrev}}"><span aria-hidden="true" class="fa fa-chevron-left"></span>
+  <div class="col-2">
+    <a class="btn btn-outline-secondary" href="?year={{yearPrev}}"><span aria-hidden="true" class="fa fa-chevron-left"></span>
       {{yearPrev}} </a>
   </div>
-  <div class="col-xs-8 calendar-section-caption">
+  <div class="col-8 calendar-section-caption">
     <strong>January - December {{yearCurrent}}</strong>
   </div>
-  <div class="col-xs-2">
-    <a class="btn btn-default pull-right" href="?year={{yearNext}}">{{yearNext}} <span aria-hidden="true"
+  <div class="col-2">
+    <a class="btn btn-outline-secondary float-end" href="?year={{yearNext}}">{{yearNext}} <span aria-hidden="true"
         class="fa fa-chevron-right"></span></a>
   </div>
 </div>
@@ -94,8 +94,8 @@
   <div class="col-md-4">
 
     <div class="row">
-      <div class="col-md-4"><label class="control-label">Date</label></div>
-      <div class="col-md-6"><label class="control-label">Holiday Name</label></div>
+      <div class="col-md-4"><label class="form-label">Date</label></div>
+      <div class="col-md-6"><label class="form-label">Holiday Name</label></div>
     </div>
 
     <div class="row">&nbsp;</div>
@@ -128,7 +128,7 @@
           <input type="text" class="form-control" value="{{name}}" name="name__{{id}}" tom-test-hook="name__{{@index}}">
         </div>
         <div class="col-md-2">
-          <button class="btn btn-default pull-right bankholiday-remove-btn" type="button" value="{{id}}"
+          <button class="btn btn-outline-secondary float-end bankholiday-remove-btn" type="button" value="{{id}}"
             tom-test-hook="remove__{{@index}}"><span class="fa fa-remove"></span></button>
         </div>
       </div>
@@ -141,10 +141,10 @@
 
       <div class="row">
         <div class="col-md-12">
-          <div class="pull-right">
-            {{!-- <button id="bankholiday-import-btn" class="btn btn-default" type="button">Import default
+          <div class="float-end">
+            {{!-- <button id="bankholiday-import-btn" class="btn btn-outline-secondary" type="button">Import default
               holidays</button> --}}
-            <button class="btn btn-default" type="button" data-toggle="modal" data-target="#add_new_bank_holiday_modal"
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#add_new_bank_holiday_modal"
               id="add_new_bank_holiday_btn">Add new</button>
             {{#if bankHolidays.length}}
             <button type="submit" class="btn btn-success single-click">Save changes</button>

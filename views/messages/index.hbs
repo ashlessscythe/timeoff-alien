@@ -25,7 +25,7 @@
             <td>{{this.name}}</td>
             <td>{{this.email}}</td>
             <td class="subject-cell">
-              <a class="message-toggle collapsed" data-toggle="collapse" data-parent="#message-list"
+              <a class="message-toggle collapsed" data-bs-toggle="collapse" data-bs-parent="#message-list"
                 href="#collapse_{{this.id}}">
                 <i class="fa fa-chevron-right"></i>
                 {{this.subject}}
@@ -57,7 +57,7 @@
           </tr>
           <tr id="collapse_{{this.id}}" class="collapse">
             <td colspan="6">
-              <div class="message-content well">
+              <div class="message-content card card-body bg-light">
                 {{this.message}}
               </div>
             </td>
@@ -68,7 +68,7 @@
     </div>
 
     {{#unless messages}}
-    <div class="well">No messages yet.</div>
+    <div class="card card-body bg-light">No messages yet.</div>
     {{/unless}}
   </div>
 </div>

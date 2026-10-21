@@ -13,26 +13,26 @@
 
   <div class="row">
     <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading" role="button" data-toggle="collapse" href="#leaveTypesPanel" aria-expanded="false"
+      <div class="card">
+        <div class="card-header" role="button" data-bs-toggle="collapse" data-bs-target="#leaveTypesPanel" aria-expanded="false"
           aria-controls="leaveTypesPanel">
-          <h4 class="panel-title">
+          <h4 class="card-title mb-0">
             <i class="fa fa-chevron-down collapsed"></i> Leave Types
           </h4>
         </div>
-        <div class="panel-collapse collapse" id="leaveTypesPanel">
-          <div class="panel-body">
+        <div class="collapse" id="leaveTypesPanel">
+          <div class="card-body">
             <div class="row">
               <div class="col-md-5">
-                <label class="control-label">Leave Type</label>
+                <label class="form-label">Leave Type</label>
                 <p><em>Tick one to pin at the top</em></p>
               </div>
               <div class="col-md-4">
-                <label class="control-label">Options</label>
+                <label class="form-label">Options</label>
                 <p><em>Behavior and eligibility</em></p>
               </div>
               <div class="col-md-2">
-                <label class="control-label">Limit</label>
+                <label class="form-label">Limit</label>
                 <p><em>Days/year</em></p>
               </div>
             </div>
@@ -50,14 +50,14 @@
               <div class="col-md-5">
 
                 <div class="input-group">
-                  <span class="input-group-addon">
+                  <span class="input-group-text">
                     <input type="radio" name="first_record" value="{{ this.id }}" {{# if this.sort_order
                       }}checked="checked" {{/ if}}>
                   </span>
                   <input type="text" class="form-control" name="name__{{ this.id }}" value="{{name}}"
                     data-tom-leave-type-order="name_{{@index}}">
 
-                  <span class="input-group-addon color-picker">
+                  <span class="input-group-text color-picker">
                     <input type="color" class="picker" name="color__{{ this.id }}"
                       value="{{# with this }}{{ this.color }}{{/with}}">
                   </span>
@@ -68,9 +68,9 @@
 
               <div class="col-md-4">
                 <div class="row">
-                  <div class="col-xs-6">
+                  <div class="col-6">
                     <div class="checkbox">
-                      <label class="control-label">
+                      <label class="form-label">
                         <input name="use_allowance__{{ this.id }}" id="use_allowance__{{ this.id }}" type="checkbox"
                           {{#if use_allowance}}checked="checked" {{/if}}
                           data-tom-leave-type-order="allowance_{{@index}}">
@@ -78,37 +78,37 @@
                       </label>
                     </div>
                     <div class="checkbox">
-                      <label class="control-label">
+                      <label class="form-label">
                         <input name="use_personal__{{ this.id }}" id="use_personal__{{ this.id }}" type="checkbox" {{#if
                           use_personal}}checked="checked" {{/if}} data-tom-leave-type-order="personal_{{@index}}">
                         Use personal
                       </label>
                     </div>
                     <div class="checkbox">
-                      <label class="control-label">
+                      <label class="form-label">
                         <input name="auto_approve__{{ this.id }}" id="auto_approve__{{ this.id }}" type="checkbox" {{#if
                           auto_approve}}checked="checked" {{/if}} data-tom-leave-type-order="approve_{{@index}}">
                         Auto approve
                       </label>
                     </div>
                   </div>
-                  <div class="col-xs-6">
+                  <div class="col-6">
                     <div class="checkbox">
-                      <label class="control-label">
+                      <label class="form-label">
                         <input name="manager_only__{{ this.id }}" id="manager_only__{{ this.id }}" type="checkbox" {{#if
                           manager_only}}checked="checked" {{/if}} data-tom-leave-type-order="manager_{{@index}}">
                         Manager only
                       </label>
                     </div>
                     <div class="checkbox">
-                      <label class="control-label">
+                      <label class="form-label">
                         <input name="is_special__{{ this.id }}" id="is_special__{{ this.id }}" type="checkbox" {{#if
                           is_special}}checked="checked" {{/if}} data-tom-leave-type-order="special_{{@index}}">
                         Special leave
                       </label>
                     </div>
                     <div class="checkbox">
-                      <label class="control-label">
+                      <label class="form-label">
                         <input name="allow_non_default_increments__{{ this.id }}"
                           id="allow_non_default_increments__{{ this.id }}" type="checkbox" {{#if
                           allow_non_default_increments}}checked="checked" {{/if}}
@@ -124,7 +124,7 @@
                   data-tom-leave-type-order="limit_{{@index}}">
               </div>
               <div class="col-md-1">
-                <button class="btn btn-default pull-right leavetype-remove-btn" value="{{ this.id }}"
+                <button class="btn btn-outline-secondary float-end leavetype-remove-btn" value="{{ this.id }}"
                   data-tom-leave-type-order="remove_{{@index}}"><span class="fa fa-remove"></span></button>
               </div>
             </div>
@@ -135,7 +135,7 @@
 
             <div class="row">
               <div class="col-md-12">
-                <button class="btn btn-default" data-toggle="modal" data-target="#add_new_leave_type_modal"
+                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#add_new_leave_type_modal"
                   type="button" id="add_new_leave_type_btn">Add new</button>
               </div>
             </div>
@@ -147,10 +147,10 @@
 
   <div class="row">
     <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading" role="button" data-toggle="collapse" href="#leaveTypeSortPanel" aria-expanded="false"
+      <div class="card">
+        <div class="card-header" role="button" data-bs-toggle="collapse" data-bs-target="#leaveTypeSortPanel" aria-expanded="false"
           aria-controls="leaveTypeSortPanel">
-          <h4 class="panel-title">
+          <h4 class="card-title mb-0">
             <i class="fa fa-chevron-down collapsed"></i> Leave Type Sorting
             <span class="text-muted">
               {{# if_equal leave_types_sort "name_asc" }}
@@ -161,8 +161,8 @@
             </span>
           </h4>
         </div>
-        <div class="panel-collapse collapse" id="leaveTypeSortPanel">
-          <div class="panel-body">
+        <div class="collapse" id="leaveTypeSortPanel">
+          <div class="card-body">
             <p class="text-muted">
               Controls the order of leave types in booking dropdowns. Manager-only types remain hidden when employees
               book leave for themselves.
@@ -199,7 +199,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      <div class="pull-right">
+      <div class="float-end">
         <button type="submit" class="btn btn-success single-click">Save changes</button>
       </div>
     </div>

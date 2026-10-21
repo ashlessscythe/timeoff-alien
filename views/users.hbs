@@ -1,55 +1,53 @@
 {{> header }}
 
-<h1>Staff</h1>
-
-{{> show_flash_messages }}
-
-<div class="row">
-  <div class="col-md-3 lead">{{company.name}}'s staff</div>
-  <div class="col-md-3 col-md-offset-6">
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">Staff</h1>
+    <p class="page-header__subtitle">{{company.name}}'s employees</p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="btn btn-outline-secondary" id="toggle-deactivated-users"
+      data-bs-content="Toggle visibility of deactivated users" data-bs-placement="top" data-bs-toggle="tooltip"
+      data-bs-trigger="hover">
+      <i class="fa fa-eye-slash"></i> Hide deactivated
+    </button>
     {{#if logged_user.admin}}
-    <div class="btn-group pull-right">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
         Add new employee
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
       </button>
-      <ul class="dropdown-menu">
-        <li><a href="/users/import/" id="import_users_btn">Import employees</a></li>
-        <li><a href="/users/add/" id="add_new_department">Add single employee</a></li>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="/users/import/" id="import_users_btn">Import employees</a></li>
+        <li><a class="dropdown-item" href="/users/add/" id="add_new_department">Add single employee</a></li>
       </ul>
     </div>
     {{/if}}
-    <div class="btn-group pull-right" style="margin-right: 10px;">
-      <button type="button" class="btn btn-default" id="toggle-deactivated-users"
-        data-content="Toggle visibility of deactivated users" data-placement="top" data-toggle="tooltip"
-        data-trigger="hover">
-        <i class="fa fa-eye-slash"></i> Hide deactivated
-      </button>
-    </div>
-    <form action="/users/" method="GET">
+    <form action="/users/" method="GET" class="d-inline">
       <input type="hidden" name="department" value="{{department_id}}">
       <input type="hidden" name="as-csv" value="1">
-      <button class="btn btn-link pull-right single-click" type="submit"
-        data-content="Download current page as .CSV file" data-placement="top" data-toggle="popover"
-        data-trigger="focus hover"><i class="fa fa-download"></i> .csv</button>
+      <button class="btn btn-outline-secondary single-click" type="submit"
+        data-bs-content="Download current page as .CSV file" data-bs-placement="top" data-bs-toggle="popover"
+        data-bs-trigger="focus hover"><i class="fa fa-download"></i> .csv</button>
     </form>
   </div>
 </div>
 
-<div class="row">&nbsp;</div>
+{{> show_flash_messages }}
 
-<div class="col-md-3 list-group all-departments">
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="list-group all-departments staff-sidebar">
   <a href="/users/" class="list-group-item{{#unless department_id }} selected-item{{/unless}}">All departments</a>
   {{#each company.departments}}
   <a class="list-group-item {{#if_equal ../department_id this.id}} selected-item{{/if_equal}}"
     href="/users/?department={{this.id}}">{{this.name}}</a>
   {{/each}}
-</div>
+    </div>
+  </div>
 
 <div class="col-md-9">
-  <table class="table table-hover" id="users-table">
+  <div class="table-responsive">
+  <table class="table table-hover staff-table" id="users-table">
     <thead>
       <tr>
         <th class="sortable" data-column="name">
@@ -79,74 +77,17 @@
             this.is_active}}<s>{{/unless}}{{this.user_full_name}}{{#unless this.is_active}}</s>{{/unless}}</a></td>
         <td class="user_department"><a
             href="/settings/departments/edit/{{ this.department_id }}/">{{this.department_name}}</a></td>
-        <td>{{# if this.is_admin }}Yes{{else}}{{/if}}</td>
-        <td>{{# if this.is_manager }}Yes{{else}}{{/if}}</td>
-        <td class="vpp-days-remaining{{#if (lt this.number_of_days_available_in_allowance 0)}} negative{{/if}}">{{
+        <td>{{#if this.is_admin}}<span class="role-badge role-badge--yes">Yes</span>{{else}}<span class="cell-empty">—</span>{{/if}}</td>
+        <td>{{#if this.is_manager}}<span class="role-badge role-badge--yes">Yes</span>{{else}}<span class="cell-empty">—</span>{{/if}}</td>
+        <td class="metric-cell vpp-days-remaining{{#if (lt this.number_of_days_available_in_allowance 0)}} negative{{/if}}">{{
           format_days_and_hours this.number_of_days_available_in_allowance }}</td>
-        <td class="vpp-days-used">{{format_days_and_hours this.number_of_days_taken_from_allowance}}</td>
+        <td class="metric-cell vpp-days-used">{{format_days_and_hours this.number_of_days_taken_from_allowance}}</td>
       </tr>
       {{/each}}
     </tbody>
   </table>
+  </div>
 </div>
-
-<div class="row">&nbsp;</div>
-
-<style>
-  .deactivated-user {
-    opacity: 0.6;
-    transition: opacity 0.3s ease;
-  }
-
-  .deactivated-user.hidden {
-    display: none !important;
-  }
-
-  #toggle-deactivated-users.active {
-    background-color: #5cb85c;
-    border-color: #4cae4c;
-    color: white;
-  }
-
-  #toggle-deactivated-users.active .fa-eye-slash:before {
-    content: "\f06e";
-  }
-
-  /* Sortable table styles */
-  .sortable {
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-    padding-right: 20px;
-  }
-
-  .sortable:hover {
-    background-color: #f5f5f5;
-  }
-
-  .sort-icon {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-  }
-
-  .sortable:hover .sort-icon {
-    opacity: 1;
-  }
-
-  .sortable.sorted-asc .sort-icon:before {
-    content: "\f0de";
-    opacity: 1;
-  }
-
-  .sortable.sorted-desc .sort-icon:before {
-    content: "\f0dd";
-    opacity: 1;
-  }
-</style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {

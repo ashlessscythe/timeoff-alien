@@ -7,9 +7,9 @@
     <div class="col-md-3 lead">
       Department details
     </div>
-    <div class="col-md-1 col-md-offset-8">
-      <button id="remove_btn" type="submit" class="pull-right btn btn-danger single-click" data-toggle="tooltip"
-        data-placement="top" title="Remove department"><i class="fa fa-trash"></i> Delete</button>
+    <div class="col-md-1 offset-md-8">
+      <button id="remove_btn" type="submit" class="float-end btn btn-danger single-click" data-bs-toggle="tooltip"
+        data-bs-placement="top" title="Remove department"><i class="fa fa-trash"></i> Delete</button>
     </div>
   </div>
 </form>
@@ -30,7 +30,7 @@
 <!-- Add Secondary Supervisors Button -->
 <div class="row">
   <div class="col-md-3">
-    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#add_secondary_supervisers_modal"
+    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#add_secondary_supervisers_modal"
       data-department_id="{{department.id}}" data-department_name="{{department.name}}">
       Add Secondary Supervisors
     </button>
@@ -43,7 +43,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span
             aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="addSecondarySuperviserModalLabel">Add Secondary Supervisors for <strong></strong>
         </h4>
@@ -52,7 +52,7 @@
         <!-- Content will be loaded dynamically -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
@@ -78,7 +78,7 @@
       modal.find('.close').css({
         'color': '#fff'
       });
-      modal.find('.btn-default').css({
+      modal.find('.btn-outline-secondary').css({
         'background-color': '#555',
         'color': '#fff',
         'border-color': '#777'

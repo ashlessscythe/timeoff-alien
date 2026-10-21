@@ -37,24 +37,24 @@
 
     <div class="row feeds-holder">
 
-      <div class="col-md-5 well">
+      <div class="col-md-5 card card-body bg-light">
         <form method="POST" action="/calendar/feeds/regenerate/">
         <a href="webcal://{{current_host}}/feed/{{calendar_feed.feed_token}}/ical.ics">My calendar feed <i class="fa fa-rss"></i></a>
 
         <input type="hidden" name="token" value="{{calendar_feed.feed_token}}"/>
-        <button type="submit" class="close" aria-label="Close"><span aria-hidden="true"><i class="fa fa-trash"></i></span></button>
+        <button type="submit" class="btn-close" aria-label="Close"><span aria-hidden="true"><i class="fa fa-trash"></i></span></button>
         </form>
       </div>
 
       {{# unless keep_team_view_hidden }}
-      <div class="col-md-5 col-md-offset-2 well">
+      <div class="col-md-5 offset-md-2 card card-body bg-light">
         <form method="POST" action="/calendar/feeds/regenerate/">
         <a href="webcal://{{current_host}}/feed/{{team_view_feed.feed_token}}/ical.ics">Team view feed <i class="fa fa-rss"></i></a>
             <a href="webcal://{{current_host}}/feed/{{team_view_feed.feed_token}}/anniversary.ics">Anniversaries Team
                 feed <i class="fa fa-rss"></i></a>
 
         <input type="hidden" name="token" value="{{team_view_feed.feed_token}}"/>
-        <button type="submit" class="close" aria-label="Close"><span aria-hidden="true"><i class="fa fa-trash"></i></span></button>
+        <button type="submit" class="btn-close" aria-label="Close"><span aria-hidden="true"><i class="fa fa-trash"></i></span></button>
         </form>
       </div>
       {{/ unless }}

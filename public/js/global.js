@@ -90,12 +90,54 @@ $(document).ready(function() {
 })(jQuery)
 
 $(function() {
-  $('[data-toggle="tooltip"]').tooltip()
+  $('[data-bs-toggle="tooltip"]').tooltip()
 })
 
 $(function() {
   // Initialize popovers except for leave summary triggers which are handled separately
-  $('[data-toggle="popover"]:not(.leave-details-summary-trigger)').popover()
+  $('[data-bs-toggle="popover"]:not(.leave-details-summary-trigger)').popover()
+})
+
+$(function() {
+  function leaveIdFromTrigger($button) {
+    if (!$button || !$button.length) {
+      return ''
+    }
+    return (
+      $button.attr('data-leave-id') ||
+      $button.data('leaveId') ||
+      $button.data('leave-id') ||
+      ''
+    )
+  }
+
+  function setLeaveIdOnModal($modal, leaveId) {
+    if (!leaveId || !$modal.length) {
+      return
+    }
+    $modal.find('input[name="request"]').val(leaveId)
+    if ($modal.attr('id') === 'rejectModal') {
+      $modal.find('textarea[name="comment"]').attr('placeholder', leaveId)
+    }
+  }
+
+  // Set leave id on click (required for approve buttons inside AJAX popover content)
+  $(document).on(
+    'click',
+    '[data-bs-target="#approveModal"], [data-bs-target="#rejectModal"]',
+    function() {
+      const $btn = $(this)
+      const leaveId = leaveIdFromTrigger($btn)
+      const $modal = $($btn.attr('data-bs-target'))
+      setLeaveIdOnModal($modal, leaveId)
+    }
+  )
+
+  // Fallback when Bootstrap provides relatedTarget (requests page, etc.)
+  $(document).on('show.bs.modal', '#approveModal, #rejectModal', function(event) {
+    const leaveId = leaveIdFromTrigger($(event.relatedTarget))
+    setLeaveIdOnModal($(this), leaveId)
+  })
 })
 
 /*
@@ -121,7 +163,7 @@ $('#add_secondary_supervisers_modal').on('show.bs.modal', function(event) {
     .find('.modal-body')
     // Show "loading" icon while content of modal is loaded
     .html(
-      '<p class="text-center"><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span></p>'
+      '<p class="text-center"><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i><span class="visually-hidden">Loading...</span></p>'
     )
     .load('/settings/departments/available-supervisors/' + department_id + '/')
 })

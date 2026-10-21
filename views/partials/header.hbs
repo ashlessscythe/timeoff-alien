@@ -1,264 +1,281 @@
 <div class="header">
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-expand-lg app-navbar sticky-top">
     <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <a class="navbar-brand" href="{{url_to_the_site_root}}">{{header_title}}</a>
-        {{#if logged_user}}
-        {{#unless is_messages_page}}
-        <button type="button" class="btn btn-info navbar-btn visible-xs-inline-block mobile-header-cta"
-          data-toggle="modal" data-target="#book_leave_modal" aria-label="New absence" title="New absence">
-          New absence
-        </button>
-        {{/unless}}
-        {{/if}}
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-          data-target="#bs-example-navbar-collapse-1">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-      </div>
+      <a class="navbar-brand" href="{{url_to_the_site_root}}">{{header_title}}</a>
 
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav navbar-left">
+      {{#if logged_user}}
+      {{#unless is_messages_page}}
+      <button type="button" class="btn btn-primary btn-sm d-inline-flex d-lg-none mobile-header-cta ms-2"
+        data-bs-toggle="modal" data-bs-target="#book_leave_modal" aria-label="New absence" title="New absence">
+        New absence
+      </button>
+      {{/unless}}
+      {{/if}}
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           {{#if logged_user}}
-          <li><a href="/calendar/">Calendar</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/calendar/">Calendar</a>
+          </li>
           {{#if (or (not keep_team_view_hidden) logged_user.manager)}}
-          <li><a href="/calendar/teamview/">Team View</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/calendar/teamview/">Team View</a>
+          </li>
           {{/if}}
           {{#if (or logged_user.admin logged_user.manager)}}
-          <li><a href="/users/">Employees</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/">Employees</a>
+          </li>
           {{/if}}
           {{#unless is_messages_page}}
-          <li class="navbar-form navbar-left hidden-xs">
-            <div class="form-group">
-              <button type="button" class="btn btn-info" data-toggle="modal" data-target="#book_leave_modal"
-                id="book_time_off_btn">New absence</button>
-            </div>
+          <li class="nav-item d-none d-lg-flex align-items-center ms-2">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+              data-bs-target="#book_leave_modal" id="book_time_off_btn">New absence</button>
           </li>
           {{/unless}}
           {{/if}}
         </ul>
 
-        <ul class="nav navbar-nav navbar-right">
-          <li>
-            {{#if logged_user }}
-            <!-- Theme Selector Dropdown -->
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
-              title="Theme">
-              <span class="fa fa-paint-brush"></span> <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu" id="theme-dropdown" role="menu">
-              <li><a href="#" data-theme="day">Day</a></li>
-              <li><a href="#" data-theme="night">Night</a></li>
-              <li><a href="#" data-theme="ocean">Ocean</a></li>
-              <li><a href="#" data-theme="nature">Nature</a></li>
-              <li><a href="#" data-theme="volcano">Volcano</a></li>
-              <li><a href="#" data-theme="neon">Neon</a></li>
-              <li><a href="#" data-theme="cyberpunk">Cyberpunk</a></li>
-            </ul>
-          </li>
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+          {{#if logged_user}}
+          <li class="nav-item">
+            <button type="button" class="theme-toggle" id="theme-toggle" title="Toggle light/dark theme"
+              aria-label="Toggle theme">
+              <span class="fa fa-sun-o theme-icon-light" aria-hidden="true"></span>
+              <span class="fa fa-moon-o theme-icon-dark d-none" aria-hidden="true"></span>
+            </button>
           </li>
 
-          <li class="dropdown" id="header-notification-dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+          <li class="nav-item dropdown" id="header-notification-dropdown">
+            <a href="#" class="nav-link nav-icon-btn dropdown-toggle" data-bs-toggle="dropdown" role="button"
+              aria-expanded="false" aria-label="Notifications">
               <span class="fa fa-bell-o"></span>
-              <span class="label label-info notification-badge hidden"></span>
+              <span class="badge bg-info notification-badge d-none"></span>
             </a>
-            <ul class="dropdown-menu" role="menu">
-              <li class="dropdown-header">Notifications</li>
-              <li><a href="/requests">See Requests</a></li>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><h6 class="dropdown-header">Notifications</h6></li>
+              <li><a class="dropdown-item" href="/requests">See Requests</a></li>
             </ul>
           </li>
 
-          <li>
-            <a href="/messages/new" class="btn"
-              style="background-color: #F4A460; color: white; margin-top: 8px; padding: 6px 12px;" title="Report Issue">
+          <li class="nav-item">
+            <a href="/messages/new" class="nav-link nav-icon-btn nav-icon-btn--report" title="Report Issue"
+              aria-label="Report issue">
               <span class="fa fa-envelope-o"></span>
             </a>
           </li>
 
           {{#if logged_user.admin}}
-          <li>
-            <a href="/messages" class="btn btn-info" style="margin-top: 8px; padding: 6px 12px;" title="Issue Reports">
+          <li class="nav-item">
+            <a href="/messages" class="nav-link nav-icon-btn" title="Issue Reports" aria-label="Issue reports">
               <span class="fa fa-inbox"></span>
-              <span class="label label-danger message-count hidden">0</span>
+              <span class="badge bg-danger message-count d-none">0</span>
             </a>
           </li>
           {{/if}}
 
-          {{#if logged_user.admin }}
-          <li class="dropdown hidden-xs">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span
-                class="fa fa-gears"></span> <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/settings/general/">General</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="/settings/departments/">Departments</a></li>
-              <li><a href="/settings/bankholidays/">Bank Holidays</a></li>
-              <li><a href="/settings/leavetypes/">Leave Types</a></li>
-              <li><a href="/settings/company/authentication/">LDAP configuration</a></li>
-              <li><a href="/settings/company/integration-api/">API configuration</a></li>
-              <li><a href="/users/import/">Import employees</a></li>
-              <li><a href="/settings/pto-adjustment/">Bulk PTO Adjustment</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="/audit/email/">Emails audit</a></li>
-              <li><a href="/messages/">User Messages</a></li>
+          {{#if logged_user.admin}}
+          <li class="nav-item dropdown d-none d-lg-block">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button"
+              aria-expanded="false">
+              <span class="fa fa-cog"></span> Settings
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/settings/general/">General</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/settings/departments/">Departments</a></li>
+              <li><a class="dropdown-item" href="/settings/bankholidays/">Bank Holidays</a></li>
+              <li><a class="dropdown-item" href="/settings/leavetypes/">Leave Types</a></li>
+              <li><a class="dropdown-item" href="/settings/company/authentication/">LDAP configuration</a></li>
+              <li><a class="dropdown-item" href="/settings/company/integration-api/">API configuration</a></li>
+              <li><a class="dropdown-item" href="/users/import/">Import employees</a></li>
+              <li><a class="dropdown-item" href="/settings/pto-adjustment/">Bulk PTO Adjustment</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/audit/email/">Emails audit</a></li>
+              <li><a class="dropdown-item" href="/messages/">User Messages</a></li>
             </ul>
           </li>
           {{/if}}
 
-          {{#if logged_user.admin }}
-          <li class="dropdown visible-xs-block">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-              <span class="fa fa-gears"></span> Settings <span class="caret"></span>
+          {{#if logged_user.admin}}
+          <li class="nav-item dropdown d-lg-none">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button"
+              aria-expanded="false">
+              <span class="fa fa-cog"></span> Settings
             </a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/settings/general/">General Settings</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="/settings/departments/">Departments</a></li>
-              <li><a href="/settings/bankholidays/">Bank Holidays</a></li>
-              <li><a href="/settings/leavetypes/">Leave Types</a></li>
-              <li><a href="/settings/company/authentication/">LDAP configuration</a></li>
-              <li><a href="/settings/company/integration-api/">API configuration</a></li>
-              <li><a href="/users/import/">Import employees</a></li>
-              <li><a href="/settings/pto-adjustment/">Bulk PTO Adjustment</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="/audit/email/">Emails audit</a></li>
-              <li><a href="/messages/">User Messages</a></li>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/settings/general/">General Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/settings/departments/">Departments</a></li>
+              <li><a class="dropdown-item" href="/settings/bankholidays/">Bank Holidays</a></li>
+              <li><a class="dropdown-item" href="/settings/leavetypes/">Leave Types</a></li>
+              <li><a class="dropdown-item" href="/settings/company/authentication/">LDAP configuration</a></li>
+              <li><a class="dropdown-item" href="/settings/company/integration-api/">API configuration</a></li>
+              <li><a class="dropdown-item" href="/users/import/">Import employees</a></li>
+              <li><a class="dropdown-item" href="/settings/pto-adjustment/">Bulk PTO Adjustment</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/audit/email/">Emails audit</a></li>
+              <li><a class="dropdown-item" href="/messages/">User Messages</a></li>
             </ul>
           </li>
           {{/if}}
-          <li class="dropdown visible-xs-block">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-              Me <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/me/">Profile</a></li>
-              <li><a href="/requests/">Requests</a></li>
-              <li><a href="/calendar/feeds/">Feeds</a></li>
+
+          <li class="nav-item dropdown d-lg-none">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button"
+              aria-expanded="false">Me</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/me/">Profile</a></li>
+              <li><a class="dropdown-item" href="/requests/">Requests</a></li>
+              <li><a class="dropdown-item" href="/calendar/feeds/">Feeds</a></li>
               {{#if (or logged_user.admin logged_user.manager)}}
-              <li><a href="/reports/">Reports</a></li>
+              <li><a class="dropdown-item" href="/reports/">Reports</a></li>
               {{/if}}
-              <li role="separator" class="divider"></li>
-              <li><a href="/logout/">Logout</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/logout/">Logout</a></li>
             </ul>
           </li>
-          <li class="dropdown hidden-xs">
-            <a id="me_menu" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-              aria-expanded="false">Me
-              <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="/me/">Profile</a></li>
-              <li><a href="/requests/">Requests</a></li>
-              <li><a href="/calendar/feeds/">Feeds</a></li>
+
+          <li class="nav-item dropdown d-none d-lg-block">
+            <a id="me_menu" href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button"
+              aria-expanded="false">Me</a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/me/">Profile</a></li>
+              <li><a class="dropdown-item" href="/requests/">Requests</a></li>
+              <li><a class="dropdown-item" href="/calendar/feeds/">Feeds</a></li>
               {{#if (or logged_user.admin logged_user.manager)}}
-              <li><a href="/reports/">Reports</a></li>
+              <li><a class="dropdown-item" href="/reports/">Reports</a></li>
               {{/if}}
-              <li role="separator" class="divider"></li>
-              <li><a href="/logout/">Logout</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/logout/">Logout</a></li>
             </ul>
           </li>
           {{else}}
-          <li><a href="/login/">Login</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login/">Login</a>
+          </li>
           {{/if}}
         </ul>
-      </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
+      </div>
+    </div>
   </nav>
 
-  {{#if logged_user }}
-  {{#if logged_user.company.company_wide_message }}
-  <div class="alert alert-danger" role="alert"
+  {{#if logged_user}}
+  {{#if logged_user.company.company_wide_message}}
+  <div class="alert alert-danger mt-3" role="alert"
     style="color: {{logged_user.company.company_wide_message_text_color}}; background-color: {{logged_user.company.company_wide_message_bg_color}}">
     {{ logged_user.company.company_wide_message }}</div>
   {{/if}}
   {{/if}}
-
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const themeDropdown = document.getElementById('theme-dropdown');
-
-    // Function to set the theme based on the dropdown selection
-    function setTheme(theme) {
-      // Remove all theme-related classes first
-      document.body.classList.remove('theme-day', 'theme-night', 'theme-ocean', 'theme-nature', 'theme-volcano', 'theme-neon', 'theme-cyberpunk');
-
-      // Add the selected theme
-      document.body.classList.add('theme-' + theme);
-
-      // Save the theme to localStorage
-      localStorage.setItem('theme', theme);
+    const LEGACY_THEME_MAP = {
+      day: 'light',
+      night: 'dark',
+      ocean: 'light',
+      nature: 'light',
+      volcano: 'dark',
+      neon: 'dark',
+      cyberpunk: 'dark'
     }
 
-    // Apply the stored theme on page load
-    const storedTheme = localStorage.getItem('theme') || 'day';  // Default to 'day' theme
-    setTheme(storedTheme);
-
-    // Theme picker is only rendered for logged-in users
-    if (themeDropdown) {
-      themeDropdown.addEventListener('click', (event) => {
-        event.preventDefault();
-
-        const selectedTheme = event.target.getAttribute('data-theme');
-
-        if (selectedTheme) {
-          setTheme(selectedTheme);
-        }
-      });
-    }
-
-    // Fetch and update notification count (logged-in header only)
-    function updateNotificationCount() {
-      const badge = document.querySelector('.notification-badge');
-      if (!badge) {
-        return;
+    function normalizeTheme(theme) {
+      if (theme === 'light' || theme === 'dark') {
+        return theme
       }
+      return LEGACY_THEME_MAP[theme] || 'light'
+    }
+
+    function applyTheme(theme) {
+      const normalized = normalizeTheme(theme)
+      document.body.classList.remove(
+        'theme-light', 'theme-dark', 'theme-day', 'theme-night',
+        'theme-ocean', 'theme-nature', 'theme-volcano', 'theme-neon', 'theme-cyberpunk'
+      )
+      document.body.classList.add('theme-' + normalized)
+
+      const lightIcon = document.querySelector('.theme-icon-light')
+      const darkIcon = document.querySelector('.theme-icon-dark')
+      if (lightIcon && darkIcon) {
+        if (normalized === 'dark') {
+          lightIcon.classList.add('d-none')
+          darkIcon.classList.remove('d-none')
+        } else {
+          lightIcon.classList.remove('d-none')
+          darkIcon.classList.add('d-none')
+        }
+      }
+
+      localStorage.setItem('theme', normalized)
+    }
+
+    const storedTheme = localStorage.getItem('theme') || 'light'
+    applyTheme(storedTheme)
+
+    const themeToggle = document.getElementById('theme-toggle')
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const current = normalizeTheme(localStorage.getItem('theme') || 'light')
+        applyTheme(current === 'light' ? 'dark' : 'light')
+      })
+    }
+
+    // Highlight active nav link
+    const path = window.location.pathname
+    document.querySelectorAll('.app-navbar .nav-link[href]').forEach(link => {
+      const href = link.getAttribute('href')
+      if (href && href !== '#' && path.startsWith(href) && href.length > 1) {
+        link.classList.add('active')
+      }
+    })
+
+    function updateNotificationCount() {
+      const badge = document.querySelector('.notification-badge')
+      if (!badge) return
 
       fetch('/api/v1/notifications/count')
         .then(response => response.json())
         .then(data => {
           if (data.count > 0) {
-            badge.textContent = data.count;
-            badge.classList.remove('hidden');
+            badge.textContent = data.count
+            badge.classList.remove('d-none')
           } else {
-            badge.classList.add('hidden');
+            badge.classList.add('d-none')
           }
         })
-        .catch(error => console.error('Error fetching notification count:', error));
+        .catch(error => console.error('Error fetching notification count:', error))
     }
 
     if (document.querySelector('.notification-badge')) {
-      updateNotificationCount();
-      setInterval(updateNotificationCount, 300000);
+      updateNotificationCount()
+      setInterval(updateNotificationCount, 300000)
     }
 
-    // Function to update message count for admins
     function updateMessageCount() {
-      const messageCountElement = document.querySelector('.message-count');
-      if (messageCountElement) {  // Only proceed if admin (element exists)
-        fetch('/messages/count')
-          .then(response => response.json())
-          .then(data => {
-            if (data.count > 0) {
-              messageCountElement.textContent = data.count;
-              messageCountElement.classList.remove('hidden');
-            } else {
-              messageCountElement.classList.add('hidden');
-            }
-          })
-          .catch(error => console.error('Error fetching message count:', error));
-      }
+      const messageCountElement = document.querySelector('.message-count')
+      if (!messageCountElement) return
+
+      fetch('/messages/count')
+        .then(response => response.json())
+        .then(data => {
+          if (data.count > 0) {
+            messageCountElement.textContent = data.count
+            messageCountElement.classList.remove('d-none')
+          } else {
+            messageCountElement.classList.add('d-none')
+          }
+        })
+        .catch(error => console.error('Error fetching message count:', error))
     }
 
-    // Update message count on page load and every 5 minutes
-    updateMessageCount();
-    setInterval(updateMessageCount, 300000);
-  });
+    updateMessageCount()
+    setInterval(updateMessageCount, 300000)
+  })
 </script>

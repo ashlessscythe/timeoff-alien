@@ -50,7 +50,8 @@ $(document).ready(function() {
     return '<div id="' + divId + '">Loading...</div>'
   }
 
-  // Bind per element so user id is captured in closure.
+  // Bind per element so user id is captured in closure (BS5 popover content callbacks
+  // do not receive the trigger element as `this`).
   $(USER_TRIGGER).each(function() {
     const $element = $(this)
     const userId = readUserId($element)
@@ -62,6 +63,7 @@ $(document).ready(function() {
       placement: 'auto',
       container: 'body',
       delay: { show: 1000, hide: 10 },
+      sanitize: false,
       content: function() {
         const divId = 'tmp-id-' + $.now()
         return detailsInPopup(userId, divId, '/users/summary/')
@@ -93,7 +95,7 @@ $(document).ready(function() {
     modal
       .find('.modal-body')
       .html(
-        '<p class="text-center"><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span></p>'
+        '<p class="text-center"><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i><span class="visually-hidden">Loading...</span></p>'
       )
       .load(url, function(response, status, xhr) {
         if (status == 'error') {
