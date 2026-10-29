@@ -121,6 +121,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # GitHub-hosted runners may ship a newer default pg_dump (e.g. 17+) that
+      # emits SET transaction_timeout in custom-format dumps. That GUC does not
+      # exist on the postgres:16 service, so pin client tools to the same major.
+      - name: Install PostgreSQL 16 client tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+          echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
+          /usr/lib/postgresql/16/bin/pg_dump --version
+          /usr/lib/postgresql/16/bin/pg_restore --version
+
       - name: Generate Prisma client
         run: npx prisma generate
 
