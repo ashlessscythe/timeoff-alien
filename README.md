@@ -23,7 +23,7 @@ cd timeoff-alien
 cp .env.example .env
 ```
 
-Edit `.env` and at least change `SESSION_SECRET` and `BACKUP_ENCRYPTION_KEY` (32+ characters; `openssl rand -hex 32` works). Then:
+The defaults in `.env.example` work as-is for local development (bundled Postgres, registrations enabled, email off). For any real deployment, change `SESSION_SECRET` and `BACKUP_ENCRYPTION_KEY` (32+ characters; `openssl rand -hex 32` works). Then:
 
 ```bash
 docker compose up -d
