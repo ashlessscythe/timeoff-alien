@@ -3,31 +3,19 @@ services:
   web:
     container_name: timeoff
     image: ashless/timeoff-alien
+    build: .
+    # All settings from .env are passed to the container; the entries below override it.
+    env_file: .env
     environment:
-      # Core settings
-      DATABASE_URL: ${DOCKER_DB_URL}
+      # Local DB (DOCKER_DB_URL) if set, otherwise the external DATABASE_URL
+      DATABASE_URL: ${DOCKER_DB_URL:-${DATABASE_URL}}
       APP_PORT: ${APP_PORT}
-      # Security settings
-      SESSION_SECRET: ${SESSION_SECRET}
-      OPTION_ALLOW_NEW_REGISTRATIONS: ${OPTION_ALLOW_NEW_REGISTRATIONS}
-      # SSL settings
-      USE_SSL: ${USE_SSL}
-      # Email settings (if configured)
-      SMTP_AUTH_PASS: ${SMTP_AUTH_PASS}
-      SMTP_AUTH_USER: ${SMTP_AUTH_USER}
-      SMTP_FROM: ${SMTP_FROM}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_REQUIRE_TLS: ${SMTP_REQUIRE_TLS}
     ports:
       - "${APP_PORT}:${APP_PORT}"
     restart: unless-stopped
 
-  # Local PostgreSQL Database (Optional)
-  # To use local database:
-  # 1. Comment out DATABASE_URL in your .env file
-  # 2. Uncomment the postgres service below
-  # 3. Set DB_* variables in your .env file
+  # Local PostgreSQL Database (remove this service and the volume below
+  # if you use an external DATABASE_URL)
   postgres:
     image: postgres:15-alpine
     container_name: ${DB_HOST}

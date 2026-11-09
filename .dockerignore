@@ -5,7 +5,6 @@
 .env*
 docs
 config.example/
-scripts/
 import/
 export/
 mock_data/
