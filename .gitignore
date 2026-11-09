@@ -19,6 +19,5 @@ export/
 prisma/uaa.csv
 prisma/app.sqlite-shm
 prisma/app.sqlite-wal
-.env.dev
 .env.test
 coverage/
