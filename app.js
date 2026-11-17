@@ -70,7 +70,15 @@ const handlebars = require('express-handlebars').create({
 
 // Language change route
 app.get('/lang/:locale', (req, res) => {
-  res.cookie('lang', req.params.locale, { maxAge: 900000, httpOnly: true })
+  if (!['en', 'es'].includes(req.params.locale)) {
+    return res.redirect('/')
+  }
+  res.cookie('lang', req.params.locale, {
+    maxAge: 900000,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: app.get('env') === 'production'
+  })
   res.redirect('back')
 })
 
