@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#3498db">
+  <title>Offline - TimeOff</title>
+  <style>
+    body { font-family: "Open Sans", Arial, sans-serif; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; color: #333; background: #f7f9fb; }
+    main { padding: 24px; max-width: 420px; }
+    img { width: 96px; height: 96px; }
+    button { background: #3498db; color: #fff; border: 0; border-radius: 4px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/img/icon-192.png" alt="">
+    <h1>You're offline</h1>
+    <p>TimeOff needs a connection to show up-to-date leave data. Check your network and try again.</p>
+    <button onclick="location.reload()">Retry</button>
+  </main>
+</body>
+</html>
