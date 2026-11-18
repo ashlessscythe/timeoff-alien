@@ -103,7 +103,11 @@ app.use(
   express.static(path.join(__dirname, 'public'), {
     maxAge: app.get('env') === 'production' ? '1d' : 0,
     setHeaders: (res, path) => {
-      if (path.endsWith('.html')) {
+      if (
+        path.endsWith('.html') ||
+        path.endsWith('/sw.js') ||
+        path.endsWith('.webmanifest')
+      ) {
         res.setHeader('Cache-Control', 'no-cache')
       }
     }
